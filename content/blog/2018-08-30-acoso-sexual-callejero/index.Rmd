@@ -1,0 +1,52 @@
+---
+aliases: [Acoso sexual callejero]
+projects: [Acoso sexual callejero]
+title: Acoso sexual callejero
+authors: [alison]
+date: '2018-08-30'
+tags: [Género]
+categories:
+  - R
+  - Investigación cualitativa
+summary: Investigación sobbre Acoso Sexual Callejero en Montevideo
+image:
+  caption: '[Foto Twitter RLadies Montevideo](https://pbs.twimg.com/media/Dl4kb0LXoAAOFrP?format=jpg&name=4096x4096)'
+  focal_point: ''
+output:
+  blogdown::html_page:
+    toc: true
+    number_sections: true
+    toc_depth: 1
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(eval = FALSE, collapse = TRUE, comment = NA, tidy = FALSE)
+```
+
+
+## Contexto
+
+El presente análisis se desarrolla en el marco del __estudio diagnóstico sobre el acoso sexual y otros tipos de violencia contra las mujeres y niñas en espacios públicos__ en Montevideo. El mismo se enmarca en un convenio suscripto entre ONU Mujeres, la Asesoría para Igualdad de Género de la Intendencia de Montevideo (IM) y la Facultad de Ciencias Sociales (UdelaR).
+
+##Definiciones
+
+El estudio concibe al Acoso Sexual Callejero (ASC) como:
+
+_"Incluye comentarios, atención, acciones o gestos con contenido sexual indeseado. Como en
+otras formas de violencia sexual, el componente clave del acoso sexual es que alguien
+realiza una acción sin el consentimiento, permiso o acuerdo de la persona o personas a las
+que se dirige. Acoso sexual incluye formas sin contacto, como comentarios sexuales acerca
+del cuerpo o apariencia de la persona, silbidos mientras pasa una mujer, exigencias de
+favores sexuales, quedarse mirando de manera sexualmente sugestiva, persecuciones y
+seguimiento de una persona, exposición de órganos sexuales. El acoso sexual también
+incluye formas físicas de contacto, como frotarse intencionalmente contra alguien en la
+calle o en el transporte público, agarrar, pegar una palmada y aproximarse a alguien en una
+manera sexual." (ONU Mujeres, 2013)_
+
+
+## Objetivos
+
+- Realizar un análisis textual de grupos de discusión sobre ASC realizados a mujeres y varones.
+
+
+- Analizar los datos surgidos de un Paper Review sobre la temática.
