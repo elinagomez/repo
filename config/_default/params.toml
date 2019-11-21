@@ -12,7 +12,7 @@ day_night = true
 font = "alison"
 
 # Description for social sharing and search engines. If undefined, superuser role is used in place.
-description = "Personal website of Alison Presmanes Hill where I blog about data science, programming, education, and R."
+description = "Sitio web de Elina Gómez"
 
 # Default image for social sharing and search engines. Place image in `static/img/` folder and specify image name here.
 sharing_image = "avatar.jpg"

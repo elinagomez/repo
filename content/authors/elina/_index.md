@@ -15,6 +15,7 @@ interests:
 - Análisis de datos
 - Investigación cualitativa
 - Evaluación y monitoreo
+- R
 
 name: Elina Gómez
 
