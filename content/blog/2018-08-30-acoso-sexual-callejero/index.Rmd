@@ -1,6 +1,7 @@
 ---
 aliases: [R para el análisis cualitativo: Acoso sexual callejero]
 title: 'R para el análisis cualitativo: Acoso sexual callejero'
+thumbnail: "img/rladies2.jpg"
 authors: [elina]
 date: '2018-08-30'
 tags: [Género]
