@@ -1,7 +1,7 @@
 ---
 aliases: [Infografías automáticas con R]
 title: 'Infografías automáticas con R'
-thumbnail: ""
+thumbnail: "img/rladies2.jpg"
 authors: [elina]
 date: '2020-04-25'
 tags: [Infografias]
