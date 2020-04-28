@@ -102,9 +102,14 @@ serie_linea_graf = ggplot(serie_linea,aes(x = as.factor(fecha_dato) , y = conteo
             show.legend = FALSE,size=4,family="Impact")+
   ylab("Casos") + xlab("Año") + ggtitle("Gráfico de línea")
 
+
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
 serie_linea_graf
 
 ```
+
 
 ###Gráfico de barras (serie temporal)
 
@@ -126,6 +131,10 @@ serie_barra_graf = ggplot(serie_barra,aes(x = factor(fecha_dato) , y = conteo,gr
             position = position_dodge(0.9) ,
             vjust = 0,show.legend = FALSE,size=4,family="Impact")+
   ylab("%") + xlab("Año") + ggtitle("Gráfico de barras")
+
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
 serie_barra_graf
 
 ```
@@ -169,6 +178,10 @@ mapa=ggplot() +
     guides(fill=guide_legend(title="Casos"))+
     ggtitle("Mapa de densidad")
 
+
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
 mapa
 
 ```
@@ -185,7 +198,7 @@ piramide=read.csv2("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforg
 Cargo los datos de la piramide, objeto _piramide_ y calculo el inverso cuando es Varón. Armo el gráfico. 
 
 
-```{r echo=TRUE, fig.height=5, fig.width=7, message=FALSE, warning=FALSE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 
 piramide$Var1 <- as.character(piramide$Var1)
 piramide$Var1 <- factor(piramide$Var1, levels=c("0 a 4","5 a 9","10 a 14","15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44","45 a 49","50 a 54","55 a 59","60 a 64","65 a 69","70 a 74","75 a 79","80 a 84","85 a 89","90 y +"))
@@ -204,9 +217,13 @@ piramide_graf=ggplot(piramide, aes(x = Var1, y = Freq, fill = Var2)) +
   guides(fill=guide_legend(title="Sexo",reverse = T))+
   ggtitle("Pirámide poblacional")
 
+```
+
+```{r echo=FALSE, fig.height=5, fig.width=7, message=FALSE, warning=FALSE}
 piramide_graf
 
 ```
+
 
 
 ### Íconos con datos y logo

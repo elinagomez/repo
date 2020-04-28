@@ -63,10 +63,8 @@ library(useful) #ubica objetos de ggplot en cuadrícula</code></pre>
   geom_text(aes(label = round(conteo, 1)),
             vjust = &quot;inward&quot;, hjust = &quot;inward&quot;,
             show.legend = FALSE,size=4,family=&quot;Impact&quot;)+
-  ylab(&quot;Casos&quot;) + xlab(&quot;Año&quot;) + ggtitle(&quot;Gráfico de línea&quot;)
-
-serie_linea_graf</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+  ylab(&quot;Casos&quot;) + xlab(&quot;Año&quot;) + ggtitle(&quot;Gráfico de línea&quot;)</code></pre>
+<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
 </div>
 <div id="gráfico-de-barras-serie-temporal" class="section level3">
 <h3>Gráfico de barras (serie temporal)</h3>
@@ -78,9 +76,8 @@ serie_linea_graf</code></pre>
   geom_text(aes(label = paste0(round(conteo, 1),&quot;%&quot;)),
             position = position_dodge(0.9) ,
             vjust = 0,show.legend = FALSE,size=4,family=&quot;Impact&quot;)+
-  ylab(&quot;%&quot;) + xlab(&quot;Año&quot;) + ggtitle(&quot;Gráfico de barras&quot;)
-serie_barra_graf</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+  ylab(&quot;%&quot;) + xlab(&quot;Año&quot;) + ggtitle(&quot;Gráfico de barras&quot;)</code></pre>
+<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
 </div>
 <div id="mapa-de-densidad" class="section level3">
 <h3>Mapa de densidad</h3>
@@ -102,10 +99,8 @@ serie_barra_graf</code></pre>
     plot.title = element_text(size=20,family=&quot;Impact&quot;),
     panel.border = element_rect(colour = &quot;#ffffff&quot;, fill = NA, size = 0.5))+
     guides(fill=guide_legend(title=&quot;Casos&quot;))+
-    ggtitle(&quot;Mapa de densidad&quot;)
-
-mapa</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+    ggtitle(&quot;Mapa de densidad&quot;)</code></pre>
+<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-11-1.png" width="768" /></p>
 </div>
 <div id="piramide-poblacional" class="section level3">
 <h3>Piramide poblacional</h3>
@@ -125,10 +120,8 @@ piramide_graf=ggplot(piramide, aes(x = Var1, y = Freq, fill = Var2)) +
     size = 15,family = &quot;Impact&quot;),legend.title = element_text(
       size = 15,family = &quot;Impact&quot;),plot.title = element_text(size=20,family = &quot;Impact&quot;))+
   guides(fill=guide_legend(title=&quot;Sexo&quot;,reverse = T))+
-  ggtitle(&quot;Pirámide poblacional&quot;)
-
-piramide_graf</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+  ggtitle(&quot;Pirámide poblacional&quot;)</code></pre>
+<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="íconos-con-datos-y-logo" class="section level3">
 <h3>Íconos con datos y logo</h3>
