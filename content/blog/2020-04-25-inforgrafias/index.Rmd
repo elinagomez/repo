@@ -1,25 +1,23 @@
 ---
-aliases: [Infografías automáticas con R]
-title: 'Infografías automáticas con R'
+aliases: [R]
+title: 'R'
 thumbnail: "img/rladies2.jpg"
 authors: [elina]
-date: '2020-04-25'
-tags: [Infografias]
+date: '2018-08-30'
+tags: [Género]
 categories:
   - R
-  - Infografías
-  - Análisis de datos
-  - Visualización
-summary: Construcción de infografías con R
+  - Investigación cualitativa
+summary: Investigación 
 image:
-  caption: ''
+  caption: '[Foto](rladies2.jpg)'
   focal_point: ''
   output:
   blogdown::html_page:
     toc: false
     number_sections: true
     toc_depth: 1
-featuredImage: ""
+featuredImage: "img/rladies2.jpg"
 ---
 
 
