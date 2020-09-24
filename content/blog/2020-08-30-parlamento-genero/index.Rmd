@@ -43,10 +43,10 @@ El objetivo general del trabajo es lograr un buen método de clasificación de t
 
 El post se va a estructurar en cuatro partes:
 
-**1. Obtención de la información (web scraping)**
-**2. Limpieza del texto y matriz de términos**
-**3. Clasificación: machine lerning y diccionario**
-**4. Análisis de los datos**
+1. **Obtención de la información (web scraping)**
+2. **Limpieza del texto y matriz de términos**
+3. **Clasificación: machine lerning y diccionario**
+4. **Análisis de los datos**
 
 ______________
 
@@ -327,6 +327,8 @@ ggplotly(ts) %>%
 ```
 
 
+
+
 __Menciones por partido político__
 
 Si vemos la distribución de las menciones relativas al género por partido político en términos absolutos, vemos que el __Frente Amplio__ es el que cuenta con más menciones ( __364__), seguidas por el __Partido Nacional__ ( __230__).    
@@ -384,6 +386,8 @@ ggplotly(part_ratio)
 
 
 
+
+
 __Menciones por género__
 
 
@@ -411,10 +415,12 @@ ggplotly(genero)
 ```
 
 
+
+
 __Legisladorxs__
 
 
-Por último, queremos ver que legisladorxs son los que tienen más intervenciones referidas al género vemos que la diputada __Gloria Rodriguez__ es la que acumula más menciones, y que la gran mayoría son mujeres `r emo::ji("female")`.Esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria. 
+Por último, queremos ver que legisladorxs son los que tienen más intervenciones referidas al género vemos que la diputada __Gloria Rodriguez__ es la que acumula más menciones, y que la gran mayoría son mujeres.Esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria. 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -451,6 +457,5 @@ Espero que les haya gustado y servido, seguro que existen muchas cosas por mejor
 
 
 ______________
-
 
 
