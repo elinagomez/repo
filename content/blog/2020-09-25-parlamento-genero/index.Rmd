@@ -20,7 +20,6 @@ image:
     toc: false
     number_sections: true
     toc_depth: 1
-  code_folding: show
 featuredImage: ""
 ---
 
