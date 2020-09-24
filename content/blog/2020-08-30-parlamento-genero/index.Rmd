@@ -11,7 +11,7 @@ categories:
   - Género
   - Análisis cualitativo
   - Aprendizaje automático
-summary: "Análisis de la instalación de la temática de género en la cámara de Representantes del Parlamento uruguayo en la legislatura 2015-2020"
+summary: "Minería y clasificación de texto con aprendizaje automático"
 image:
   caption: ''
   focal_point: ''
