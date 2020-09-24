@@ -50,6 +50,7 @@ El post se va a estructurar en cuatro partes:
 
 ______________
 
+
 ## 1. Obtención de la información (web scraping)
 
 
