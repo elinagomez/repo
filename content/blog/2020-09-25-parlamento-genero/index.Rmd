@@ -359,35 +359,6 @@ ggplotly(part)
 ```
 
 
-Por su parte, si lo relativizamos según el peso de cada partido en términos de cantidad de legisladorxs, y consideramos la cantidad de menciones por legisladorx, el __Partido Colorado__ es el que cuenta con mayor peso relativo.
-
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-
-part_ratio=base_final %>%
-  group_by(Partido) %>%
-summarise(ratio= n()/length(unique(legislator)))%>%
-  ggplot(aes(x = reorder(Partido, -ratio) , y = ratio,group = 1)) + 
-  geom_bar(size=1, stat="identity",fill = c("#954342","#4a2524","#e76363","#bd5352","#6e3432"),width = 0.6) +
-#  scale_y_continuous(limits = c(0, 100))+ 
-  scale_fill_gradient(low = "white", high = "red")+
-  theme(axis.text.x = element_text(size=10,family = "Impact"), 
-        axis.text.y = element_text(size=10,family = "Impact"),
-        plot.title = element_text(size=20,family = "Impact"),
-        axis.title.x=element_blank(),axis.title.y=element_blank())+
-#  geom_text(aes(label = paste0(round(N, 1))),
-#            position = position_dodge(0.9) ,
-#            vjust = 0,show.legend = FALSE,size=4,family="Impact")+
-  ylab("%") + xlab("Año") + ggtitle("")
-
-ggplotly(part_ratio)
-
-
-```
-
-
-
-
 
 __Menciones por género__
 
@@ -421,7 +392,7 @@ ggplotly(genero)
 __Legisladorxs__
 
 
-Por último, queremos ver que legisladorxs son los que tienen más intervenciones referidas al género vemos que la diputada __Gloria Rodriguez__ es la que acumula más menciones, y que la gran mayoría son mujeres.Esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria. 
+Por último, queremos ver qué legisladorxs son lxs que tienen más intervenciones referidas al género y observamos que, a pesar de que el Frente Amplio era el partido que registraba más menciones absolutas, quienes acumulan más intervanciones referidas al tema son diputadas del Partido Nacional y Partido Colorado. También vemos que, entre lxs 10 principales, la gran mayoría son mujeres, esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria. 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -453,10 +424,7 @@ ggplotly(legis)
 
 ______________
 
-
 Espero que les haya gustado y servido, seguro que existen muchas cosas por mejorar y mucho potencial aún para ahondar y enriquecer la investigación social a partir del análisis del texto y de la palabra. 
 
 
 ______________
-
-
