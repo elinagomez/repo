@@ -34,7 +34,7 @@ library(emo)
 ```
 
 
-Este post surge a partir de la idea de aplicar algunas técnicas de _minería de texto_ y _clasificación con aprendizaje automático_ (o _machine larning_) para análisis masivo de datos cualitativos usando R, de una temática que me interesaba particularmente como es el **discurso político de género**. Considero que la minería de texto es un área que aún no se encuentra tan difundida en Uruguay, que tiene mucho potencial y que puede ser aprovechada desde las ciencias sociales como aporte para sumar o complementar las herramientas metodológicas más tradicionales. 
+Este post surge a partir de la idea de aplicar algunas técnicas de _minería de texto_ y _clasificación con aprendizaje automático_ (o _machine learning_) para análisis masivo de datos cualitativos usando R, de una temática que me interesaba particularmente como es el **discurso político de género**. Considero que la minería de texto es un área que aún no se encuentra tan difundida en Uruguay, que tiene mucho potencial y que puede ser aprovechada desde las ciencias sociales como aporte para sumar o complementar las herramientas metodológicas más tradicionales. 
 
 El **objetivo general** del trabajo es lograr un buen método de clasificación de texto que me permita distinguir entre las intervenciones parlamentarias en la Cámara de representantes (unidad mínima de análisis) que planteen y discutan la temática de género para luego analizar mediante variables anexas, qué representantes, partidos, sectores son los que instalan la discusión en dicha materia [^1].    
 
