@@ -30,10 +30,10 @@ date_format = "January 2006"
 
 [[experience]]
   title = "Docente"
-  company = "Facultad de Ciencias Sociales - Universidad de la República"
-  company_url = ""
+  company = "Unidad de Métodos y Acceso a Datos (UMAD) - Facultad de Ciencias Sociales - Universidad de la República"
+  company_url = "https://umad.cienciassociales.edu.uy/"
   location = "Montevideo, Uruguay"
-  date_start = "2018-08-01"
+  date_start = "2020-11-01"
   date_end = ""
   description = """ """
 
