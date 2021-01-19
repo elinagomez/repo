@@ -4,7 +4,7 @@ title: Cooperativa Integral Consultora (CIC)/ INEFOP - 2020
 
 summary: Evaluación participativa del proyecto _Acercando Educación y Trabajo en el Cooperativismo_ diseñado por CIC y financiado por INEFOP. 
 
-date: "2018-12-27T00:00:00Z"
+date: "2020-12-27T00:00:00Z"
 
 categories:
 - Cooperativismo

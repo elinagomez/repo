@@ -4,7 +4,7 @@ title: Gurises Unidos / FIFA Foundation - 2021
 
 summary: Diseño y ejecución de estrategia de evaluación y monitoreo del proyecto _Fútbol Tres Tiempos_ (Football for Hope (FFH)) que realiza intervención socioeducativa con niños, niñas y adolescentes de Montevideo. 
 
-date: "2019-08-24T00:00:00Z"
+date: "2021-01-24T00:00:00Z"
 
 categories:
 - Educación
