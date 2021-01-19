@@ -20,7 +20,7 @@ date_format = "January 2006"
 
 [[experience]]
   title = "Asistente Técnica"
-  company = "Ministerio de Desarrollo Social (MIDES)"
+  company = "Dirección Nacional de Trasferencias y Análisis de Datos - Ministerio de Desarrollo Social (MIDES)"
   company_url = "https://www.gub.uy/ministerio-desarrollo-social/"
   location = "Montevideo, Uruguay"
   date_start = "2014-02-13"
@@ -34,7 +34,7 @@ date_format = "January 2006"
   company_url = ""
   location = "Montevideo, Uruguay"
   date_start = "2018-08-01"
-  date_end = "2018-12-01"
+  date_end = ""
   description = """ """
 
 [[experience]]
