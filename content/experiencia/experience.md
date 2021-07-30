@@ -24,7 +24,7 @@ date_format = "January 2006"
   company_url = "https://www.gub.uy/ministerio-desarrollo-social/"
   location = "Montevideo, Uruguay"
   date_start = "2014-02-13"
-  date_end = ""
+  date_end = "2021-04-30"
   description = """
   """
 
