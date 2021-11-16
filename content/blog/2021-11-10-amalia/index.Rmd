@@ -4,7 +4,7 @@ title: 'AMALIA: análisis masivo de archivos de la dictadura uruguaya'
 thumbnail: ""
 authors: [elina]
 date: '2021-11-10'
-tags: [Género]
+tags: [Pasado reciente]
 categories:
   - R
   - Minería de texto
