@@ -35,7 +35,8 @@ knitr::opts_chunk$set(
 En el marco de la conferencia regional [LatinR 2021](https://latin-r.com/), presenté la aplicación _AMALIA_, dejo video de la ponencia:
 
 
-[![AMALIA](ama.png)](https://youtu.be/mquWWrM8eqo "AMALIA")
+
+[![AMALIA](ama.png)](https://youtu.be/mquWWrM8eqo)
 
 ______________
 
