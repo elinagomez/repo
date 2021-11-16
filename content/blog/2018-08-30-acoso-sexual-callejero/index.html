@@ -8,7 +8,7 @@ tags: [Género]
 categories:
   - R
   - Investigación cualitativa
-summary: Investigación sobre Acoso Sexual Callejero en Montevideo
+summary: Usuario / Investigación sobre Acoso Sexual Callejero en Montevideo
 image:
   caption: '[Foto Twitter RLadies Montevideo](rladies2.jpg)'
   focal_point: ''
@@ -26,19 +26,25 @@ featuredImage: "img/rladies2.jpg"
 <hr />
 <p>El siguiente es un análisis se desarrolla en el marco del <strong>estudio diagnóstico sobre el acoso sexual y otros tipos de violencia contra las mujeres y niñas en espacios públicos</strong> en Montevideo. El mismo se enmarca en un convenio suscripto entre ONU Mujeres, la Asesoría para Igualdad de Género de la Intendencia de Montevideo (IM) y la Facultad de Ciencias Sociales (UdelaR).</p>
 <p>Representa un ejemplo de las posibilidades analíticas de tipo cualitativo que pueden hacerse desde R, utilizando los paquetes <em>quanteda</em> y <em>tm</em>.</p>
-<div id="definiciones-previas" class="section level2">
-<h2>Definiciones previas:</h2>
+<p>##Definiciones previas:</p>
 <p>El estudio concibe al Acoso Sexual Callejero (ASC) como:</p>
-<p><em>&quot;Incluye comentarios, atención, acciones o gestos con contenido sexual indeseado. Como en otras formas de violencia sexual, el componente clave del acoso sexual es que alguien realiza una acción sin el consentimiento, permiso o acuerdo de la persona o personas a las que se dirige. Acoso sexual incluye formas sin contacto, como comentarios sexuales acerca del cuerpo o apariencia de la persona, silbidos mientras pasa una mujer, exigencias de favores sexuales, quedarse mirando de manera sexualmente sugestiva, persecuciones y seguimiento de una persona, exposición de órganos sexuales. El acoso sexual también incluye formas físicas de contacto, como frotarse intencionalmente contra alguien en la calle o en el transporte público, agarrar, pegar una palmada y aproximarse a alguien en una manera sexual.&quot; (ONU Mujeres, 2013)</em></p>
-</div>
+<p><em>“Incluye comentarios, atención, acciones o gestos con contenido sexual indeseado. Como en
+otras formas de violencia sexual, el componente clave del acoso sexual es que alguien
+realiza una acción sin el consentimiento, permiso o acuerdo de la persona o personas a las
+que se dirige. Acoso sexual incluye formas sin contacto, como comentarios sexuales acerca
+del cuerpo o apariencia de la persona, silbidos mientras pasa una mujer, exigencias de
+favores sexuales, quedarse mirando de manera sexualmente sugestiva, persecuciones y
+seguimiento de una persona, exposición de órganos sexuales. El acoso sexual también
+incluye formas físicas de contacto, como frotarse intencionalmente contra alguien en la
+calle o en el transporte público, agarrar, pegar una palmada y aproximarse a alguien en una
+manera sexual.” (ONU Mujeres, 2013)</em></p>
 <div id="objetivos-del-estudio" class="section level2">
 <h2>Objetivos del estudio:</h2>
 <ul>
 <li>Realizar un análisis textual de grupos de discusión sobre ASC realizados a mujeres y varones.</li>
 </ul>
+<p>#I. Análisis textual</p>
 </div>
-<div id="i.-análisis-textual" class="section level1">
-<h1>I. Análisis textual</h1>
 <div id="datos-existentes" class="section level2">
 <h2>Datos existentes</h2>
 <ul>
@@ -74,41 +80,27 @@ featuredImage: "img/rladies2.jpg"
 </tr>
 </tbody>
 </table>
-</div>
-<div id="pre-procesamiento" class="section level2">
-<h2>Pre-procesamiento</h2>
+<p>##Pre-procesamiento</p>
 <ul>
 <li>Abro los archivos de texto en los cuales tengo las transcripciones de los grupos</li>
 <li>Elimino aquellas menciones que corresponden a lxs moderadorxs</li>
 <li>Guardo como archivos .txt, identificando cada archivo por su nombre según las carcaterísticas del grupo (variables de agrupación posteriores)</li>
 </ul>
-</div>
-<div id="pre-procesamiento-1" class="section level2">
-<h2>Pre-procesamiento</h2>
+<p>##Pre-procesamiento</p>
 <ul>
 <li>Abro los archivos con la función <strong>readtext()</strong>, especificando ubicación de los mismos y variables anexas en los títulos para identificar características del documento</li>
 </ul>
-<div class="figure">
-<img src="readtext.png" />
-
-</div>
-</div>
-<div id="pre-procesamiento-2" class="section level2">
-<h2>Pre-procesamiento</h2>
+<p><img src="readtext.png" /></p>
+<p>##Pre-procesamiento</p>
 <ul>
 <li>Creo un <strong>corpus</strong> con el paquete <strong>quanteda</strong></li>
 </ul>
-<div class="figure">
-<img src="corpus.png" />
-
-</div>
+<p><img src="corpus.png" /></p>
 <!-- ##Pre-procesamiento -->
 <!-- ```{r corpus, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE,size="tiny"} -->
 <!-- summary(myCorpus) -->
 <!-- ``` -->
-</div>
-<div id="limpieza-del-texto" class="section level2">
-<h2><em>&quot;Limpieza&quot;</em> del texto</h2>
+<p>##<em>“Limpieza”</em> del texto</p>
 <ul>
 <li>Creo un Document feature matrix (DFM), aplicando algunos argumentos que me permiten limpiar las palabras que no me interesan al efecto del análisis.
 <ul>
@@ -117,119 +109,54 @@ featuredImage: "img/rladies2.jpg"
 <li>Elimino puntuaciones</li>
 <li>Elimno stopwords (por defecto y lista propia)</li>
 <li>Elimino palabras con pocos caracteres (1 y 2)</li>
-<li>Elimino palabras específicas que no me interesan (ej. &quot;Risas&quot;)</li>
+<li>Elimino palabras específicas que no me interesan (ej. “Risas”)</li>
 </ul></li>
 </ul>
-</div>
-</div>
-<div id="nubes-de-palabras" class="section level1">
-<h1>Nubes de palabras</h1>
+<p>#Nubes de palabras</p>
 <p>Creo nubes de palabras con la función <em>textplot_wordcloud</em> y desagrego por grupos de interés.</p>
-<div id="nubes-de-palabras-general" class="section level2">
-<h2>Nubes de palabras: general</h2>
-<p><img src="/blog/2018-08-30-acoso-sexual-callejero/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-</div>
-<div id="nubes-de-palabras-grupos" class="section level2">
-<h2>Nubes de palabras: grupos</h2>
-<div class="figure">
-<img src="blog_post1/2.png" />
-
-</div>
-</div>
-<div id="nubes-de-palabras-mujeresvarones" class="section level2">
-<h2>Nubes de palabras: mujeres/varones</h2>
-<p><img src="/blog/2018-08-30-acoso-sexual-callejero/index_files/figure-html/wccomp2-1.png" width="672" /></p>
-<div class="figure">
-<img src="blog_post1/3.png" />
-
-</div>
-</div>
-</div>
-<div id="agrupación-de-palabras" class="section level1">
-<h1>Agrupación de palabras</h1>
-<div id="agrupación-de-palabras-1" class="section level2">
-<h2>Agrupación de palabras</h2>
+<p>##Nubes de palabras: general</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>##Nubes de palabras: grupos</p>
+<p><img src="blog_post1/2.png" /></p>
+<p>##Nubes de palabras: mujeres/varones</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/wccomp2-1.png" width="672" /></p>
+<p><img src="blog_post1/3.png" /></p>
+<p>#Agrupación de palabras</p>
+<p>##Agrupación de palabras</p>
 <ul>
 <li>Para dar cuenta de la agrupación de palabras, uso el paquete <strong>tm</strong> y, a diferencia del análisis anterior, considero cada mención como un elemento del corpus</li>
 <li>Calculo las distancias entre los términos y armo <em>clusters</em> de palabras (método euclidiano)</li>
 <li>Grafico la agrupación jerárquica de las palabras en un dendograma, separada entre grupos (método de Ward)</li>
 </ul>
-</div>
-<div id="agrupación-de-palabras-mujeres" class="section level2">
-<h2>Agrupación de palabras: mujeres</h2>
-<div class="figure">
-<img src="blog_post1/4.png" />
-
-</div>
-</div>
-<div id="agrupación-de-palabras-varones" class="section level2">
-<h2>Agrupación de palabras: varones</h2>
-<div class="figure">
-<img src="blog_post1/5.png" />
-
-</div>
-</div>
-<div id="asociación-de-palabras" class="section level2">
-<h2>Asociación de palabras</h2>
+<p>##Agrupación de palabras: mujeres</p>
+<p><img src="blog_post1/4.png" /></p>
+<p>##Agrupación de palabras: varones</p>
+<p><img src="blog_post1/5.png" /></p>
+<p>##Asociación de palabras</p>
 <ul>
 <li>Para analizar las asociaciones entre palabras, consideramos una dispersión de 0.995</li>
 <li>Buscamos la asociación de palabras, considerando una correlación mínima de 0.05</li>
 <li>Al tratarse de menciones y no de grupos, la dispersión entre términos es muy alta</li>
 <li>Analizamos la asociación con las palabras: <em>calle</em>, <em>acoso</em> y <em>mujer</em></li>
 </ul>
-</div>
-<div id="asociaciónde-palabras-calle" class="section level2">
-<h2>Asociaciónde palabras: $calle</h2>
-<div class="figure">
-<img src="blog_post1/6.png" />
-
-</div>
-</div>
-<div id="asociación-de-palabras-acoso" class="section level2">
-<h2>Asociación de palabras: $acoso</h2>
-<div class="figure">
-<img src="blog_post1/7.png" />
-
-</div>
-</div>
-<div id="asociaciónde-palabras-mujer" class="section level2">
-<h2>Asociaciónde palabras: $mujer</h2>
-<div class="figure">
-<img src="blog_post1/8.png" />
-
-</div>
-</div>
-</div>
-<div id="análisis-de-sentimiento" class="section level1">
-<h1>Análisis de sentimiento</h1>
-<div id="análisis-de-sentimiento-1" class="section level2">
-<h2>Análisis de sentimiento</h2>
+<p>##Asociaciónde palabras: $calle</p>
+<p><img src="blog_post1/6.png" /></p>
+<p>##Asociación de palabras: $acoso</p>
+<p><img src="blog_post1/7.png" /></p>
+<p>##Asociaciónde palabras: $mujer</p>
+<p><img src="blog_post1/8.png" /></p>
+<p>#Análisis de sentimiento</p>
+<p>##Análisis de sentimiento</p>
 <p>Se presentan dos métodos para analizar sentimiento de los documentos:</p>
 <ul>
 <li><p>Diccionario LWIC-Spanish: con la función dfm_lookup() de <em>quanteda</em> identifica en los documentos las emociones presentes en el diccionario y establece puntajes para cada uno, a partir de la estandarización de los mismos (conicidencia únicamente de 15% entre términos).</p></li>
 <li><p>Método Syuzhet: utiliza la función get_sentiment() de <em>syuzhet</em> asigna puntajes a cada documento según el método y lenguaje indicado. El método <strong>syuzhet</strong> es un diccionario de sentimientos desarrollado en el Laboratorio Literario de Nebraska. Otros métodos: <em>bing</em>, <em>afinn</em>, <em>nrc</em> y <em>stanford</em>.</p></li>
 </ul>
-</div>
-<div id="análisis-de-sentimiento-2" class="section level2">
-<h2>Análisis de sentimiento</h2>
+<p>##Análisis de sentimiento</p>
 <p>Comparación entre los métodos:</p>
-<div class="figure">
-<img src="blog_post1/9.png" />
-
-</div>
-</div>
-<div id="análisis-de-sentimiento-mujeres" class="section level2">
-<h2>Análisis de sentimiento: mujeres</h2>
-<div class="figure">
-<img src="blog_post1/10.png" />
-
-</div>
-</div>
-<div id="análisis-de-sentimiento-varones" class="section level2">
-<h2>Análisis de sentimiento: varones</h2>
-<div class="figure">
-<img src="blog_post1/11.png" />
-
-</div>
-</div>
+<p><img src="blog_post1/9.png" /></p>
+<p>##Análisis de sentimiento: mujeres</p>
+<p><img src="blog_post1/10.png" /></p>
+<p>##Análisis de sentimiento: varones</p>
+<p><img src="blog_post1/11.png" /></p>
 </div>

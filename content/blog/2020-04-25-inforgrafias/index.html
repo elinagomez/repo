@@ -10,7 +10,7 @@ categories:
   - Infografías
   - Análisis de datos
   - Visualización
-summary: Construcción de infografías con R
+summary: 2020-04-25 / Construcción de infografías con R
 image:
   caption: ''
   focal_point: ''
@@ -25,7 +25,8 @@ featuredImage: ""
 
 
 <p>Necesitaba hacer <em>inforgrafías automáticas y reproducibles</em> en R para presentar diferentes indicadores y poder replicar el mismo formato para una gran cantidad de datos con la misma estructura inicial.</p>
-<p>Mi inspiración principal estuvo en <a href="https://www.r-bloggers.com/r-how-to-layout-and-design-an-infographic/">este post</a> que presentaba algunas posibilidades de cómo construir una inforgrafía combinando diferentes paquetes de análisis y visualización. No encontré nada útil en español, así que por eso decidí escribir esto. A continuación dejo el paso a paso:</p>
+<p>Mi inspiración principal estuvo en <a href="https://www.r-bloggers.com/r-how-to-layout-and-design-an-infographic/">este post</a> que presentaba algunas posibilidades de cómo construir una inforgrafía combinando diferentes paquetes de análisis y visualización. No encontré nada útil en español, así que por eso decidí escribir esto.
+A continuación dejo el paso a paso:</p>
 <hr />
 <p>En primer lugar, debemos decidir qué tipo de grafico o información queremos presentar en la infografía. En este caso necesitaba:</p>
 <ul>
@@ -38,8 +39,7 @@ featuredImage: ""
 <p>También un titulo inicial y un logo!</p>
 <div id="construcción-del-contenido" class="section level2">
 <h2>Construcción del contenido:</h2>
-<div id="paquetes" class="section level3">
-<h3>Paquetes</h3>
+<p>###Paquetes</p>
 <p>Los paquetes genéricos que que voy a utilizar son:</p>
 <pre class="r"><code>library(ggplot2) #visualización
 library(dplyr) #manipulación de datos
@@ -53,9 +53,7 @@ library(classInt) #calcular intervalos
 library(useful) #ubica objetos de ggplot en cuadrícula</code></pre>
 <p>Cómo les comenté, será una inforgrafía <em>automática</em> que se aplicará a conjuntos de datos iguales pero con diferente unidad de análisis, por lo que me interesa que cambiando un parámetro inicial, pueda correrlo sin tener que modificar nada del código, por lo que dejo referenciadas de modo variable las rutas, los títulos, etc. creando un objeto <em>nombre</em>.</p>
 <pre class="r"><code>nombre =&quot;Infografia&quot;</code></pre>
-</div>
-<div id="gráfico-de-línea-serie-temporal" class="section level3">
-<h3>Gráfico de línea (serie temporal)</h3>
+<p>###Gráfico de línea (serie temporal)</p>
 <p>Cargo un archivo con la serie de datos que será insumo para el gráfico de línea y le pongo <strong>serie_linea</strong>. Construyo el gráfico con <em>ggplot</em>.</p>
 <pre class="r"><code>serie_linea_graf = ggplot(serie_linea,aes(x = as.factor(fecha_dato) , y = conteo,group = 1)) + 
   geom_line(size=2, stat=&quot;identity&quot;,colour = &quot;#E13D3D&quot;) +
@@ -64,10 +62,8 @@ library(useful) #ubica objetos de ggplot en cuadrícula</code></pre>
             vjust = &quot;inward&quot;, hjust = &quot;inward&quot;,
             show.legend = FALSE,size=4,family=&quot;Impact&quot;)+
   ylab(&quot;Casos&quot;) + xlab(&quot;Año&quot;) + ggtitle(&quot;Gráfico de línea&quot;)</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
-</div>
-<div id="gráfico-de-barras-serie-temporal" class="section level3">
-<h3>Gráfico de barras (serie temporal)</h3>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
+<p>###Gráfico de barras (serie temporal)</p>
 <p>Cargo un archivo con la serie de datos que será insumo para el gráfico de barras y le pongo <strong>serie_barra</strong>. Construyo el gráfico también con <em>ggplot</em>.</p>
 <pre class="r"><code>serie_barra_graf = ggplot(serie_barra,aes(x = factor(fecha_dato) , y = conteo,group = 1)) + 
   geom_bar(size=2, stat=&quot;identity&quot;, colour = &quot;#E13D3D&quot;,fill = &quot;#E13D3D&quot;,width = 0.6) +
@@ -77,11 +73,11 @@ library(useful) #ubica objetos de ggplot en cuadrícula</code></pre>
             position = position_dodge(0.9) ,
             vjust = 0,show.legend = FALSE,size=4,family=&quot;Impact&quot;)+
   ylab(&quot;%&quot;) + xlab(&quot;Año&quot;) + ggtitle(&quot;Gráfico de barras&quot;)</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
-</div>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
 <div id="mapa-de-densidad" class="section level3">
 <h3>Mapa de densidad</h3>
-<p>Cargo un archivo con los datos por departamento ( <strong>depto</strong> ) y luego dos archivos de tipo <em>shape</em> para tener los polígonos y las coordenadas para construir el mapa de Uruguay, pegándoselos a mis datos originales según una variable común (en este caso el nombre del departamento!). Luego calculo 5 intervalos (con la función <em>classIntervals</em>) que serán diferentes según la distribución de los datos que levante (a estos le asigno el nombre <em>brks</em>). Construyo el mapa.</p>
+<p>Cargo un archivo con los datos por departamento ( <strong>depto</strong> ) y luego dos archivos de tipo <em>shape</em> para tener los polígonos y las coordenadas para construir el mapa de Uruguay, pegándoselos a mis datos originales según una variable común (en este caso el nombre del departamento!). Luego calculo 5 intervalos (con la función <em>classIntervals</em>) que serán diferentes según la distribución de los datos que levante (a estos le asigno el nombre <em>brks</em>).
+Construyo el mapa.</p>
 <pre class="r"><code>mapa=ggplot() + 
   geom_sf(aes(fill = conteo), data = uru) +
   scale_y_continuous(breaks = brks)+
@@ -100,7 +96,7 @@ library(useful) #ubica objetos de ggplot en cuadrícula</code></pre>
     panel.border = element_rect(colour = &quot;#ffffff&quot;, fill = NA, size = 0.5))+
     guides(fill=guide_legend(title=&quot;Casos&quot;))+
     ggtitle(&quot;Mapa de densidad&quot;)</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-11-1.png" width="768" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="768" /></p>
 </div>
 <div id="piramide-poblacional" class="section level3">
 <h3>Piramide poblacional</h3>
@@ -121,11 +117,11 @@ piramide_graf=ggplot(piramide, aes(x = Var1, y = Freq, fill = Var2)) +
       size = 15,family = &quot;Impact&quot;),plot.title = element_text(size=20,family = &quot;Impact&quot;))+
   guides(fill=guide_legend(title=&quot;Sexo&quot;,reverse = T))+
   ggtitle(&quot;Pirámide poblacional&quot;)</code></pre>
-<p><img src="/blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="íconos-con-datos-y-logo" class="section level3">
 <h3>Íconos con datos y logo</h3>
-<p>Cargo los íconos que quiero incluir con la función <em>readPNG()</em> y asignandolo a objetos correlativos (icon1,icon2...). También un objeto <em>datos</em> con los datos brutos que me interesa incluir.</p>
+<p>Cargo los íconos que quiero incluir con la función <em>readPNG()</em> y asignandolo a objetos correlativos (icon1,icon2…). También un objeto <em>datos</em> con los datos brutos que me interesa incluir.</p>
 </div>
 </div>
 <div id="armado-de-la-infografía" class="section level2">
@@ -178,10 +174,7 @@ grid.text(datos[4,2],gp = gpar(fontsize = 32, fontface = &quot;bold&quot;,fontfa
 </div>
 <div id="versión-final" class="section level2">
 <h2>Versión final:</h2>
-<div class="figure">
-<img src="Inforgrafia.jpg" />
-
-</div>
+<p><img src="Inforgrafia.jpg" /></p>
 <hr />
 <div id="espero-que-les-sirva" class="section level3">
 <h3>Espero que les sirva!</h3>

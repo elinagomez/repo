@@ -8,7 +8,7 @@ tags: [Género]
 categories:
   - R
   - Investigación cualitativa
-summary: Investigación sobre Acoso Sexual Callejero en Montevideo
+summary: Usuario / Investigación sobre Acoso Sexual Callejero en Montevideo
 image:
   caption: '[Foto Twitter RLadies Montevideo](rladies2.jpg)'
   focal_point: ''

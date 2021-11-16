@@ -10,7 +10,7 @@ categories:
   - Infografías
   - Análisis de datos
   - Visualización
-summary: Construcción de infografías con R
+summary: 2020-04-25 / Construcción de infografías con R
 image:
   caption: ''
   focal_point: ''
@@ -85,7 +85,7 @@ nombre ="Infografia"
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-serie_linea=read.csv("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/serie_linea.csv",sep = ";")
+serie_linea=read.csv("Inforgrafia/serie_linea.csv",sep = ";")
 
 ```
 
@@ -115,7 +115,7 @@ serie_linea_graf
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-serie_barra=read.csv("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/serie_barra.csv",sep=";")
+serie_barra=read.csv("Inforgrafia/serie_barra.csv",sep=";")
 
 ```
 
@@ -143,9 +143,9 @@ serie_barra_graf
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-depto=read.csv("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/depto.csv",sep=";")
-uru = st_read("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/ine_depto.shp", crs = 32721, stringsAsFactors = F,quiet = TRUE)
-coord = st_read("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/dptos_centroides.shp", crs = 32721,quiet = TRUE)
+depto=read.csv("Inforgrafia/depto.csv",sep=";")
+uru = st_read("Inforgrafia/ine_depto.shp", crs = 32721, stringsAsFactors = F,quiet = TRUE)
+coord = st_read("Inforgrafia/dptos_centroides.shp", crs = 32721,quiet = TRUE)
 uru = merge(uru, depto,  by.x = "NOMBRE",by.y = "coddepartamento_in")
 coord = merge(coord, depto,  by.x = "NOMBRE",by.y = "coddepartamento_in")
 brks=classIntervals(uru$conteo, n=5, style="quantile")
@@ -191,7 +191,7 @@ mapa
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-piramide=read.csv2("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/piramide_edad.csv")
+piramide=read.csv2("Inforgrafia/piramide_edad.csv")
 
 ```
 
@@ -232,16 +232,16 @@ Cargo los íconos que quiero incluir con la función _readPNG()_ y asignandolo a
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-datos=read.csv2(paste0("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/datos.csv"))
+datos=read.csv2(paste0("Inforgrafia/datos.csv"))
 
 #cargo íconos  
-icon1=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon1.png")
-icon2=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon2.png")
-icon3=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon3.png")
-icon4=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon4.png")
+icon1=readPNG("Inforgrafia/icon1.png")
+icon2=readPNG("Inforgrafia/icon2.png")
+icon3=readPNG("Inforgrafia/icon3.png")
+icon4=readPNG("Inforgrafia/icon4.png")
 
 #cargo logo 
-logo=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/rlogo.png")
+logo=readPNG("Inforgrafia/rlogo.png")
 
 ```
 
@@ -255,7 +255,7 @@ En segundo lugar, defino los parámetros para diseñar la cuadrícula que tendr�
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-pdf(paste0("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/",nombre,".pdf"), width = 40, height = 22)
+pdf(paste0("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/",nombre,".pdf"), width = 40, height = 22)
 
 grid.newpage() 
 pushViewport(viewport(layout = grid.layout(12,12)))
@@ -320,7 +320,7 @@ grid.text(datos[4,2],gp = gpar(fontsize = 32, fontface = "bold",fontfamily = "Im
 ## Versión final:
 
 
-![](C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia.jpg)
+![](C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia.jpg)
 
 
 
