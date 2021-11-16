@@ -8,7 +8,7 @@ tags: [Género]
 categories:
   - R
   - Investigación cualitativa
-summary: Usuario / Investigación sobre Acoso Sexual Callejero en Montevideo
+summary: 2018-08-30 / Investigación sobre Acoso Sexual Callejero en Montevideo
 image:
   caption: '[Foto Twitter RLadies Montevideo](rladies2.jpg)'
   focal_point: ''
@@ -41,7 +41,7 @@ Representa un ejemplo de las posibilidades analíticas de tipo cualitativo que p
 
 
 
-##Definiciones previas:
+## Definiciones previas:
 
 El estudio concibe al Acoso Sexual Callejero (ASC) como:
 
@@ -62,7 +62,7 @@ manera sexual." (ONU Mujeres, 2013)_
 - Realizar un análisis textual de grupos de discusión sobre ASC realizados a mujeres y varones.
 
 
-#I. Análisis textual
+# I. Análisis textual
 
 ```{r cargodatos, message=FALSE, warning=FALSE, include=FALSE}
 ## seteo
@@ -106,19 +106,19 @@ mydfm<-dfm(mydfm,remove=otherWords)
 | Total   | 4       | 2      |6      |
 
 
-##Pre-procesamiento
+## Pre-procesamiento
 
 - Abro los archivos de texto en los cuales tengo las transcripciones de los grupos
 - Elimino aquellas menciones que corresponden a lxs moderadorxs 
 - Guardo como archivos .txt, identificando cada archivo por su nombre según las carcaterísticas del grupo (variables de agrupación posteriores)
 
-##Pre-procesamiento
+## Pre-procesamiento
 
 - Abro los archivos con la función **readtext()**, especificando ubicación de los mismos y variables anexas en los títulos para identificar características del documento
 
 ![](readtext.png)
 
-##Pre-procesamiento
+## Pre-procesamiento
 
 - Creo un **corpus** con el paquete **quanteda** 
 
@@ -132,7 +132,7 @@ mydfm<-dfm(mydfm,remove=otherWords)
 <!-- ``` -->
 
 
-##_"Limpieza"_ del texto
+## _"Limpieza"_ del texto
 
 
 - Creo un Document feature matrix (DFM), aplicando algunos argumentos que me permiten limpiar las palabras que no me interesan al efecto del análisis. 
@@ -143,28 +143,28 @@ mydfm<-dfm(mydfm,remove=otherWords)
     - Elimino palabras con pocos caracteres (1 y 2)
     - Elimino palabras específicas que no me interesan (ej. "Risas")
     
-#Nubes de palabras
+# Nubes de palabras
 
 Creo nubes de palabras con la función _textplot_wordcloud_ y desagrego por grupos de interés. 
 
 
-##Nubes de palabras: general
+## Nubes de palabras: general
 
 
 ```{r echo=FALSE}
-textplot_wordcloud(mydfm, min.count = 3,max_words = 200,random.order = FALSE,
+quanteda::textplot_wordcloud(mydfm, min.count = 3,max_words = 200,random.order = FALSE,
                     rot.per = .25, 
                     colors = RColorBrewer::brewer.pal(8,"Dark2"))
 
 ```
 
 
-##Nubes de palabras: grupos
+## Nubes de palabras: grupos
 
 ![](blog_post1/2.png)
 
 
-##Nubes de palabras: mujeres/varones
+## Nubes de palabras: mujeres/varones
 
 ```{r wccomp2, echo=FALSE, message=FALSE, warning=FALSE}
 dfm_sexo <- dfm(mydfm, groups = "docvar1")
@@ -176,19 +176,19 @@ textplot_wordcloud(dfm_sexo, min.count = 2,max_words = 200,random.order = FALSE,
 ![](blog_post1/3.png)
 
 
-#Agrupación de palabras
+# Agrupación de palabras
 
-##Agrupación de palabras
+## Agrupación de palabras
 
 - Para dar cuenta de la agrupación de palabras, uso el paquete **tm** y, a diferencia del análisis anterior, considero cada mención como un elemento del corpus
 - Calculo las distancias entre los términos y armo _clusters_ de palabras (método euclidiano)
 - Grafico la agrupación jerárquica de las palabras en un dendograma, separada entre grupos (método de Ward)
 
-##Agrupación de palabras: mujeres
+## Agrupación de palabras: mujeres
 
 ![](blog_post1/4.png)
 
-##Agrupación de palabras: varones
+## Agrupación de palabras: varones
 
 ![](blog_post1/5.png)
 
@@ -199,22 +199,22 @@ textplot_wordcloud(dfm_sexo, min.count = 2,max_words = 200,random.order = FALSE,
 - Al tratarse de menciones y no de grupos, la dispersión entre términos es muy alta
 - Analizamos la asociación con las palabras: _calle_, _acoso_ y _mujer_
 
-##Asociaciónde palabras: $calle
+## Asociaciónde palabras: $calle
 
 ![](blog_post1/6.png)
 
-##Asociación de palabras: $acoso
+## Asociación de palabras: $acoso
 
 ![](blog_post1/7.png)
 
-##Asociaciónde palabras: $mujer
+## Asociaciónde palabras: $mujer
 
 ![](blog_post1/8.png)
 
 #Análisis de sentimiento
 
 
-##Análisis de sentimiento
+## Análisis de sentimiento
 
 Se presentan dos métodos para analizar sentimiento de los documentos:
 
@@ -224,13 +224,13 @@ Se presentan dos métodos para analizar sentimiento de los documentos:
 
 
 
-##Análisis de sentimiento
+## Análisis de sentimiento
 
 Comparación entre los métodos:
 
 ![](blog_post1/9.png)
 
-##Análisis de sentimiento: mujeres
+## Análisis de sentimiento: mujeres
 
 ![](blog_post1/10.png)
 

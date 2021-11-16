@@ -156,17 +156,17 @@ En el código explico cada paso:
 #Cargo paquetes:
 library(quanteda) #minería de texto
 
-entrenamiento <- corpus(train,text_field = "speech")%>%
-  corpus_trimsentences(min_length = 13) # quito las intervenciones que tienen menos de 13 palabras 
+entrenamiento <- quanteda::corpus(train,text_field = "speech")%>%
+  quanteda::corpus_trimsentences(min_length = 13) # quito las intervenciones que tienen menos de 13 palabras 
 
-entrenamiento_dfm <- dfm(entrenamiento,
+entrenamiento_dfm <- quanteda::dfm(entrenamiento,
                          tolower = TRUE, #transforma todo a minúscula
                          remove_punct = TRUE, #elimina puntuación  
                          remove_numbers = TRUE,  #elimina números 
-                         remove = c(stopwords("spanish"),palabras_drop), #elimina stopwords pre-cargadas en quanteda y palabras específicas de interés
+                         remove = c(quanteda::stopwords("spanish"),palabras_drop), #elimina stopwords pre-cargadas en quanteda y palabras específicas de interés
                          verbose = TRUE) %>% #imprime un resumen del proceso
-  dfm_remove(min_nchar=3)%>% # elimino las palabras que tienen 1 y 2 caracteres
-  dfm_trim(min_termfreq = 90) #le indico que se quede con téminos que aparezcan al menos 90 veces (Esto se va calibrando en la marcha!). Me permite sacar los términos que se usan muy poco. 
+  quanteda::dfm_remove(min_nchar=3)%>% # elimino las palabras que tienen 1 y 2 caracteres
+  quanteda::dfm_trim(min_termfreq = 90) #le indico que se quede con téminos que aparezcan al menos 90 veces (Esto se va calibrando en la marcha!). Me permite sacar los términos que se usan muy poco. 
 
 ```
 
@@ -175,7 +175,7 @@ Acá me interesa ver si me está agregando bien las palabras y hago una nube de 
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 
-textplot_wordcloud(dfm(entrenamiento_dfm, groups = "genero"), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c("#954342","#e76363"),comparison = T)
+quanteda::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups = "genero"), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c("#954342","#e76363"),comparison = T)
 
 
 ```
