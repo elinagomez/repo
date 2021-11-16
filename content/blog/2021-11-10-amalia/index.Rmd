@@ -9,7 +9,7 @@ categories:
   - R
   - Minería de texto
   - Shiny
-summary: Minería y visualización de texto
+summary: 2021-11-10 / Minería y visualización de texto
 image:
   caption: ''
   focal_point: ''

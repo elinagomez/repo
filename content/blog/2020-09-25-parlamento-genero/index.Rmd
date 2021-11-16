@@ -11,7 +11,7 @@ categories:
   - Género
   - Análisis cualitativo
   - Aprendizaje automático
-summary: Minería y clasificación de texto con aprendizaje automático
+summary: 2020-09-25 / Minería y clasificación de texto con aprendizaje automático
 image:
   caption: ''
   focal_point: ''
