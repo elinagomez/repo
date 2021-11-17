@@ -1,0 +1,334 @@
+---
+aliases: [Infografías automáticas con R]
+title: 'Infografías automáticas con R'
+thumbnail: ""
+authors: [elina]
+date: '2020-04-25'
+tags: [Infografias]
+categories:
+  - R
+  - Infografías
+  - Análisis de datos
+  - Visualización
+summary: 2020-04-25 / Construcción de infografías con R
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: false
+    number_sections: true
+    toc_depth: 1
+featuredImage: ""
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+```
+
+
+Necesitaba hacer _inforgrafías automáticas y reproducibles_ en R para presentar diferentes indicadores y poder replicar el mismo formato para una gran cantidad de datos con la misma estructura inicial. 
+
+Mi inspiración principal estuvo en [este post](https://www.r-bloggers.com/r-how-to-layout-and-design-an-infographic/) que presentaba algunas posibilidades de cómo construir una inforgrafía combinando diferentes paquetes de análisis y visualización. No encontré nada útil en español, así que por eso decidí escribir esto. 
+A continuación dejo el paso a paso:
+
+______________
+
+
+En primer lugar, debemos decidir qué tipo de grafico o información queremos presentar en la infografía. En este caso necesitaba:
+
+- Gráfico de líneas (serie temporal)
+- Gráfico de barras (serie temporal)
+- Mapa de densidad
+- Pirámide poblacional
+- Íconos con datos brutos
+
+También un titulo inicial y un logo!
+
+## Construcción del contenido:
+
+###Paquetes
+
+Los paquetes genéricos que que voy a utilizar son:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+library(ggplot2) #visualización
+library(dplyr) #manipulación de datos
+library(grid) #estructura de cuadrantes de infografía
+library(gridExtra) #estructura de cuadrantes de infografía
+library(RColorBrewer) #paleta de colores
+library(extrafont) #tipos de letras
+library(sf) #cargar shape de mapas
+library(png) #abrir iconos en formato png 
+library(classInt) #calcular intervalos
+library(useful) #ubica objetos de ggplot en cuadrícula
+
+```
+
+Cómo les comenté, será una inforgrafía _automática_ que se aplicará a conjuntos de datos iguales pero con diferente unidad de análisis, por lo que me interesa que cambiando un parámetro inicial, pueda correrlo sin tener que modificar nada del código, por lo que dejo referenciadas de modo variable las rutas, los títulos, etc. creando un objeto _nombre_. 
+
+```{r echo=TRUE}
+
+nombre ="Infografia"
+
+```
+
+
+###Gráfico de línea (serie temporal)
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+serie_linea=read.csv("Inforgrafia/serie_linea.csv",sep = ";")
+
+```
+
+Cargo un archivo con la serie de datos que será insumo para el gráfico de línea y le pongo __serie_linea__. Construyo el gráfico con _ggplot_. 
+
+
+```{r echo=TRUE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
+
+serie_linea_graf = ggplot(serie_linea,aes(x = as.factor(fecha_dato) , y = conteo,group = 1)) + 
+  geom_line(size=2, stat="identity",colour = "#E13D3D") +
+  theme(axis.text.x = element_text(size=15,family = "Impact"), axis.text.y = element_text(size=15,family = "Impact"),plot.title = element_text(size=20,family = "Impact"),axis.title.x=element_blank(),axis.title.y=element_blank())+
+  geom_text(aes(label = round(conteo, 1)),
+            vjust = "inward", hjust = "inward",
+            show.legend = FALSE,size=4,family="Impact")+
+  ylab("Casos") + xlab("Año") + ggtitle("Gráfico de línea")
+
+
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
+serie_linea_graf
+
+```
+
+
+###Gráfico de barras (serie temporal)
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+serie_barra=read.csv("Inforgrafia/serie_barra.csv",sep=";")
+
+```
+
+Cargo un archivo con la serie de datos que será insumo para el gráfico de barras y le pongo __serie_barra__. Construyo el gráfico también con _ggplot_. 
+
+```{r echo=TRUE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
+
+serie_barra_graf = ggplot(serie_barra,aes(x = factor(fecha_dato) , y = conteo,group = 1)) + 
+  geom_bar(size=2, stat="identity", colour = "#E13D3D",fill = "#E13D3D",width = 0.6) +
+   scale_y_continuous(limits = c(0, 100))+ 
+  theme(axis.text.x = element_text(size=15,family = "Impact"), axis.text.y = element_blank(),plot.title = element_text(size=20,family = "Impact"),axis.title.x=element_blank(),axis.title.y=element_blank())+
+  geom_text(aes(label = paste0(round(conteo, 1),"%")),
+            position = position_dodge(0.9) ,
+            vjust = 0,show.legend = FALSE,size=4,family="Impact")+
+  ylab("%") + xlab("Año") + ggtitle("Gráfico de barras")
+
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
+serie_barra_graf
+
+```
+
+### Mapa de densidad
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+depto=read.csv("Inforgrafia/depto.csv",sep=";")
+uru = st_read("Inforgrafia/ine_depto.shp", crs = 32721, stringsAsFactors = F,quiet = TRUE)
+coord = st_read("Inforgrafia/dptos_centroides.shp", crs = 32721,quiet = TRUE)
+uru = merge(uru, depto,  by.x = "NOMBRE",by.y = "coddepartamento_in")
+coord = merge(coord, depto,  by.x = "NOMBRE",by.y = "coddepartamento_in")
+brks=classIntervals(uru$conteo, n=5, style="quantile")
+brks<- brks$brks
+
+```
+
+Cargo un archivo con los datos por departamento ( __depto__ ) y luego dos archivos de tipo _shape_ para tener los polígonos y las coordenadas para construir el mapa de  Uruguay, pegándoselos a mis datos originales según una variable común (en este caso el nombre del departamento!). Luego calculo 5 intervalos (con la función _classIntervals_) que serán diferentes según la distribución de los datos que levante (a estos le asigno el nombre _brks_).
+Construyo el mapa.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+
+mapa=ggplot() + 
+  geom_sf(aes(fill = conteo), data = uru) +
+  scale_y_continuous(breaks = brks)+
+  scale_fill_continuous(high = "#e13d3d", low = "#fcebeb")+
+  geom_text(data = subset(coord, coord$conteo !=0), aes(XCOORD, YCOORD -3000 , label = conteo),size = 4,family="Impact") +
+  theme(
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.text = element_text(size = 15,family="Impact"),
+    legend.title = element_text(size = 15,family="Impact"),
+    plot.title = element_text(size=20,family="Impact"),
+    panel.border = element_rect(colour = "#ffffff", fill = NA, size = 0.5))+
+    guides(fill=guide_legend(title="Casos"))+
+    ggtitle("Mapa de densidad")
+
+
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=8, message=FALSE, warning=FALSE}
+mapa
+
+```
+
+
+### Piramide poblacional
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+piramide=read.csv2("Inforgrafia/piramide_edad.csv")
+
+```
+
+Cargo los datos de la piramide, objeto _piramide_ y calculo el inverso cuando es Varón. Armo el gráfico. 
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+piramide$Var1 <- as.character(piramide$Var1)
+piramide$Var1 <- factor(piramide$Var1, levels=c("0 a 4","5 a 9","10 a 14","15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44","45 a 49","50 a 54","55 a 59","60 a 64","65 a 69","70 a 74","75 a 79","80 a 84","85 a 89","90 y +"))
+
+piramide$Freq <- ifelse(piramide$Var2 == "Varón", -1*piramide$Freq, piramide$Freq)
+
+
+piramide_graf=ggplot(piramide, aes(x = Var1, y = Freq, fill = Var2)) + 
+  geom_bar(data = subset(piramide, Var2 == "Mujer"), stat = "identity") +
+  geom_bar(data = subset(piramide, Var2 == "Varón"), stat = "identity") + 
+  scale_fill_manual(values = c("#f09e9e","#e76363"))+
+  coord_flip()+
+  theme(axis.text.x = element_text(size=15,family = "Impact"), axis.text.y = element_text(size=15,family = "Impact"),axis.title.x = element_blank(),axis.title.y = element_blank(),legend.text = element_text(
+    size = 15,family = "Impact"),legend.title = element_text(
+      size = 15,family = "Impact"),plot.title = element_text(size=20,family = "Impact"))+
+  guides(fill=guide_legend(title="Sexo",reverse = T))+
+  ggtitle("Pirámide poblacional")
+
+```
+
+```{r echo=FALSE, fig.height=5, fig.width=7, message=FALSE, warning=FALSE}
+piramide_graf
+
+```
+
+
+
+### Íconos con datos y logo
+
+Cargo los íconos que quiero incluir con la función _readPNG()_ y asignandolo a objetos correlativos (icon1,icon2...). También un objeto _datos_ con los datos brutos que me interesa incluir.  
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+datos=read.csv2(paste0("Inforgrafia/datos.csv"))
+
+#cargo íconos  
+icon1=readPNG("Inforgrafia/icon1.png")
+icon2=readPNG("Inforgrafia/icon2.png")
+icon3=readPNG("Inforgrafia/icon3.png")
+icon4=readPNG("Inforgrafia/icon4.png")
+
+#cargo logo 
+logo=readPNG("Inforgrafia/rlogo.png")
+
+```
+
+## Armado de la infografía:
+
+Ahora ya tenemos todos los elementos que incluiremos en la inforgrafía, por lo que debemos construirla incluyendo a todos:
+
+En primer lugar, con la función _pdf()_ le digo qué quiero que me guarde la infografía en pdf (podría haber sido jpg, png, etc.), dónde quiero que se guarde y el tamaño de la misma. En este caso quería que sea horizontal pero podría ser vertical.
+
+En segundo lugar, defino los parámetros para diseñar la cuadrícula que tendré como referencia para ubicar los elementos. En este caso es una cuadrícula de 12 x 12. Todo esto lo hago con el paquete _grid_. 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+pdf(paste0("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/",nombre,".pdf"), width = 40, height = 22)
+
+grid.newpage() 
+pushViewport(viewport(layout = grid.layout(12,12)))
+
+```
+
+```{r eval=F, message=FALSE, warning=FALSE}
+
+pdf(paste0("/",nombre,".pdf"), width = 40, height = 22)
+
+grid.newpage() 
+pushViewport(viewport(layout = grid.layout(12,12)))
+
+```
+
+Ahora, usamos las funciones _grid.rect_ para poner una línea recta, _grid.text_ para incluir texto, _grid.raster_ para insertar imágenes y la función _print_ para insertar los objetos gráficos construidos anteriormente. Con la función _vplayout_ defino el lugar de la cuadrícula en que quiero ubicar el elemento en cuestión. También en cada función se setean los tipos y formatos de letra, tamaños, alineación, etc.    
+_(dejo comentado lo que costruye en cada línea)_
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+#Línea recta del encabezado
+grid.rect(gp = gpar(fill = "#E13D3D", col = "#E13D3D"), x = unit(0.5, "npc"), y = unit(0.82, "npc"), width = unit(1, "npc"), height = unit(1.2, "npc"),vp = vplayout(1,1:11))
+#Título
+grid.text("INFOGRAFÍA EN R",gp = gpar(fontsize = 45, fontface ="bold",fontfamily = "Impact", col = "#000000"),just = c("left"),vp = vplayout(1,1)) 
+#Logo de R a la derecha
+grid.raster(logo,width = unit(0.6, "npc"),height=unit(0.6, "npc"),vp = vplayout(1,12))
+
+#Inserto gráficos
+print(serie_linea_graf, vp = vplayout(2:6, 1:6))
+print(mapa, vp = vplayout(8:12, 1:3))
+print(piramide_graf, vp = vplayout(8:12,4:6))
+print(serie_barra_graf, vp = vplayout(8:12,7:12))
+
+#ÍconoS con datos 
+#Título
+grid.text("Iconos con datos",gp = gpar(fontsize = 30, fontfamily = "Impact"),just = c("left"),vp = vplayout(2,8))
+
+#Ícono y dato 1
+grid.raster(icon1,width = unit(0.3, "npc"),height=unit(0.5, "npc"),vp = vplayout(3,8))
+grid.text("Dato 1",gp = gpar(fontsize = 30, fontfamily = "Impact"),just = c("left"),vp = vplayout(3,9))
+grid.text(datos[1,2],gp = gpar(fontsize = 32, fontface = "bold",fontfamily = "Impact"),just = c("right"),vp = vplayout(3,11))   
+
+#Ícono y dato 2
+grid.raster(icon2,width = unit(0.3, "npc"),height=unit(0.5, "npc"),vp = vplayout(4,8))
+grid.text("Dato 2",gp = gpar(fontsize = 30, fontfamily = "Impact"),just = c("left"),vp = vplayout(4,9))
+grid.text(datos[2,2],gp = gpar(fontsize = 32, fontface = "bold",fontfamily = "Impact"),just = c("right"),vp = vplayout(4,11))   
+
+#Ícono y dato 3
+grid.raster(icon3,width = unit(0.3, "npc"),height=unit(0.5, "npc"),vp = vplayout(5,8))
+grid.text("Dato 3",gp = gpar(fontsize = 30, fontfamily = "Impact"),just = c("left"),vp = vplayout(5,9))
+grid.text(datos[3,2],gp = gpar(fontsize = 32, fontface = "bold",fontfamily = "Impact"),just = c("right"),vp = vplayout(5,11))   
+
+#Ícono y dato 4
+grid.raster(icon4,width = unit(0.3, "npc"),height=unit(0.5, "npc"),vp = vplayout(6,8))
+grid.text("Dato 4",gp = gpar(fontsize = 30, fontfamily = "Impact"),just = c("left"),vp = vplayout(6,9)) 
+grid.text(datos[4,2],gp = gpar(fontsize = 32, fontface = "bold",fontfamily = "Impact"),just = c("right"),vp = vplayout(6,11))   
+
+
+```
+
+
+## Versión final:
+
+
+![](C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia.jpg)
+
+
+
+______________
+
+
+
+### Espero que les sirva!
+
+
+

@@ -1,0 +1,55 @@
+---
+aliases: [amalia]
+title: 'AMALIA: análisis masivo de archivos de la dictadura uruguaya'
+thumbnail: ""
+authors: [elina]
+date: '2021-11-10'
+tags: [Pasado reciente]
+categories:
+  - R
+  - Minería de texto
+  - Shiny
+summary: 2021-11-10 / Minería y visualización de texto
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: false
+    number_sections: true
+    toc_depth: 1
+featuredImage: ""
+---
+
+
+
+<p>En el marco de la conferencia regional <a href="https://latin-r.com/">LatinR 2021</a>, presenté la aplicación <em>AMALIA</em>, dejo video de la ponencia:</p>
+<p><a href="https://youtu.be/mquWWrM8eqo"><img src="ama.png" alt="AMALIA" /></a></p>
+<hr />
+<p><strong>AMALIA</strong> es una aplicación que surge como una iniciativa en el marco del proyecto <a href="https://cruzar.edu.uy/">CRUZAR</a> (<em>Sistema de Información de Archivos del Pasado Reciente</em>), y que a través de técnicas de minería de texto, busca aportar en el análisis masivo e interactivo de documentos de la dictadura uruguaya (1973-1985) que han sido digitalizados y convertidos a texto mediante técnicas de OCR. La misma ha sido desarrollada utilizando el lenguaje R y se encuentra en su versión de prueba. Se nutre de más de 100000 imágenes que conforman el denominado <em>Archivo Berruti</em>, y permite realizar búsqueda de términos y palabras, analizar las inter-conexiones entre los mismos, así como el contexto en que son mencionadas en los archivos.</p>
+<hr />
+<div id="estructura-general" class="section level3">
+<h3>Estructura general:</h3>
+<ul>
+<li>Buscador:</li>
+</ul>
+<p>El buscador parte de un listado de palabras validadas previamente a partir de su inclusión en los diccionarios pre-definidos y permite evaluar tanto la frecuencia de aparición de un término como la co-ocurrencia entre diferentes palabras en las unidades de agregación. Así también plantea la posibilidad de analizar su contexto de mención en el texto bruto.</p>
+<ul>
+<li>Explorador:</li>
+</ul>
+<p>El explorador permite realizar un análisis partiendo de lo general a lo particular ya que es posible seleccionar un sub-conjunto de documentos y explorar las temáticas que incluye a partir de las frecuencias de términos, nubes de palabras, co-ocurrencia, redes de palabras y asociaciones. También es posible dirigir el análisis seleccionando los diccionarios de interés.</p>
+<ul>
+<li>Analizador:</li>
+</ul>
+<p>El analizador plantea un análisis centrado en el contexto en que se menciona una determinada palabra o conjunto de palabras previamente validadas por los diccionarios, a partir de la frecuencia, redes de términos y asociación entre las palabras que forman parte de dicho contexto.</p>
+</div>
+<div id="paquetes-utilizados" class="section level3">
+<h3>Paquetes utilizados:</h3>
+<ul>
+<li><p><em>shiny</em> , <em>shinythemes</em>, <em>shinyWidgets</em>, <em>shinycssloaders</em> , <em>wordclouds2</em> , <em>DT</em> para diseñar la estructura de la aplicación, formato, visualizaciones.</p></li>
+<li><p><em>dbplyr</em> para hacer conexión con la base en Postgres y optimizar las búsquedas SQL.</p></li>
+<li><p><em>quanteda</em> ( <em>quanteda.textmodels</em>, <em>quanteda.textplots</em>, <em>quanteda.textstats</em>) para visualizacione y cálculos de co-ocurrencias y distancias entre términos.</p></li>
+<li><p>Otros: <em>dplyr</em> , <em>ggplot2</em>, <em>seededlda</em></p></li>
+</ul>
+<hr />
+</div>
