@@ -163,7 +163,7 @@ entrenamiento_dfm <- quanteda::dfm(entrenamiento,
                          tolower = TRUE, #transforma todo a minúscula
                          remove_punct = TRUE, #elimina puntuación  
                          remove_numbers = TRUE,  #elimina números 
-                         remove = c(quanteda::stopwords("spanish"),palabras_drop), #elimina stopwords pre-cargadas en quanteda y palabras específicas de interés
+                         remove = c(stopwords::stopwords("spanish"),palabras_drop), #elimina stopwords pre-cargadas en quanteda y palabras específicas de interés
                          verbose = TRUE) %>% #imprime un resumen del proceso
   quanteda::dfm_remove(min_nchar=3)%>% # elimino las palabras que tienen 1 y 2 caracteres
   quanteda::dfm_trim(min_termfreq = 90) #le indico que se quede con téminos que aparezcan al menos 90 veces (Esto se va calibrando en la marcha!). Me permite sacar los términos que se usan muy poco. 
@@ -173,12 +173,14 @@ entrenamiento_dfm <- quanteda::dfm(entrenamiento,
 
 Acá me interesa ver si me está agregando bien las palabras y hago una nube de palabras con la función __textplot_wordcloud()__, para ello le defino la variable _genero_ como de agrupación y el argumento _comparison=T_ para mostrar la segmentación. 
 
-```{r echo=TRUE, message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 
 quanteda::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups = "genero"), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c("#954342","#e76363"),comparison = T)
 
 
 ```
+
+![](C:/Users/Usuario/Documents/repo/content/blog/2020-09-25-parlamento-genero/index_files/figure-html/unnamed-chunk-5-1.png)
 
 Me quedo conformé con las palabras que me muestra!
 
