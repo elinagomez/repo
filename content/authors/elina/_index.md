@@ -14,7 +14,7 @@ email: ""
 interests:
 - Análisis de datos
 - Investigación cualitativa
-- Evaluación y monitoreo
+- Minería de texto
 - R
 
 name: Elina Gómez
@@ -39,6 +39,8 @@ social:
 superuser: true
 ---
 
-Soy Licenciada en Sociología por la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy)  de la [Universidad de la República](www.universidad.edu.uy) (Montevideo, Uruguay), con posgrado en estudios de América Latina. Además de trabajar en el ámbito público, me desempeño como consultora en investigación social aplicada, asesorando en el diseño y ejecución de estrategias metodológicas en diversas áreas de conocimiento _(gestión pública_, _educación_, _cooperativismo_,  _género_, _ciencia y tecnología_, _medicina_, entre otros.). Los trabajos de consultoría que desarrollo se centran en la generación y análisis de datos (cuantitativos y cualitativos), evaluación y monitoreo de proyectos, diseño de indicadores y automatización de reportes.
+Soy Licenciada en Sociología por la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy), con posgrado en estudios de América Latina. Trabajo como docente e investigadora en la [Unidad de Métodos y Acceso a Datos (UMAD)](https://umad.cienciassociales.edu.uy/) de la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy) - [Universidad de la República](www.universidad.edu.uy). 
 
-Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD), y he impartido clases de programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado a la investigación cualitativa en el área de Educación Permanente de la Universidad de la República.
+Me desempeño también como consultora en investigación social aplicada, asesorando en el diseño y ejecución de estrategias metodológicas en diversas áreas de conocimiento _(gestión pública_, _educación_, _cooperativismo_,  _género_, _ciencia y tecnología_, _medicina_, entre otros.). Los trabajos de consultoría que desarrollo se centran en la generación y análisis de datos (cuantitativos y cualitativos), evaluación y monitoreo de proyectos, diseño de indicadores y automatización de reportes.
+
+Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD). Imparto cursos en el área de [Educación Permanente](https://cienciassociales.edu.uy/educacion-permanente/) orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al análisis cualitativo. 
