@@ -151,7 +151,7 @@ En un segundo momento, aplico la función _dfm()_ al corpus previamente creado p
 
 En el código explico cada paso:
 
-```{r echo=TRUE, message=FALSE, warning=FALSE}
+```{r echo=TRUE, message=FALSE, warning=FALSE,eval=FALSE}
 
 #Cargo paquetes:
 library(quanteda) #minería de texto
@@ -175,7 +175,7 @@ Acá me interesa ver si me está agregando bien las palabras y hago una nube de 
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE}
 
-quanteda::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups = "genero"), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c("#954342","#e76363"),comparison = T)
+quanteda.textplots::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups = "genero"), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c("#954342","#e76363"),comparison = T)
 
 
 ```

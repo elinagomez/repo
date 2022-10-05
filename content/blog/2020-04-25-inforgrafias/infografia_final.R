@@ -15,7 +15,7 @@ library(useful)
 
 nombre ="Inforgrafia"
 
-serie_linea=read.csv("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/serie_linea.csv",sep = ";")
+serie_linea=read.csv("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/serie_linea.csv",sep = ";")
 
 serie_linea_graf = ggplot(serie_linea,aes(x = as.factor(fecha_dato) , y = conteo,group = 1)) + 
   geom_line(size=2, stat="identity",colour = "#E13D3D") +
@@ -25,7 +25,7 @@ serie_linea_graf = ggplot(serie_linea,aes(x = as.factor(fecha_dato) , y = conteo
             show.legend = FALSE,size=10,family="Impact")+
   ylab("Casos") + xlab("Año") + ggtitle("Gráfico de línea")
 
-serie_barra=read.csv("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/serie_barra.csv",sep=";")
+serie_barra=read.csv("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/serie_barra.csv",sep=";")
 
 serie_barra_graf = ggplot(serie_barra,aes(x = factor(fecha_dato) , y = conteo,group = 1)) + 
   geom_bar(size=2, stat="identity", colour = "#E13D3D",fill = "#E13D3D",width = 0.6) +
@@ -37,10 +37,10 @@ serie_barra_graf = ggplot(serie_barra,aes(x = factor(fecha_dato) , y = conteo,gr
   ylab("%") + xlab("Año") + ggtitle("Gráfico de barras")
 serie_barra_graf
 
-depto=read.csv("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/depto.csv",sep=";")
+depto=read.csv("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/depto.csv",sep=";")
 
-uru = st_read("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/ine_depto.shp", crs = 32721, stringsAsFactors = F,quiet = TRUE)
-coord = st_read("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/dptos_centroides.shp", crs = 32721,quiet = TRUE)
+uru = st_read("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/ine_depto.shp", crs = 32721, stringsAsFactors = F,quiet = TRUE)
+coord = st_read("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/dptos_centroides.shp", crs = 32721,quiet = TRUE)
 uru = merge(uru, depto,  by.x = "NOMBRE",by.y = "coddepartamento_in")
 coord = merge(coord, depto,  by.x = "NOMBRE",by.y = "coddepartamento_in")
 brks=classIntervals(uru$conteo, n=5, style="quantile")
@@ -66,7 +66,7 @@ mapa=ggplot() +
   ggtitle("Mapa de densidad")
 
 
-piramide=read.csv2("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/piramide_edad.csv")
+piramide=read.csv2("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/piramide_edad.csv")
 
 piramide$Var1 <- as.character(piramide$Var1)
 piramide$Var1 <- factor(piramide$Var1, levels=c("0 a 4","5 a 9","10 a 14","15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44","45 a 49","50 a 54","55 a 59","60 a 64","65 a 69","70 a 74","75 a 79","80 a 84","85 a 89","90 y +"))
@@ -86,19 +86,19 @@ piramide_graf=ggplot(piramide, aes(x = Var1, y = Freq, fill = Var2)) +
   ggtitle("Pirámide poblacional")
 
 
-datos=read.csv2(paste0("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/datos.csv"))
+datos=read.csv2(paste0("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/datos.csv"))
 
 #cargo íconos  
-icon1=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon1.png")
-icon2=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon2.png")
-icon3=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon3.png")
-icon4=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon4.png")
+icon1=readPNG("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon1.png")
+icon2=readPNG("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon2.png")
+icon3=readPNG("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon3.png")
+icon4=readPNG("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/icon4.png")
 
 #cargo logo 
-logo=readPNG("C:/Users/Elina/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/rlogo.png")
+logo=readPNG("C:/Users/Usuario/Documents/repo/content/blog/2020-04-25-inforgrafias/Inforgrafia/rlogo.png")
 
 
-pdf(paste0("C:/Users/Elina/Desktop/",nombre,".pdf"), width = 40, height = 22)
+pdf(paste0("C:/Users/Usuario/Desktop/",nombre,".pdf"), width = 40, height = 22)
 
 grid.newpage() 
 pushViewport(viewport(layout = grid.layout(12,12)))
