@@ -339,7 +339,7 @@ Si vemos la distribución de las menciones relativas al género por partido pol�
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-part=base_final %>%
+base_final %>%
   group_by(Partido) %>%
   summarise(N = n()) %>%
   ggplot(aes(x = reorder(Partido, -N) , y = N,group = 1)) + 
@@ -355,7 +355,7 @@ part=base_final %>%
 #            vjust = 0,show.legend = FALSE,size=4,family="Impact")+
   ylab("%") + xlab("Año") + ggtitle("")
 
-ggplotly(part)
+#ggplotly(part)
 
 
 ```
@@ -368,7 +368,7 @@ __Menciones por género__
 Si nos centramos en el género de lxs legisladorxs, el __56.5%__ de las intervenciones son de varones y el __43.5%__ por mujeres. Sin embargo, si relativizamos por la cantidad de mujeres y varones diputadxs vemos que la cantidad de menciones por legisladorx es mayor en el caso de las mujeres con respecto a los varones, de hecho podemos decir que las diputadas mujeres hablan __1.3__ más que los varones.    
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE,eval=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 genero=base_final %>%
   group_by(Género) %>%
@@ -377,9 +377,9 @@ summarise(ratio= n()/length(unique(legislator)))%>%
   geom_bar(size=1, stat="identity",fill = c("#e76363","#f09e9e"),width = 0.6) +
     scale_y_continuous(limits = c(0, 8))+ 
   scale_fill_gradient(low = "white", high = "red")+
-  theme(axis.text.x = element_text(size=10,family = "Impact"), 
-        axis.text.y = element_text(size=10,family = "Impact"),
-        plot.title = element_text(size=20,family = "Impact"),
+  theme(axis.text.x = element_text(size=10), 
+        axis.text.y = element_text(size=10),
+        plot.title = element_text(size=20),
         axis.title.x=element_blank(),axis.title.y=element_blank())+
   ylab("%") + xlab("") + ggtitle("")
 
@@ -397,9 +397,9 @@ __Legisladorxs__
 Por último, queremos ver qué legisladorxs son lxs que tienen más intervenciones referidas al género y observamos que, a pesar de que el Frente Amplio era el partido que registraba más menciones absolutas, quienes acumulan más intervanciones referidas al tema son diputadas del Partido Nacional y Partido Colorado. También vemos que, entre lxs 10 principales, la gran mayoría son mujeres, esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria. 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-legis=base_final %>%
+base_final %>%
   count(legislator)%>%
   top_n(n=10) %>%
   arrange(n)%>%
@@ -408,17 +408,17 @@ legis=base_final %>%
   scale_fill_gradient(low = "white", high = "red")+
   scale_y_continuous(limits = c(0, 70))+
   coord_flip()+
-  theme(axis.text.x = element_text(size=10,family = "Impact"), 
-        axis.text.y = element_text(size=10,family = "Impact"),
-        plot.title = element_text(size=20,family = "Impact"),
+  theme(axis.text.x = element_text(size=10), 
+        axis.text.y = element_text(size=10),
+        plot.title = element_text(size=20),
         axis.title.x=element_blank(),axis.title.y=element_blank())+
-#  geom_text(aes(label = paste0(round(n, 1))),
-#            position = position_dodge(0.9) ,
-#            vjust = 0,show.legend = FALSE,size=4,family="Impact")+
+  geom_text(aes(label = paste0(round(n, 1))),
+            position = position_dodge(0.2) ,
+            vjust = 0,show.legend = FALSE,size=3)+
   ylab("%") + xlab("Año") + ggtitle("")
 
 
-ggplotly(legis)
+
 
 
 ```
