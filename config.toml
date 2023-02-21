@@ -73,3 +73,6 @@ ignoreFiles = ["\\.ipynb$", ".ipynb_checkpoints$", "\\.Rmd$", "\\.Rmarkdown$", "
 [permalinks]
   posts = "/post/:year-:month-:slug/"
   talks = "/talk/:year-:slug/"
+  
+[markup.goldmark.renderer]
+  unsafe= true

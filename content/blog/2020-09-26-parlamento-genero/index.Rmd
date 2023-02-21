@@ -337,7 +337,7 @@ __Menciones por partido político__
 Si vemos la distribución de las menciones relativas al género por partido político en términos absolutos, vemos que el __Frente Amplio__ es el que cuenta con más menciones ( __364__), seguidas por el __Partido Nacional__ ( __230__).    
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 part=base_final %>%
   group_by(Partido) %>%
