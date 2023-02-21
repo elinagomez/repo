@@ -362,8 +362,7 @@ part = base_final %>%
 ```
 
 
-
-<!-- <iframe src="imagenes/part.html" width="700"  height="500"></iframe> -->
+<iframe src="imagenes/part.html" width="800"  height="500"></iframe>
 
 
 __Menciones por género__
