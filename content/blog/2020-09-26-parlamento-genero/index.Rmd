@@ -322,12 +322,13 @@ ggplot(aes(x = Fecha , y = N,group = Partido,color=Partido)) +
         axis.title.x=element_blank(),axis.title.y=element_blank())+
   ylab("Casos") + xlab("Año") + ggtitle("")
 
-ggplotly(ts) %>% 
+a=ggplotly(ts) %>% 
   layout(legend = list(orientation = "h", x = 0.4, y = -0.2))
 
 
 ```
 
+![](C:/Users/Usuario/Documents/repo/content/blog/2020-09-26-parlamento-genero/imagenes/g1.html)
 
 
 
