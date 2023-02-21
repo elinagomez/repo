@@ -296,7 +296,7 @@ En primer lugar, observando la evolución de menciones sobre el tema se registra
 __Evolución de las menciones en el tiempo por partido político__
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 library(dplyr)
 library(ggplot2)
@@ -367,7 +367,7 @@ __Menciones por género__
 Si nos centramos en el género de lxs legisladorxs, el __56.5%__ de las intervenciones son de varones y el __43.5%__ por mujeres. Sin embargo, si relativizamos por la cantidad de mujeres y varones diputadxs vemos que la cantidad de menciones por legisladorx es mayor en el caso de las mujeres con respecto a los varones, de hecho podemos decir que las diputadas mujeres hablan __1.3__ más que los varones.    
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE,eval=FALSE}
 
 genero=base_final %>%
   group_by(Género) %>%
