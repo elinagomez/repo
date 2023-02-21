@@ -3,7 +3,7 @@ aliases: [Género en el parlamento]
 title: 'La temática de género en el Parlamento uruguayo'
 thumbnail: ""
 authors: [elina]
-date: '2020-09-25'
+date: '2020-09-26'
 tags: [Género]
 categories:
   - R
@@ -11,7 +11,7 @@ categories:
   - Género
   - Análisis cualitativo
   - Aprendizaje automático
-summary: 2020-09-25 / Minería y clasificación de texto con aprendizaje automático
+summary: 2020-09-26 / Minería y clasificación de texto con aprendizaje automático
 image:
   caption: ''
   focal_point: ''
@@ -180,7 +180,7 @@ quanteda.textplots::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups =
 
 ```
 
-![](C:/Users/Usuario/Documents/repo/content/blog/2020-09-26-parlamento-genero/index_files/figure-html/unnamed-chunk-5-1.png)
+![](C:/Users/Usuario/Documents/repo/content/blog/2020-09-26-parlamento-genero/imagenes/nube.png)
 
 Me quedo conformé con las palabras que me muestra!
 
