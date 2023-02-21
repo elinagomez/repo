@@ -424,6 +424,11 @@ base_final %>%
 ```
 
 
+
+<iframe src="imagenes/g1.html"></iframe>
+
+
+
 ______________
 
 Espero que les haya gustado y servido, seguro que existen muchas cosas por mejorar y mucho potencial aún para ahondar y enriquecer la investigación social a partir del análisis del texto y de la palabra. 

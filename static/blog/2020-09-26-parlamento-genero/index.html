@@ -1,0 +1,219 @@
+---
+aliases: [Género en el parlamento]
+title: 'La temática de género en el Parlamento uruguayo'
+thumbnail: ""
+authors: [elina]
+date: '2020-09-26'
+tags: [Género]
+categories:
+  - R
+  - Minería de texto
+  - Género
+  - Análisis cualitativo
+  - Aprendizaje automático
+summary: 2020-09-26 / Minería y clasificación de texto con aprendizaje automático
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: false
+    number_sections: true
+    toc_depth: 1
+featuredImage: ""
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="{{< blogdown/postref >}}index_files/plotly-binding/plotly.js"></script>
+<script src="{{< blogdown/postref >}}index_files/typedarray/typedarray.min.js"></script>
+<script src="{{< blogdown/postref >}}index_files/jquery/jquery.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/crosstalk/js/crosstalk.min.js"></script>
+<link href="{{< blogdown/postref >}}index_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/plotly-main/plotly-latest.min.js"></script>
+
+
+<p>Este post surge a partir de la idea de aplicar algunas técnicas de <em>minería de texto</em> y <em>clasificación con aprendizaje automático</em> (o <em>machine learning</em>) para análisis masivo de datos cualitativos usando R, de una temática que me interesaba particularmente como es el <strong>discurso político de género</strong>. Considero que la minería de texto es un área que aún no se encuentra tan difundida en Uruguay, que tiene mucho potencial y que puede ser aprovechada desde las ciencias sociales como aporte para sumar o complementar las herramientas metodológicas más tradicionales.</p>
+<p>El <strong>objetivo general</strong> del trabajo es lograr un buen método de clasificación de texto que me permita distinguir entre las intervenciones parlamentarias en la Cámara de representantes (unidad mínima de análisis) que planteen y discutan la temática de género para luego analizar mediante variables anexas, qué representantes, partidos, sectores son los que instalan la discusión en dicha materia <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p>El post se va a estructurar en cuatro partes:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Obtención de la información (web scraping)</strong></li>
+<li><strong>Limpieza del texto y matriz de términos</strong></li>
+<li><strong>Clasificación: machine lerning y diccionario</strong></li>
+<li><strong>Análisis de los datos</strong></li>
+</ol>
+<hr />
+<div id="obtención-de-la-información-web-scraping" class="section level2">
+<h2>1. Obtención de la información (web scraping)</h2>
+<p>En lo que respecta a la fuente de datos, mi primera inspiración estuvo en <a href="https://d4tagirl.com/2018/04/de-qu%C3%A9-se-habl%C3%B3-en-el-parlamento-uruguayo-desde-2017">este post</a> de 2018 de <a href="https://d4tagirl.com/"><em>d4tagirl</em></a> que trataba sobre la obtención de datos directamente desde internet (<em>web scraping</em>), de las sesiones parlamentarias (cuyas transcripcioes son de libre acceso) y análisis de las frecuencias de las sesiones, visualización de las palabras más relevantes, análisis de sentimiento, etc.</p>
+<p>Luego de esto, en 2019 se desarrolla por parte de un equipo<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> de la <em>Facultad de Ciencias Sociales</em> (UdelaR), el paquete <a href="https://cran.r-project.org/web/packages/speech/index.html">speech</a>, el cual permite descargar las sesiones parlamentarias de forma fácil y ordenada, agregando a los discursos algunas variables anexas como la legislatura, el nombre (lo cual me permite rastrear algunas características), la fecha de la sesión, entre otras. Esto me facilitó mucho el trabajo de recolección de información inicial 🙏 !.</p>
+<p>Para el análisis, decidí acotar el universo a los discursos e intervenciones de lxs diputadxs (ya que incluir ambas cámaras era un volúmen demasiado grande de información!), correspondientes a la legislatura pasada: <strong>XLVIII (2015-2020)</strong>. La transcripciones taquigráficas de las sesiones parlamentarias se encuentran en archivos formato <em>pdf</em> en la <a href="https://parlamento.gub.uy/">página del parlamento</a>, en la cual se pueden hacer búsquedas manuales según legislatura, fechas, identificadores de sesión y Diario, etc. Lo que yo necesitaba entonces era obtener todas las transcripciones del período, las cuales metiante una búsuqueda simple filtrando la legislatura, sólo para la Cámara de representantes asciendían a <strong>308</strong> Diarios de sesiones.</p>
+<p>Como primer paso para la obtención de la información debía recolectar todas las rutas a los archivos <em>pdf</em> lo cual me permitiría aplicar la función <strong>speech_build()</strong> del paquete <a href="https://cran.r-project.org/web/packages/speech/index.html">speech</a> y transformar la información que se encuentra en <em>pdf</em> en un <em>data frame</em> ordenado.</p>
+<p>Una opción válida, pero ineficiente, hubiera sido copiar <em>“a mano”</em> las 308 rutas a cada uno de los <em>pdf</em>, sin embargo indagando un poco en el post de <em>d4tagirl</em> sobre <a href="https://d4tagirl.com/2018/04/scrapeando-las-sesiones-parlamentarias-de-uruguay">web scraping</a> (recomiendo!) y en foros, agregué alguna cosa y llegué a una solución para automatizar la recolección considerando incluso que, dada la cantidad, los mismos se encuentran desplegados en diferentes páginas.</p>
+<pre class="r"><code>#Cargo paquetes:
+library(dplyr) #manipulación
+library(rvest) #web scraping  
+library(purrr) #iteración 
+
+##creo un objeto &quot;ruta&quot; que es el url raíz para luego pegarle la terminación según el número de página del cual me interesa objeter las url a los pdf. 
+ruta= &quot;https://parlamento.gub.uy/documentosyleyes/documentos/diarios-de-sesion?Cpo_Codigo_2=D&amp;Lgl_Nro=48&amp;DS_Fecha%5Bmin%5D%5Bdate%5D=15-02-2015&amp;DS_Fecha%5Bmax%5D%5Bdate%5D=14-02-2020&amp;Ssn_Nro=&amp;TS_Diario=&amp;tipoBusqueda=T&amp;Texto=&quot;
+paginas=as.character(c(0:7)) ##defino la cantidad de paginas, en este caso 8 (del 0 al 7)
+
+##creo un objeto &quot;url&quot; dónde me va a guardar el vector de las 308 rutas que necesito!
+
+url &lt;- map(paginas,~ paste0(ruta, &quot;&amp;page=&quot;, .))%&gt;% #pego el pedazo de ruta para hacer referencia al número de página
+       unlist() %&gt;% 
+       map(~ .x  %&gt;% ## con la función map() de purr, ítero a lo largo del vector &quot;paginas&quot;
+       read_html() %&gt;%  ##función de rvest para obtener contenido en formato html 
+       html_nodes(&quot;.views-field-DS-File-IMG a&quot;) %&gt;% #identifica qué parte o nodo específico me interesa   
+       html_attr(&quot;href&quot;) %&gt;%
+       map(~ paste0(&quot;https://parlamento.gub.uy&quot;, .)))%&gt;%
+       unlist()</code></pre>
+<p>En este punto lo que tengo es un vector con 308 elementos, en el cual cada uno es una ruta a un Diario de sesión en formato pdf. Luego, aplico la función <strong>speech_build()</strong> para que ordene en un data frame todas las intervenciones contenidas en cada uno de los Diarios, con información anexa como ya lo mencioné.</p>
+<pre class="r"><code>#Cargo paquetes:
+library(speech) #scraping parlamentario
+
+#aplico la función speech_build() iterando sobre cada una de las rutas y alojandolo en un objeto &quot;discursos_diputadxs&quot;
+
+discursos_diputadxs &lt;- map(url,possibly(speech_build,otherwise = NULL))
+
+#Importante: acá tuve algún problema grande con pdf en los cuales no se podían identificar intervenciones y me cortaban el proceso, lo cual solucioné con la función possibly() de purr, la cual omite el error y continúa aplicando la función.   </code></pre>
+<p>Al final de este proceso (que demora bastante!), obtuve una base con <strong>23990</strong> intervenciones para todo el período. Cabe aclarar que la función <strong>speech_build()</strong> tiene un argumento <em>quality</em> que te permite, mediante un par de indicadores, dar cuenta de la calidad de la conversión a partir de la proporción del documento que pudo ser recuperado. También otro argumento que permite agregar o compilar la información por legislador, en este caso obtuve cada mención por separado.</p>
+<p>Hasta este momento tenía una gran base de todas las intervenciones de la legislatura pasada en bruto y que necesitaba clasificar en aquellas que trataban la temática de género y aquellas que no. Debía conseguir entonces documentos que hablaran de género y otros que no, así podía aplicar un modelo que <em>aprendiera</em> a distinguir entre estos dos discursos y me permitiera clasificar las intervenciones (machine lerning o aprendizaje automático).Para esto podría haber etiquetado de forma <em>artesanal</em> las intervenciones que trataran la temática de género y aquellas que no, pero me implicaba mucho tiempo (que no tengo!) y entonces se me ocurrió una idea💡: en la pagina del parlamento hay unos documentos de las transcripciones de las diferentes comisiones temáticas que integran lxs propixs parlamentarixs y existe una específica de <a href="https://parlamento.gub.uy/documentosyleyes/documentos/versiones-taquigraficas?Cpo_Codigo=D&amp;Lgl_Nro=48&amp;Fecha%5Bmin%5D%5Bdate%5D=15-02-2015&amp;Fecha%5Bmax%5D%5Bdate%5D=14-02-2020&amp;Cms_Codigo=1090&amp;Dtb_Nro=&amp;tipoBusqueda=T&amp;Texto=&amp;Cuerpo=">Equidad y género</a> con <strong>28</strong> documentos disponibles, por lo que con la misma técnica anterior, elaboré una base de datos con todas las intervenciones de dicha comisión y otra base con intervenciones de diferentes comisiones parlamentarias con temas variados: presupuesto, hacienda, asuntos internacionales, salud, turismo, ambiente, etc.</p>
+<p>Finalmente, construí una base que servirá de <em>entrenamiento</em> con ambos tipos de intervenciones y una variabla de agregación llamada <em>genero</em> con dos valores: <em>Si genero</em> / <em>No genero</em>.</p>
+</div>
+<div id="limpieza-del-texto-y-matriz-de-términos" class="section level2">
+<h2>2. Limpieza del texto y matriz de términos</h2>
+<p>En este momento necesitaba aplicar algunas funciones que me permitieran <em>limpiar</em> el texto y quedarme con lo que realmente me interesa y que me permite distinguir entre palabras que dan cuenta de un discurso que hace referencia a la temática de género y aquellos que no. Este es un trabajo que lleva mucho tiempo (tal vez el que más!), mucho ensayo y error, y a veces resulta tedioso, pero es el más importante para que los resultados tengan sentido y lograr hacer una buena clasificación y análisis posterior.</p>
+<p>En un primer momento esto lo hice para la base de <em>entrenamiento</em> que incluía intervenciones de las comisiones, las cuales alojé en un <em>corpus</em> dónde cada una es un elemento del mismo. El resultado de este paso será una una matriz de términos (en este caso palabras, pero podrían ser expresiones también!) que se denomina <em>document-feature matrix</em> (dfm) en el paquete <strong>quanteda</strong> que es el que voy a utilizar. Esta matriz contiene tantas filas como elementos del corpus haya (en este caso intervenciones) y tantas columnas como términos, en las celdas se encuentra la frecuencia de aparición de cada término en cada intervención.</p>
+<p>Como primer paso para llevar a cabo la limpieza, me interesa eliminar todas las intervenciones que cuenten con menos de 13 palabras ya que, según he leído, corresponden con expresiones o asuntos de órden ( <em>“Pido la palabra”</em>, <em>“Voto la moción de…”</em>, etc.) que no me dicen nada para mi análisis. Esto lo hago en un primer momento con la función <em>corpus trimsentences()</em> al momento de crear el corpus y decirle la variable en dónde se encuentra el discurso ( <em>speech</em> en este caso).</p>
+<p>En un segundo momento, aplico la función <em>dfm()</em> al corpus previamente creado para limpiar y construir la matriz. Para esto, uso un vector que tengo pre-cargado y que llamo <strong>palabras_drop</strong> y que me ayudan a eliminar términos que no me interesan, el cual contiene:</p>
+<ul>
+<li><strong>nombres</strong> y <strong>apellidos</strong> de lxs diputadxs</li>
+<li><strong>stopwords</strong> y modismos uruguayos</li>
+<li><strong>palabras específicas</strong> que se reiteran en las trascripciones (señor, señora, dipudato, diputada, taquigráfico y varias más)</li>
+</ul>
+<p>En el código explico cada paso:</p>
+<pre class="r"><code>#Cargo paquetes:
+library(quanteda) #minería de texto
+
+entrenamiento &lt;- quanteda::corpus(train,text_field = &quot;speech&quot;)%&gt;%
+  quanteda::corpus_trimsentences(min_length = 13) # quito las intervenciones que tienen menos de 13 palabras 
+
+entrenamiento_dfm &lt;- quanteda::dfm(entrenamiento,
+                         tolower = TRUE, #transforma todo a minúscula
+                         remove_punct = TRUE, #elimina puntuación  
+                         remove_numbers = TRUE,  #elimina números 
+                         remove = c(stopwords::stopwords(&quot;spanish&quot;),palabras_drop), #elimina stopwords pre-cargadas en quanteda y palabras específicas de interés
+                         verbose = TRUE) %&gt;% #imprime un resumen del proceso
+  quanteda::dfm_remove(min_nchar=3)%&gt;% # elimino las palabras que tienen 1 y 2 caracteres
+  quanteda::dfm_trim(min_termfreq = 90) #le indico que se quede con téminos que aparezcan al menos 90 veces (Esto se va calibrando en la marcha!). Me permite sacar los términos que se usan muy poco. </code></pre>
+<p>Acá me interesa ver si me está agregando bien las palabras y hago una nube de palabras con la función <strong>textplot_wordcloud()</strong>, para ello le defino la variable <em>genero</em> como de agrupación y el argumento <em>comparison=T</em> para mostrar la segmentación.</p>
+<pre class="r"><code>quanteda.textplots::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups = &quot;genero&quot;), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c(&quot;#954342&quot;,&quot;#e76363&quot;),comparison = T)</code></pre>
+<p><img src="imagenes/nube.png" /></p>
+<p>Me quedo conformé con las palabras que me muestra!</p>
+</div>
+<div id="clasificación-aprendizaje-automático-y-diccionario" class="section level2">
+<h2>3. Clasificación: aprendizaje automático y diccionario</h2>
+<p>El <a href="https://es.wikipedia.org/wiki/Aprendizaje_autom%C3%A1tico"><em>aprendizaje automático</em></a> (o machine learning) es un procedimiento que permite automatizar algunas operaciones reduciendo la necesidad de intervención de un ser humano, a partir de la identificación o <em>aprendizaje</em> de ciertos patrones según parámetros determinados y posterior predicción en otro conjunto de datos.</p>
+<p>En este caso, tengo la matriz de téminos creada a partir de mi base de entrenamiento (creada en el punto 1) y categorizada con la variable <em>“genero”</em> de forma equilibrada según si las mismas fueron realizadas en la <em>Comisión de Equidad y género</em> o en otras comisiones temáticas. Ahora tengo que aplicar un modelo que permita <em>aprender</em> qué términos distinguen entre un discurso que trata género y uno que no. Para ello existen diferentes tipos de técnicas y modelos, más sencillos y más complejos, en este caso usaré el modelo predictivo de clasificación llamado <a href="https://es.wikipedia.org/wiki/Random_forest"><em>Random forest</em></a> (o bosques aleatorios en español), con el paquete <a href="https://cran.r-project.org/web/packages/randomForest/index.html"><em>random Forest</em></a>. Para ello, creo dos grupos aleatorios para entrenar y testear el modelo, todo dentro de la matriz de términos ya creada. Para definir con qué modelo me quedo, pruebo diferentes opciones de parámetros y evalúo según la precisión en la predicción.</p>
+<pre class="r"><code>#Cargo paquetes:
+library(randomForest) #correr modelo
+library(tidymodels) #lo uso sólo para crear grupos para entrenamiento y prueba
+
+##primero convierto la matriz en un data frame
+entrenamiento_dfm &lt;- entrenamiento_dfm %&gt;%
+  convert(to = &quot;data.frame&quot;)%&gt;%
+  mutate(genero=docvars(entrenamiento_dfm, &quot;genero&quot;))
+
+set.seed(23) #hago reproducible la selección aleatoria
+
+genero_split &lt;- initial_split(entrenamiento_dfm, strata = genero) ##divide aleatoriamente según un estrato, acá es genero y genera dos sub grupos: entreno y testeo
+entreno &lt;- training(genero_split) 
+testeo &lt;- testing(genero_split)
+
+##Con la variable randomForest se aplica el algoritmo y guardo el modelo
+modelo &lt;- randomForest(genero ~ ., data=entreno)
+##OOB 
+#0.1582538 
+
+##lo uso para predecir en los grupos: entreno y testeo 
+prediccion_entreno &lt;- predict(modelo, newdata=entreno)
+prediccion_testeo &lt;- predict(modelo, newdata=testeo)
+
+##Evalúo el modelo
+
+##veo la matriz de confusión y veo en cuantos predijo bien y en cuantos no
+
+# table(entreno$genero, prediccion_entreno)
+#  prediccion_entreno
+#               No genero Si genero
+#   No genero       372         1
+#   Si genero        23       337
+#accuracy 96.7%
+
+# table(testeo$genero, prediccion_testeo)
+#  prediccion_testeo
+#              No genero Si genero
+#  No genero       111        13
+#  Si genero        31        88
+#accuracy 81.9%</code></pre>
+<p>Luego de tener este modelo y ver que funciona bastante bien, lo que hago es cargar mi base de las intervenciones de todxs lxs diputadxs, aplico una limpieza similar al punto 2 y me quedo con las sentencias y palabras que me sirven en una matriz de términos. En esta limpieza, de <strong>23990</strong> intervenciones paso a <strong>13437</strong>, poco más de la mitad.</p>
+<p>Luego me quedo con los términos coincidentes en ambos casos y predigo en mi base sin clasificación alguna.</p>
+<pre class="r"><code>##me quedo con los términos coincidentes entre la base que usé para predicir y la que quiero predecir
+
+entrenamiento_dfm_final &lt;-data.frame(entreno[,colnames(entreno)%in%colnames(diputados_dfm)])
+diputados_dfm_final &lt;- data.frame(diputados_dfm[,colnames(diputados_dfm)%in%colnames(entreno)])
+
+##hago la predicción
+prediccion_todo &lt;- predict(modelo, newdata=diputados_dfm_final)
+
+#lo convierto en data frame y filtro los que fueron predecido como &quot;Si genero&quot;
+sigenero &lt;- diputados%&gt;%
+  convert(to = &quot;data.frame&quot;)%&gt;%
+  mutate(genero=prediccion_todo) %&gt;%
+  filter(genero=&quot;Si genero&quot;) </code></pre>
+<p>En este momento tengo una base con una clasificación entre: <em>Si genero</em> / <em>No genero</em> generada a partir de la aplicación del algoritmo random forest con intervenciones que tocan la temática de género. En este punto, podríamos comenzar el análisis viendo como se sub divide entre partidos, legisladorxs, etc, pero tomo algunas intervenciones y, más allá de que muchas están bien clasificadas, veo que algunas tocan el tema pero muy tangencialmente o se entran en la proporción de error del modelo y directamente no hablan del tema, por lo que se me ocurre la idea de afinar un poco más la clasificación y combinar con la técnica de diccionario de <strong>quanteda</strong>, considerando los 50 téminos más usados en mi base de entrenamiento (limpia) para el grupo <em>Si género</em> como un diccionario a aplicar a mis intervenciones pre-clasificadas.</p>
+<pre class="r"><code> ##top términos por grupo
+ dicgenero &lt;- entrenamiento_dfm %&gt;%
+   quanteda::topfeatures(50,groups = &quot;genero&quot;)
+dicgenero &lt;- rownames(as.data.frame(dicgenero[[2]]))
+##lo convierto en diccionario (formato lista) con la función dictionary()  
+idc_dicgenero &lt;-dictionary(list(genero=dicgenero))
+##aplico la función dfm_lookup() para evaluarlo en un dfm nuevo sólo de la base pre-clasificada
+midic_result_dicgen &lt;- data.frame(dfm_lookup(sigenero_dfm,dictionary=idc_dicgenero))
+
+base_final &lt;-  sigenero %&gt;%
+              left_join(y=midic_result_dicgen,by=&quot;doc_id&quot;)%&gt;%
+              filter(diccionario&gt;=30)</code></pre>
+<p>Luego de aplicar el diccionario, opto por quedarme con aquellas intervenciones que tienen &gt;=30 palabras del mismo y así asegurarme que están bien clasificadas. Luego de esto al fin llego a una base final con <strong>745</strong> intervenciones que tratan género 😄!</p>
+<p>Para mi análisis necesito dar cuenta del género de lxs diputadxs, el partido, sector, etc, por lo que la variable que lxs identifica, toma unicamente el primer apellido que se encuentra en la trascripción, por lo que tuve que hacer un trabajo artesanal de identificar a qué legisladorxs se refería y pegar ese dato con la información anexa que me interesa (me complicaron mucho los apellidos repetidos: Rodriguez, Cardoso, Umpiérrez, Viera y algunos más)</p>
+</div>
+<div id="análisis-de-los-datos" class="section level2">
+<h2>4. Análisis de los datos</h2>
+<p>En este apartado presento algunos datos generales que se desprenden de mi base de menciones sobre género.</p>
+<p>En primer lugar, observando la evolución de menciones sobre el tema se registra un aumento de las mismas hacia el final de la legislatura, con diferencias entre partidos.</p>
+<p><strong>Evolución de las menciones en el tiempo por partido político</strong></p>
+<p><embed src="C:/Users/Usuario/Documents/repo/content/blog/2020-09-26-parlamento-genero/imagenes/g1.html" /></p>
+<p><strong>Menciones por partido político</strong></p>
+<p>Si vemos la distribución de las menciones relativas al género por partido político en términos absolutos, vemos que el <strong>Frente Amplio</strong> es el que cuenta con más menciones ( <strong>364</strong>), seguidas por el <strong>Partido Nacional</strong> ( <strong>230</strong>).</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><strong>Menciones por género</strong></p>
+<p>Si nos centramos en el género de lxs legisladorxs, el <strong>56.5%</strong> de las intervenciones son de varones y el <strong>43.5%</strong> por mujeres. Sin embargo, si relativizamos por la cantidad de mujeres y varones diputadxs vemos que la cantidad de menciones por legisladorx es mayor en el caso de las mujeres con respecto a los varones, de hecho podemos decir que las diputadas mujeres hablan <strong>1.3</strong> más que los varones.</p>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"orientation":"v","width":0.6,"base":0,"x":[1],"y":[5.68421052631579],"text":"reorder(Género, -ratio): Mujer<br />ratio: 5.684211","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(231,99,99,1)","line":{"width":3.77952755905512,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.6,"base":0,"x":[2],"y":[4.34020618556701],"text":"reorder(Género, -ratio): Varón<br />ratio: 4.340206","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(240,158,158,1)","line":{"width":3.77952755905512,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":26.2283105022831,"r":7.30593607305936,"b":27.164798671648,"l":17.6006641760066},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,2.6],"tickmode":"array","ticktext":["Mujer","Varón"],"tickvals":[1,2],"categoryorder":"array","categoryarray":["Mujer","Varón"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.4,8.4],"tickmode":"array","ticktext":["0","2","4","6","8"],"tickvals":[0,2,4,6,8],"categoryorder":"array","categoryarray":["0","2","4","6","8"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.2835201328352},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"48107e474c84":{"x":{},"y":{},"type":"bar"}},"cur_data":"48107e474c84","visdat":{"48107e474c84":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p><strong>Legisladorxs</strong></p>
+<p>Por último, queremos ver qué legisladorxs son lxs que tienen más intervenciones referidas al género y observamos que, a pesar de que el Frente Amplio era el partido que registraba más menciones absolutas, quienes acumulan más intervanciones referidas al tema son diputadas del Partido Nacional y Partido Colorado. También vemos que, entre lxs 10 principales, la gran mayoría son mujeres, esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<hr />
+<p>Espero que les haya gustado y servido, seguro que existen muchas cosas por mejorar y mucho potencial aún para ahondar y enriquecer la investigación social a partir del análisis del texto y de la palabra.</p>
+<hr />
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>En este punto cabe aclarar que se hace un análisis del tratamiento de la temática sin valoraciones positivas o negativas en los discursos, lo cual podría eventualmente analizarse mediante la técnica de análisis de sentimento.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://github.com/Nicolas-Schmidt">Nicolas Schmidt</a> [aut, cre], Diego Lujan [aut], Juan Andres Moraes [aut]<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
