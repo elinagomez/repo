@@ -363,7 +363,7 @@ part = base_final %>%
 
 
 
-<iframe src="imagenes/part.html" width="700"  height="500"></iframe>
+<!-- <iframe src="imagenes/part.html" width="700"  height="500"></iframe> -->
 
 
 __Menciones por género__
@@ -394,7 +394,7 @@ ggplotly(genero)
 
 
 
-<iframe src="imagenes/genero.html" width="700"  height="500"></iframe>
+<!-- <iframe src="imagenes/genero.html" width="700"  height="500"></iframe> -->
 
 
 __Legisladorxs__
