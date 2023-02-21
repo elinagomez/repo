@@ -328,6 +328,7 @@ a=ggplotly(ts) %>%
 
 ```
 
+
 <iframe src="imagenes/g1.html" width="800"  height="500"></iframe>
 
 
@@ -360,6 +361,8 @@ part = base_final %>%
 
 ```
 
+
+
 <iframe src="imagenes/part.html" width="700"  height="500"></iframe>
 
 
@@ -389,6 +392,8 @@ ggplotly(genero)
 
 ```
 
+
+
 <iframe src="imagenes/genero.html" width="700"  height="500"></iframe>
 
 
@@ -398,7 +403,7 @@ __Legisladorxs__
 Por último, queremos ver qué legisladorxs son lxs que tienen más intervenciones referidas al género y observamos que, a pesar de que el Frente Amplio era el partido que registraba más menciones absolutas, quienes acumulan más intervanciones referidas al tema son diputadas del Partido Nacional y Partido Colorado. También vemos que, entre lxs 10 principales, la gran mayoría son mujeres, esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria. 
 
 
-<iframe src="imagenes/legis.html" width="700"  height="500"></iframe>
+<!-- <iframe src="imagenes/legis.html" width="700"  height="500"></iframe> -->
 
 
 ______________
