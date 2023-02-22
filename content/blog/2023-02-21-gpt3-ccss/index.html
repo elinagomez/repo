@@ -121,7 +121,8 @@ base_op=cbind(base_op,respuestas)</code></pre>
 <script type="application/htmlwidget-sizing" data-for="htmlwidget-1">{"viewer":{"width":450,"height":350,"padding":15,"fill":true},"browser":{"width":960,"height":500,"padding":40,"fill":false}}</script>
 </body>
 </html>
-<!-- <iframe src="prueba.html" width="900"  height="500"></iframe> -->
+<iframe src="t2.html" width="900" height="500">
+</iframe>
 <p>Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos emergentes. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue:</p>
 <pre class="r"><code>prompt = data.frame(&#39;prompts&#39; = c(paste(&quot;Tengo algunas respuestas abiertas de una encuesta que pregunta: ¿Qué cosas le causan bienestar, qué le hace feliz o le pone contento?. 
 Por favor identifique en pocas palabras las principales respuestas&quot;,base_op$R2)),
