@@ -152,7 +152,7 @@ ______________
 
 <br />
 
-En el primer caso, dentro de la orden que le damos y que vimos en el caso anterior, le defino las categorías que deseo que identifique en cada caso. Hay un paper reciente (Bailey et al, 2022)[^2] que compara para un set de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés). 
+En el primer caso, dentro de la orden que le damos y que vimos anteriormente, le defino las categorías que deseo que identifique. Hay una publicación reciente (Bailey et al, 2022)[^2] que compara para un dataset de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés). 
 
 [^2]:  Mellon, Jonathan and Bailey, Jack and Scott, Ralph and Breckwoldt, James and Miori, Marta, Does GPT-3 know what the Most Important Issue is? Using Large Language Models to Code Open-Text Social Survey Responses At Scale (December 22, 2022). Available at SSRN: https://ssrn.com/abstract=4310154 or http://dx.doi.org/10.2139/ssrn.4310154 
 
@@ -232,13 +232,10 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
 Los resultados que obtengo son los que se encuentran en la sigiente tabla, según los códigos sugeridos en mi orden. Esta categorización es más fácil de procesar, por ejemplo separando en diferentes columnas considerando la coma como separador y luego contabilizando menciones para cada código:
 
 <br />
-<br />
-
 
 
 
 <iframe src="t2.html" width="700"  height="500"></iframe>
-
 
 
 
@@ -321,6 +318,6 @@ Espero que haya inspirado `r emo::ji("thanks")`!
 
 ______________
 
-
-
+<br />
+<br />
 

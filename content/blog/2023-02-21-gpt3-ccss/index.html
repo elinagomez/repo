@@ -70,7 +70,7 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original</code></
 <p>Identifico dos formas: (a) <em>Codigueras pre-definidas</em> o (b) <em>Emergentes</em></p>
 <hr />
 <p><br /></p>
-<p>En el primer caso, dentro de la orden que le damos y que vimos en el caso anterior, le defino las categorías que deseo que identifique en cada caso. Hay un paper reciente (Bailey et al, 2022)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> que compara para un set de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés).</p>
+<p>En el primer caso, dentro de la orden que le damos y que vimos anteriormente, le defino las categorías que deseo que identifique. Hay una publicación reciente (Bailey et al, 2022)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> que compara para un dataset de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés).</p>
 <p>El ensayo que hice fue de una encuesta de opinión pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).</p>
 <p><br /></p>
 <pre class="r"><code>prompt = data.frame(&#39;prompts&#39; = c(paste(&quot;Tengo algunas respuestas abiertas de una encuesta que pregunta lo siguiente: ¿qué cosas le preocupan en su vida?. 
@@ -107,8 +107,7 @@ respuestas=consulta[[1]]
 base_op=cbind(base_op,respuestas)</code></pre>
 <p><br /></p>
 <p>Los resultados que obtengo son los que se encuentran en la sigiente tabla, según los códigos sugeridos en mi orden. Esta categorización es más fácil de procesar, por ejemplo separando en diferentes columnas considerando la coma como separador y luego contabilizando menciones para cada código:</p>
-<p><br />
-<br /></p>
+<p><br /></p>
 <iframe src="t2.html" width="700" height="500">
 </iframe>
 <hr />
@@ -136,8 +135,10 @@ base_op=cbind(base_op,respuestas_2)</code></pre>
 <br /></p>
 <hr />
 <p>Esta es una idea inicial para uso de esta potente herramienta para nuestro trabajo orientado al procesamiento de grandes volúmenes de texto. Podrían haber otros de asistencia a armado de código para análisis y visualización.
-Espero que haya inspirado 🙇‍♀!</p>
+Espero que haya inspirado 🙇!</p>
 <hr />
+<p><br />
+<br /></p>
 <div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
