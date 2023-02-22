@@ -106,7 +106,6 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(dplyr)
-library(gt)
 
 load("Datos/violencia_gen_2.RData")
 
@@ -201,11 +200,22 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
                                                                                                  "return type === 'display' && data.length > 40 ?",
                                                                                                  "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
 
-htmlwidgets::saveWidget(b, "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html",selfcontained = TRUE)
+
+b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = 'Bfrtip',
+scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
+                                                                                          "function(data, type, row, meta) {",
+                                                                                                 "return type === 'display' && data.length > 40 ?",
+                                                                                                 "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
+
+# htmlwidgets::saveWidget(frameableWidget(b), "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html",selfcontained = TRUE)
+
+# htmlwidgets::saveWidget(b, "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html",selfcontained = TRUE)
+
+frameWidget(b)
 
 ```
 
-<iframe src="t2.html" width="900"  height="500"></iframe> 
+<!-- <iframe src="t2.html" width="900"  height="500"></iframe>  -->
 
 
 Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos emergentes. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue: 
