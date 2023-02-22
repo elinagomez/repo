@@ -104,7 +104,7 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original
 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 library(dplyr)
 
 load("Datos/violencia_gen_2.RData")
@@ -112,25 +112,19 @@ load("Datos/violencia_gen_2.RData")
 a=violencia_gen_2 %>%
   select(prompt_1,gpt3_1,prompt_2,gpt3_2)
 
-# DT::datatable(a,rownames = TRUE, options = list(pageLength = 15,dom = 'Bfrtip',
-# scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
-#                                                                                           "function(data, type, row, meta) {",
-#                                                                                                  "return type === 'display' && data.length > 40 ?",
-#                                                                                                  "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
+b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 9,dom = 'Bfrtip',
+scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
+                                                                                          "function(data, type, row, meta) {",
+                                                                                                 "return type === 'display' && data.length > 40 ?",
+                                                                                                 "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
 
 
-# DT::datatable(a)
-# 
-# library(htmlwidgets)
-# library(widgetframe)
-# htmlwidgets::saveWidget(a,file="C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/a.html",selfcontained = TRUE)
-
-
+# htmlwidgets::saveWidget(b, "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t1.html",selfcontained = FALSE)
 
 ```
 
 
-<!-- <iframe src="imagenes/t1.html" width="900"  height="500"></iframe> -->
+<iframe src="t1.html" width="900"  height="500"></iframe>
 
 
 
@@ -186,7 +180,7 @@ base_op=cbind(base_op,respuestas)
 
 ```
 
-```{r  message=FALSE, warning=FALSE, echo=FALSE}
+```{r  message=FALSE, warning=FALSE, eval=FALSE}
 library(dplyr)
 library(DT)
 library(widgetframe)
@@ -212,8 +206,6 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
 # htmlwidgets::saveWidget(frameableWidget(b), "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html",selfcontained = TRUE)
 
 # htmlwidgets::saveWidget(b, "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html",selfcontained = FALSE)
-
-htmltools::includeHTML("t2.html")
 
 ```
 
@@ -266,10 +258,12 @@ scrollX = T,columnDefs = list(list(targets = c(1),render = DT::JS(
 
 # htmlwidgets::saveWidget(b, "C:/Users/Usuario/Documents/repo/content/blog/2023-02-21-gpt3-ccss/imagenes/t3.html",selfcontained = TRUE)
 
+# htmlwidgets::saveWidget(b, "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t3.html",selfcontained = FALSE)
+
 
 ```
 
-<!-- <iframe src="imagenes/t3.html" width="900"  height="500"></iframe> -->
+<iframe src="t3.html" width="900"  height="500"></iframe>
 
 
 
