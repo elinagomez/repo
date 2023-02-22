@@ -67,10 +67,11 @@ ______________
 Luego de estos pasos previos, **ya tengo conectada** mi consola R+RStudio con la API de GPT-3 !
 
 
-Empecemos...
+Empecemos...`r emo::ji("happy")` `r emo::ji("biceps")` 
 
 
 
+______________
 
 
 **1.** Identificación de tópicos o temas (binarios) en textos medianos o largos. 
@@ -124,7 +125,17 @@ scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
 ```
 
 
-<iframe src="t1.html" width="900"  height="500"></iframe>
+Los resultados de la reducción del texto en dos pasos son lo que se muestran en la siguiente tabla, la variable **gpt3_1** nos da una idea del tema principal del texto largo, y luego utilizo esa variable para identificar un tema específico:
+
+
+
+
+<iframe src="t1.html" width="700"  height="500"></iframe>
+
+
+
+
+______________
 
 
 
@@ -209,10 +220,22 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
 
 ```
 
-<iframe src="t2.html" width="900"  height="500"></iframe>
+
+Los resultados que obtengo son los que se encuentran en la sigiente tabla, según los códigos sugeridos en mi orden. Esta categorización es más fácil de procesar, por ejemplo separando en diferentes columnas considerando la coma como separador y luego contabilizando menciones para cada código:
 
 
-Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos emergentes. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue: 
+
+<iframe src="t2.html" width="700"  height="500"></iframe>
+
+
+
+
+
+______________
+
+
+
+Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos _emergentes_. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue: 
 
 
 
@@ -263,7 +286,22 @@ scrollX = T,columnDefs = list(list(targets = c(1),render = DT::JS(
 
 ```
 
-<iframe src="t3.html" width="900"  height="500"></iframe>
+Los resultados también me ayudan a reducir mi respuesta inicial para poder procesarlas creando, por ejemplo, conjuntos de códigos más amplios:
+
+
+
+
+<iframe src="t3.html" width="700"  height="500"></iframe>
+
+
+
+
+______________
+
+Esta es una idea inicial para uso de esta potente herramienta para nuestro trabajo orientado al procesamiento de grandes volúmenes de texto. Podrían haber otros de asistencia a armado de código para análisis y visualización.
+Espero que haya inspirado `r emo::ji("thanks")`! 
+
+______________
 
 
 
