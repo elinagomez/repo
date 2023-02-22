@@ -89,8 +89,7 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original
 
 ```
 
-
-```{r echo=F, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE,eval=FALSE}
 library(dplyr)
 library(DT)
 load("Datos/violencia_gen_2.RData")
@@ -165,7 +164,7 @@ base_op=cbind(base_op,respuestas)
 
 ```
 
-```{r echo=F, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE,eval=FALSE}
 library(dplyr)
 library(DT)
 load("Datos/base_op_codiguera.RData")
@@ -211,7 +210,7 @@ base_op=cbind(base_op,respuestas_2)
 ```
 
 
-```{r echo=F, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE,eval=FALSE}
 library(dplyr)
 library(DT)
 library(htmlwidgets)
