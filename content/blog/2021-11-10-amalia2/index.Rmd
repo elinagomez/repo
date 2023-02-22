@@ -104,7 +104,7 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original
 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 library(dplyr)
 library(DT)
 library(plotly)
@@ -113,7 +113,7 @@ load("Datos/violencia_gen_2.RData")
 a=violencia_gen_2 %>%
   select(prompt_1,gpt3_1,prompt_2,gpt3_2)
 
-DT::datatable(a,rownames = TRUE, options = list(pageLength = 15,dom = 'Bfrtip',
+b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 15,dom = 'Bfrtip',
 scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
                                                                                           "function(data, type, row, meta) {",
                                                                                                  "return type === 'display' && data.length > 40 ?",
@@ -121,11 +121,12 @@ scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
 
 # htmlwidgets::saveWidget(as_widget(b), "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/imagenes/t1.html",selfcontained = TRUE)
 
+#htmltools::save_html(b, file = "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/imagenes")
 
 ```
 
 
-<!-- <iframe src="imagenes/t1.html" width="900"  height="500"></iframe> -->
+<!-- <iframe src="t1_prueba.html" width="900"  height="500"></iframe>  -->
 
 
 
