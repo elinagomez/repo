@@ -106,8 +106,6 @@ scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
 # htmlwidgets::saveWidget(b, "C:/Users/Usuario/Documents/repo/content/blog/2023-02-21-gpt3-ccss/imagenes/t1.html",selfcontained = TRUE)
 
 
-htmltools::includeHTML("imagenes/t1.html")
-
 
 ```
 
