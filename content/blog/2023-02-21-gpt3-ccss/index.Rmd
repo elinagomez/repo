@@ -67,7 +67,7 @@ ______________
 Luego de estos pasos previos, **ya tengo conectada** mi consola R+RStudio con la API de GPT-3 !
 
 
-Empecemos...`r emo::ji("happy")` `r emo::ji("biceps")` 
+<!-- Empecemos...`r emo::ji("happy")` `r emo::ji("biceps")`  -->
 
 
 
