@@ -21,7 +21,10 @@ image:
 featuredImage: ""
 ---
 
-<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="{{< blogdown/postref >}}index_files/pymjs/pym.v1.js"></script>
+<script src="{{< blogdown/postref >}}index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <p>En esta entrada me interesaba indagar acerca de las potencialidades que podría tener GPT-3, desde el punto de vista metodológico, para las investigaciones que hacemos en ciencias sociales, pero…empezando por el principio <strong>¿qué es GPT-3?</strong></p>
@@ -97,32 +100,8 @@ consulta = gpt3_completions(prompt_var = my_prompts$prompts
 
 respuestas=consulta[[1]]
 base_op=cbind(base_op,respuestas)</code></pre>
-<pre class="r"><code>library(dplyr)
-library(DT)
-load(&quot;Datos/base_op_codiguera.RData&quot;)
-
-a=base_op_codiguera %&gt;%
-  select(prompt,SIM1,gpt3)%&gt;%
-  rename(&quot;respuesta&quot;=SIM1)
-
-b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = &#39;Bfrtip&#39;,
-scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
-                                                                                          &quot;function(data, type, row, meta) {&quot;,
-                                                                                                 &quot;return type === &#39;display&#39; &amp;&amp; data.length &gt; 40 ?&quot;,
-                                                                                                 &quot;&#39;&lt;span title=\&quot;&#39; + data + &#39;\&quot;&gt;&#39; + data.substr(0, 40) + &#39;...&lt;/span&gt;&#39; : data;&quot;,&quot;}&quot;)))), callback = JS(&#39;table.page(3).draw(false);&#39;))
-
-
-b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = &#39;Bfrtip&#39;,
-scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
-                                                                                          &quot;function(data, type, row, meta) {&quot;,
-                                                                                                 &quot;return type === &#39;display&#39; &amp;&amp; data.length &gt; 40 ?&quot;,
-                                                                                                 &quot;&#39;&lt;span title=\&quot;&#39; + data + &#39;\&quot;&gt;&#39; + data.substr(0, 40) + &#39;...&lt;/span&gt;&#39; : data;&quot;,&quot;}&quot;)))), callback = JS(&#39;table.page(3).draw(false);&#39;))
-
-# htmlwidgets::saveWidget(frameableWidget(b), &quot;C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html&quot;,selfcontained = TRUE)
-
-# htmlwidgets::saveWidget(b, &quot;C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html&quot;,selfcontained = TRUE)
-
-frameWidget(b)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <!-- <iframe src="t2.html" width="900"  height="500"></iframe>  -->
 <p>Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos emergentes. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue:</p>
 <pre class="r"><code>prompt = data.frame(&#39;prompts&#39; = c(paste(&quot;Tengo algunas respuestas abiertas de una encuesta que pregunta: ¿Qué cosas le causan bienestar, qué le hace feliz o le pone contento?. 

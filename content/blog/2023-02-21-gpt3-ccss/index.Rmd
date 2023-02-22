@@ -185,9 +185,10 @@ base_op=cbind(base_op,respuestas)
 
 ```
 
-```{r message=FALSE, warning=FALSE,eval=FALSE}
+```{r message=FALSE, warning=FALSE,echo=FALSE}
 library(dplyr)
 library(DT)
+library(widgetframe)
 load("Datos/base_op_codiguera.RData")
 
 a=base_op_codiguera %>%
@@ -211,7 +212,7 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
 
 # htmlwidgets::saveWidget(b, "C:/Users/Usuario/Desktop/2023-02-21-gpt3-ccss/t2.html",selfcontained = TRUE)
 
-frameWidget(b)
+widgetframe::frameWidget(b)
 
 ```
 
