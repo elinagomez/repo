@@ -185,7 +185,7 @@ base_op=cbind(base_op,respuestas)
 
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE,results='asis'}
+```{r  message=FALSE, warning=FALSE, eval=FALSE}
 library(dplyr)
 library(DT)
 library(widgetframe)
@@ -202,7 +202,7 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
                                                                                                  "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
 
 
-DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = 'Bfrtip',
+b=DT::datatable(a,rownames = TRUE), options = list(pageLength = 50,dom = 'Bfrtip',
 scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
                                                                                           "function(data, type, row, meta) {",
                                                                                                  "return type === 'display' && data.length > 40 ?",
@@ -214,7 +214,7 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
 
 ```
 
-<!-- <iframe src="t2.html" width="900"  height="500"></iframe> -->
+<iframe src="prueba.html" width="900"  height="500"></iframe>
 
 
 Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos emergentes. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue: 
