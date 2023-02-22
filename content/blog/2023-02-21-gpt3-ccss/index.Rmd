@@ -1,0 +1,243 @@
+---
+aliases: [GPT-3 ciencias sociales]
+title: 'Uso de GPT-3 en las ciencias sociales: algunas ideas'
+thumbnail: ""
+authors: [elina]
+date: '2023-02-21'
+tags: [Ciencias sociales computacionales]
+categories:
+  - R
+  - Minería de texto
+  - GPT-3
+summary: 2023-02-21 / Uso de GPT-3 en las ciencias sociales
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: false
+    number_sections: true
+    toc_depth: 1
+featuredImage: ""
+---
+
+
+En esta entrada me interesaba indagar acerca de las potencialidades que podría tener GPT-3, desde el punto de vista metodológico, para las investigaciones que hacemos en ciencias sociales, pero...empezando por el principio **¿qué es GPT-3?**
+
+Bueno, **GPT-3** es un modelo de lenguaje basado en Inteligencia Artificial (IA), desarrollado por la empresa [OpenAI](https://openai.com/), que ha tenido gran repercusión en los últimos meses y que tiene capacidad de predecir palabras o frases dado un contexto determinado. El texto que genera es posible a través de un pre-entrenamiento de modelo con un gran volumen de datos textuales de lenguaje natural. El acceso gratuito tiene un tope (U$S 18 para usar en 3 meses) y podemos conectarlo con RStudio. 
+
+
+______________
+
+
+Presento dos posibles aplicaciones para optimizar nuestros procesos:
+
+1. Identificación de tópicos o temas (binarios) en textos medianos o largos. 
+
+2. Codificación de preguntas abiertas a partir de _codigueras pre-definidas_ o _emergentes_
+
+
+La librería que usé para el procesamiento es [rgpt3](https://github.com/ben-aaron188/rgpt3) de Bennett Kleinberg (2022)[^1].
+
+[^1]: Kleinberg, B. (2022). rgpt3: Making requests from R to the GPT-3 API (Version 0.3.1) [Computer software]. https://doi.org/10.5281/zenodo.7327667
+
+El paquete tiene una función que se llama __gpt3_authenticate()__ y que te permite, luego de crear un usuario [acá](https://openai.com/api/), acceder a una [clave](https://platform.openai.com/account/api-keys) que va a permitirte conectar con la API de GPT-3. La clave debe ser guardada en un archivo de notas (.txt) y va a ser el primer argumento de la función para conectar. Luego, chequeo que la conexión se estableció con éxito con la función __gpt3_test_completion()__
+
+
+```{r eval=F, message=FALSE, warning=FALSE}
+
+#Cargo paquete ya instalado:
+library(rgpt3)
+
+gpt3_authenticate("ruta/access_key.txt") ##le indico dónde tengo guardado el archivo con la clave
+gpt3_test_completion() ##testeo la conexión
+
+```
+
+
+Luego de estos pasos previos, **ya tengo conectada** mi consola R+RStudio con la API de GPT-3 !
+
+
+Empecemos...
+
+
+**1.** Identificación de tópicos o temas (binarios) en textos medianos o largos. 
+
+
+Me interesa saber, más allá de una clasificación genérica de menciones parlamentarias que tocan la temática de género(como lo hice en una entrada anterior), saber cuales de ellas hablan específicamente del tema _violencia de género_, y para eso uso la asistencia del modelo GPT-3 para que me ayude a identificarlas. Según algunos ensayos previos, veo que lo más optimo es hacerlo en dos pasos: en primer lugar le pido que identifique un _Tema principal_ en cada mención (lo cual ya me podría ser útil y analizable en sí mismo), ya que la intervención podría tratar varios temas y, en segundo lugar, le doy una orden concreta para que identifique si ese tema se vincula con mi tópico de interés y le sugiero devolverme un **Si** si le parece que lo trata y un **No**, en el caso contrario.
+
+_Nota:_ Esto también podría servir para un análisis rápido de corpus de noticias o post de redes sociales. Más adelante vamos a ver que para textos cortos utilizo otra estrategia de clasificación/extracción de tópicos. 
+
+
+Las ordenes que le voy a dar son: _'Identifique un tema principal en el siguiente texto:'_ y _'Este texto habla sobre violencia de género? Responda únicamente Si o No'_ y luego, le pego cada una de las menciones y variables de origen de cada parlamentario/a, de este modo para el segundo caso:
+
+
+```{r eval=F, message=FALSE, warning=FALSE}
+
+prompt = data.frame('prompts' = c(paste('La siguiente frase menciona la violencia de género? Responda únicamente Si o No',base$speech)),'prompt_id' = c(1:nrow(base)))
+
+
+
+consulta = gpt3_completions(prompt_var = prompt$prompts # defino las órdenes, una por cada mención
+                             , id_var = prompt$prompt_id # el identificador
+                             , param_model = 'text-davinci-003', ##defino el modelo
+                            param_max_tokens = 2000,param_output_type = "complete",
+                            param_temperature = 0) ##defino algunos parámetros: max_tokens (cuanto me va a traer como máximo, debe ser mayor que mi N y temperature que está entre 0 y 1, siendo las respuestas que se acercan a 1 más aleatorias) 
+
+respuestas=consulta[[1]] ##veo el primer elemento en mi lista que es mi data frame de respuestas
+base=cbind(base,respuestas) ##le pego las respuestas a la base original
+
+```
+
+
+```{r echo=F, message=FALSE, warning=FALSE}
+library(dplyr)
+library(DT)
+load("Datos/violencia_gen_2.RData")
+
+a=violencia_gen_2 %>%
+  select(prompt_1,gpt3_1,prompt_2,gpt3_2)
+
+b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = 'Bfrtip',
+scrollX = T,columnDefs = list(list(targets = 1,render = DT::JS(
+                                                                                          "function(data, type, row, meta) {",
+                                                                                                 "return type === 'display' && data.length > 40 ?",
+                                                                                                 "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
+
+# htmlwidgets::saveWidget(b, "C:/Users/Usuario/Documents/repo/content/blog/2023-02-21-gpt3-ccss/imagenes/t1.html",selfcontained = TRUE)
+
+```
+
+
+<iframe src="imagenes/t1.html" width="700"  height="500"></iframe>
+
+
+
+**2.** Codificación de preguntas abiertas a partir de _codigueras pre-definidas_ o _emergentes_
+
+
+Otra aplicación posible sería el tratamiento de preguntas abiertas usando el GTP-3 como un asistente para la codificación (lo cual nos podría ahorrar mucho tiempo!), al menos para una clasificación inicial cuando tenemos muchos casos. 
+
+Identifico dos formas: (a) _Codigueras pre-definidas_ o (b) _Emergentes_ 
+
+
+En el primer caso, dentro de la orden que le damos y que vimos en el caso anterior, le defino las categorías que deseo que identifique en cada caso. Hay un paper reciente (Bailey et al, 2022)[^2] que compara para un set de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés). 
+
+[^2]:  Mellon, Jonathan and Bailey, Jack and Scott, Ralph and Breckwoldt, James and Miori, Marta, Does GPT-3 know what the Most Important Issue is? Using Large Language Models to Code Open-Text Social Survey Responses At Scale (December 22, 2022). Available at SSRN: https://ssrn.com/abstract=4310154 or http://dx.doi.org/10.2139/ssrn.4310154 
+
+El ensayo que hice fue de una encuesta de Opinión Pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).
+
+
+```{r eval=F, message=FALSE, warning=FALSE}
+
+prompt = data.frame('prompts' = c(paste("Tengo algunas respuestas abiertas de una encuesta que pregunta lo siguiente: ¿qué cosas le preocupan en su vida?. 
+Por favor, asigne una de las siguientes categorías a cada respuesta de texto abierto.
+La categoría son: 
+
+salud
+economía
+educación 
+seguridad
+política
+pobreza
+sueldos
+desempleo
+corrupción
+suba de precios
+espacios
+transporte público
+migración
+vivienda
+costo del estado
+
+Si no es ninguna de las anteriores por favor asigne la categoría Otros",
+base_op$R1)),'prompt_id' = c(1:nrow(base_op)))
+
+consulta = gpt3_completions(prompt_var = my_prompts$prompts
+                            , id_var = my_prompts$prompt_id
+                            , param_model = 'text-davinci-003',
+                            param_max_tokens = 500,param_temperature = 0,
+                            param_output_type = "complete")
+
+
+respuestas=consulta[[1]]
+base_op=cbind(base_op,respuestas)
+
+```
+
+```{r echo=F, message=FALSE, warning=FALSE}
+library(dplyr)
+library(DT)
+load("Datos/base_op_codiguera.RData")
+
+a=base_op_codiguera %>%
+  select(prompt,SIM1,gpt3)%>%
+  rename("respuesta"=SIM1)
+
+b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = 'Bfrtip',
+scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
+                                                                                          "function(data, type, row, meta) {",
+                                                                                                 "return type === 'display' && data.length > 40 ?",
+                                                                                                 "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
+
+# htmlwidgets::saveWidget(b, "C:/Users/Usuario/Documents/repo/content/blog/2023-02-21-gpt3-ccss/imagenes/t2.html",selfcontained = TRUE)
+
+```
+
+<iframe src="imagenes/t2.html" width="700"  height="500"></iframe>
+
+
+Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos emergentes. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue: 
+
+
+
+```{r eval=F, message=FALSE, warning=FALSE}
+
+prompt = data.frame('prompts' = c(paste("Tengo algunas respuestas abiertas de una encuesta que pregunta: ¿Qué cosas le causan bienestar, qué le hace feliz o le pone contento?. 
+Por favor identifique en pocas palabras las principales respuestas",base_op$R2)),
+'prompt_id' = c(1:nrow(base_op)))
+
+consulta = gpt3_completions(prompt_var = prompt$prompts
+                            , id_var = prompt$prompt_id
+                            , param_model = 'text-davinci-003',param_max_tokens = 2000,
+                            param_temperature = 0,
+                            param_output_type = "complete")
+
+
+
+respuestas_2=consulta[[1]]
+base_op=cbind(base_op,respuestas_2)
+
+```
+
+
+```{r echo=F, message=FALSE, warning=FALSE}
+library(dplyr)
+library(DT)
+library(htmlwidgets)
+library(plotly)
+load("Datos/bienestar_muestra.RData")
+
+a=base_op %>%
+  filter(id<=9 & id>1)%>%
+  select(prompt,SIM2,gpt3)%>%
+  rename("respuesta"=SIM2)
+
+
+b=DT::datatable(a,rownames = TRUE, options = list(pageLength = 50,dom = 'Bfrtip',
+scrollX = T,columnDefs = list(list(targets = c(1),render = DT::JS(
+                                                                                          "function(data, type, row, meta) {",
+                                                                                                 "return type === 'display' && data.length > 40 ?",
+                                                                                                 "'<span title=\"' + data + '\">' + data.substr(0, 40) + '...</span>' : data;","}")))), callback = JS('table.page(3).draw(false);'))
+
+
+# htmlwidgets::saveWidget(b, "C:/Users/Usuario/Documents/repo/content/blog/2023-02-21-gpt3-ccss/imagenes/t3.html",selfcontained = TRUE)
+
+
+```
+
+<iframe src="imagenes/t3.html" width="700"  height="500"></iframe>
+
+
+
+
