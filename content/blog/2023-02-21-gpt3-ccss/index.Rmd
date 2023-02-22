@@ -9,7 +9,7 @@ categories:
   - R
   - Minería de texto
   - GPT-3
-summary: 2023-02-21 / Uso de GPT-3 en las ciencias sociales
+summary: 2023-02-21 / Uso de GPT-3 para reducción de texto
 image:
   caption: ''
   focal_point: ''
@@ -64,10 +64,10 @@ ______________
 
 
 
-Luego de estos pasos previos, **ya tengo conectada** mi consola R+RStudio con la API de GPT-3 !
+Luego de estos pasos previos, **ya tengo conectada** mi consola R + RStudio con la API de GPT-3 !
 
 
-Empecemos...`r emo::ji("happy")` `r emo::ji("biceps")`
+Empecemos...`r emo::ji("biceps")`
 
 
 
@@ -138,6 +138,7 @@ Los resultados de la reducción del texto en dos pasos son lo que se muestran en
 ______________
 
 
+<br />
 
 **2.** Codificación de preguntas abiertas a partir de _codigueras pre-definidas_ o _emergentes_
 
@@ -147,11 +148,17 @@ Otra aplicación posible sería el tratamiento de preguntas abiertas usando el G
 Identifico dos formas: (a) _Codigueras pre-definidas_ o (b) _Emergentes_ 
 
 
+______________
+
+<br />
+
 En el primer caso, dentro de la orden que le damos y que vimos en el caso anterior, le defino las categorías que deseo que identifique en cada caso. Hay un paper reciente (Bailey et al, 2022)[^2] que compara para un set de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés). 
 
 [^2]:  Mellon, Jonathan and Bailey, Jack and Scott, Ralph and Breckwoldt, James and Miori, Marta, Does GPT-3 know what the Most Important Issue is? Using Large Language Models to Code Open-Text Social Survey Responses At Scale (December 22, 2022). Available at SSRN: https://ssrn.com/abstract=4310154 or http://dx.doi.org/10.2139/ssrn.4310154 
 
-El ensayo que hice fue de una encuesta de Opinión Pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).
+El ensayo que hice fue de una encuesta de opinión pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).
+
+<br />
 
 
 ```{r eval=F, message=FALSE, warning=FALSE}
@@ -220,8 +227,13 @@ scrollX = T,columnDefs = list(list(targets = c(1,2),render = DT::JS(
 
 ```
 
+<br />
 
 Los resultados que obtengo son los que se encuentran en la sigiente tabla, según los códigos sugeridos en mi orden. Esta categorización es más fácil de procesar, por ejemplo separando en diferentes columnas considerando la coma como separador y luego contabilizando menciones para cada código:
+
+<br />
+<br />
+
 
 
 
@@ -237,7 +249,7 @@ ______________
 
 Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos _emergentes_. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue: 
 
-
+<br />
 
 ```{r eval=F, message=FALSE, warning=FALSE}
 
@@ -286,6 +298,9 @@ scrollX = T,columnDefs = list(list(targets = c(1),render = DT::JS(
 
 ```
 
+
+<br />
+
 Los resultados también me ayudan a reducir mi respuesta inicial para poder procesarlas creando, por ejemplo, conjuntos de códigos más amplios:
 
 
@@ -294,6 +309,9 @@ Los resultados también me ayudan a reducir mi respuesta inicial para poder proc
 <iframe src="t3.html" width="700"  height="500"></iframe>
 
 
+
+<br />
+<br />
 
 
 ______________

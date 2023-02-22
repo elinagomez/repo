@@ -9,7 +9,7 @@ categories:
   - R
   - Minería de texto
   - GPT-3
-summary: 2023-02-21 / Uso de GPT-3 en las ciencias sociales
+summary: 2023-02-21 / Uso de GPT-3 para reducción de texto
 image:
   caption: ''
   focal_point: ''
@@ -41,8 +41,8 @@ library(rgpt3)
 gpt3_authenticate(&quot;ruta/access_key.txt&quot;) ##le indico dónde tengo guardado el archivo con la clave
 gpt3_test_completion() ##testeo la conexión</code></pre>
 <hr />
-<p>Luego de estos pasos previos, <strong>ya tengo conectada</strong> mi consola R+RStudio con la API de GPT-3 !</p>
-<p>Empecemos…😆 💪</p>
+<p>Luego de estos pasos previos, <strong>ya tengo conectada</strong> mi consola R + RStudio con la API de GPT-3 !</p>
+<p>Empecemos…💪</p>
 <hr />
 <p><strong>1.</strong> Identificación de tópicos o temas (binarios) en textos medianos o largos.</p>
 <p>Me interesa saber, más allá de una clasificación genérica de menciones parlamentarias que tocan la temática de género(como lo hice en una entrada anterior), saber cuales de ellas hablan específicamente del tema <em>violencia de género</em>, y para eso uso la asistencia del modelo GPT-3 para que me ayude a identificarlas. Según algunos ensayos previos, veo que lo más optimo es hacerlo en dos pasos: en primer lugar le pido que identifique un <em>Tema principal</em> en cada mención (lo cual ya me podría ser útil y analizable en sí mismo), ya que la intervención podría tratar varios temas y, en segundo lugar, le doy una orden concreta para que identifique si ese tema se vincula con mi tópico de interés y le sugiero devolverme un <strong>Si</strong> si le parece que lo trata y un <strong>No</strong>, en el caso contrario.</p>
@@ -64,11 +64,15 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original</code></
 <iframe src="t1.html" width="700" height="500">
 </iframe>
 <hr />
+<p><br /></p>
 <p><strong>2.</strong> Codificación de preguntas abiertas a partir de <em>codigueras pre-definidas</em> o <em>emergentes</em></p>
 <p>Otra aplicación posible sería el tratamiento de preguntas abiertas usando el GTP-3 como un asistente para la codificación (lo cual nos podría ahorrar mucho tiempo!), al menos para una clasificación inicial cuando tenemos muchos casos.</p>
 <p>Identifico dos formas: (a) <em>Codigueras pre-definidas</em> o (b) <em>Emergentes</em></p>
+<hr />
+<p><br /></p>
 <p>En el primer caso, dentro de la orden que le damos y que vimos en el caso anterior, le defino las categorías que deseo que identifique en cada caso. Hay un paper reciente (Bailey et al, 2022)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> que compara para un set de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés).</p>
-<p>El ensayo que hice fue de una encuesta de Opinión Pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).</p>
+<p>El ensayo que hice fue de una encuesta de opinión pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).</p>
+<p><br /></p>
 <pre class="r"><code>prompt = data.frame(&#39;prompts&#39; = c(paste(&quot;Tengo algunas respuestas abiertas de una encuesta que pregunta lo siguiente: ¿qué cosas le preocupan en su vida?. 
 Por favor, asigne una de las siguientes categorías a cada respuesta de texto abierto.
 La categoría son: 
@@ -101,11 +105,15 @@ consulta = gpt3_completions(prompt_var = my_prompts$prompts
 
 respuestas=consulta[[1]]
 base_op=cbind(base_op,respuestas)</code></pre>
+<p><br /></p>
 <p>Los resultados que obtengo son los que se encuentran en la sigiente tabla, según los códigos sugeridos en mi orden. Esta categorización es más fácil de procesar, por ejemplo separando en diferentes columnas considerando la coma como separador y luego contabilizando menciones para cada código:</p>
+<p><br />
+<br /></p>
 <iframe src="t2.html" width="700" height="500">
 </iframe>
 <hr />
 <p>Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos <em>emergentes</em>. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue:</p>
+<p><br /></p>
 <pre class="r"><code>prompt = data.frame(&#39;prompts&#39; = c(paste(&quot;Tengo algunas respuestas abiertas de una encuesta que pregunta: ¿Qué cosas le causan bienestar, qué le hace feliz o le pone contento?. 
 Por favor identifique en pocas palabras las principales respuestas&quot;,base_op$R2)),
 &#39;prompt_id&#39; = c(1:nrow(base_op)))
@@ -120,12 +128,15 @@ consulta = gpt3_completions(prompt_var = prompt$prompts
 
 respuestas_2=consulta[[1]]
 base_op=cbind(base_op,respuestas_2)</code></pre>
+<p><br /></p>
 <p>Los resultados también me ayudan a reducir mi respuesta inicial para poder procesarlas creando, por ejemplo, conjuntos de códigos más amplios:</p>
 <iframe src="t3.html" width="700" height="500">
 </iframe>
+<p><br />
+<br /></p>
 <hr />
 <p>Esta es una idea inicial para uso de esta potente herramienta para nuestro trabajo orientado al procesamiento de grandes volúmenes de texto. Podrían haber otros de asistencia a armado de código para análisis y visualización.
-Espero que haya inspirado 🙇!</p>
+Espero que haya inspirado 🙇‍♀!</p>
 <hr />
 <div class="footnotes footnotes-end-of-document">
 <hr />
