@@ -37,6 +37,10 @@ Presento dos posibles aplicaciones para optimizar nuestros procesos:
 2. Codificación de preguntas abiertas a partir de _codigueras pre-definidas_ o _emergentes_
 
 
+______________
+
+
+
 La librería que usé para el procesamiento es [rgpt3](https://github.com/ben-aaron188/rgpt3) de Bennett Kleinberg (2022)[^1].
 
 [^1]: Kleinberg, B. (2022). rgpt3: Making requests from R to the GPT-3 API (Version 0.3.1) [Computer software]. https://doi.org/10.5281/zenodo.7327667
@@ -55,10 +59,16 @@ gpt3_test_completion() ##testeo la conexión
 ```
 
 
+
+______________
+
+
 Luego de estos pasos previos, **ya tengo conectada** mi consola R+RStudio con la API de GPT-3 !
 
 
 Empecemos...
+
+
 
 
 **1.** Identificación de tópicos o temas (binarios) en textos medianos o largos. 
@@ -88,6 +98,11 @@ respuestas=consulta[[1]] ##veo el primer elemento en mi lista que es mi data fra
 base=cbind(base,respuestas) ##le pego las respuestas a la base original
 
 ```
+
+
+
+
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(dplyr)
