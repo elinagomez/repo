@@ -67,7 +67,7 @@ ______________
 Luego de estos pasos previos, **ya tengo conectada** mi consola R+RStudio con la API de GPT-3 !
 
 
-<!-- Empecemos...`r emo::ji("happy")` `r emo::ji("biceps")`  -->
+Empecemos...`r emo::ji("happy")` `r emo::ji("biceps")`
 
 
 
@@ -105,7 +105,7 @@ base=cbind(base,respuestas) ##le pego las respuestas a la base original
 
 
 
-```{r eval=FALSE, message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(dplyr)
 
 load("Datos/violencia_gen_2.RData")
@@ -191,7 +191,7 @@ base_op=cbind(base_op,respuestas)
 
 ```
 
-```{r  message=FALSE, warning=FALSE, eval=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(dplyr)
 library(DT)
 library(widgetframe)
@@ -259,7 +259,7 @@ base_op=cbind(base_op,respuestas_2)
 ```
 
 
-```{r message=FALSE, warning=FALSE,eval=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(dplyr)
 library(DT)
 library(htmlwidgets)
