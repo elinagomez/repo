@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Elina Gómez</title>
+    <link>/authors/elina/</link>
+    <description>Recent content on Elina Gómez</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator>
+    <language>es</language>
+    <copyright>&amp;copy; Elina Gómez, {year}</copyright>
+    <lastBuildDate>Tue, 21 Feb 2023 00:00:00 +0000</lastBuildDate>
+    
+	    <atom:link href="/authors/elina/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Uso de GPT-3 en las ciencias sociales: algunas ideas</title>
+      <link>/blog/2023-02-21-gpt3-ccss/</link>
+      <pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2023-02-21-gpt3-ccss/</guid>
+      <description>
+&lt;script src=&#34;../../blog/2023-02-21-gpt3-ccss/index_files/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;En esta entrada me interesaba indagar acerca de las potencialidades que podría tener GPT-3, desde el punto de vista metodológico, para las investigaciones que hacemos en ciencias sociales, pero…empezando por el principio &lt;strong&gt;¿qué es GPT-3?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Bueno, &lt;strong&gt;GPT-3&lt;/strong&gt; es un modelo de lenguaje basado en Inteligencia Artificial (IA), desarrollado por la empresa &lt;a href=&#34;https://openai.com/&#34;&gt;OpenAI&lt;/a&gt;, que ha tenido gran repercusión en los últimos meses y que tiene capacidad de predecir palabras o frases dado un contexto determinado. El texto que genera es posible a través de un pre-entrenamiento de modelo con un gran volumen de datos textuales de lenguaje natural. El acceso gratuito tiene un tope (U$S 18 para usar en 3 meses) y podemos conectarlo con RStudio.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Presento dos posibles aplicaciones para optimizar nuestros procesos:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Identificación de tópicos o temas (binarios) en textos medianos o largos.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Codificación de preguntas abiertas a partir de &lt;em&gt;codigueras pre-definidas&lt;/em&gt; o &lt;em&gt;emergentes&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr /&gt;
+&lt;p&gt;La librería que usé para el procesamiento es &lt;a href=&#34;https://github.com/ben-aaron188/rgpt3&#34;&gt;rgpt3&lt;/a&gt; de Bennett Kleinberg (2022)&lt;a href=&#34;#fn1&#34; class=&#34;footnote-ref&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;El paquete tiene una función que se llama &lt;strong&gt;gpt3_authenticate()&lt;/strong&gt; y que te permite, luego de crear un usuario &lt;a href=&#34;https://openai.com/api/&#34;&gt;acá&lt;/a&gt;, acceder a una &lt;a href=&#34;https://platform.openai.com/account/api-keys&#34;&gt;clave&lt;/a&gt; que va a permitirte conectar con la API de GPT-3. La clave debe ser guardada en un archivo de notas (.txt) y va a ser el primer argumento de la función para conectar. Luego, chequeo que la conexión se estableció con éxito con la función &lt;strong&gt;gpt3_test_completion()&lt;/strong&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Cargo paquete ya instalado:
+library(rgpt3)
+
+gpt3_authenticate(&amp;quot;ruta/access_key.txt&amp;quot;) ##le indico dónde tengo guardado el archivo con la clave
+gpt3_test_completion() ##testeo la conexión&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;p&gt;Luego de estos pasos previos, &lt;strong&gt;ya tengo conectada&lt;/strong&gt; mi consola R + RStudio con la API de GPT-3 !&lt;/p&gt;
+&lt;p&gt;Empecemos…💪&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Identificación de tópicos o temas (binarios) en textos medianos o largos.&lt;/p&gt;
+&lt;p&gt;Me interesa saber, más allá de una clasificación genérica de menciones parlamentarias que tocan la temática de género(como lo hice en una entrada anterior), saber cuales de ellas hablan específicamente del tema &lt;em&gt;violencia de género&lt;/em&gt;, y para eso uso la asistencia del modelo GPT-3 para que me ayude a identificarlas. Según algunos ensayos previos, veo que lo más optimo es hacerlo en dos pasos: en primer lugar le pido que identifique un &lt;em&gt;Tema principal&lt;/em&gt; en cada mención (lo cual ya me podría ser útil y analizable en sí mismo), ya que la intervención podría tratar varios temas y, en segundo lugar, le doy una orden concreta para que identifique si ese tema se vincula con mi tópico de interés y le sugiero devolverme un &lt;strong&gt;Si&lt;/strong&gt; si le parece que lo trata y un &lt;strong&gt;No&lt;/strong&gt;, en el caso contrario.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Nota:&lt;/em&gt; Esto también podría servir para un análisis rápido de corpus de noticias o post de redes sociales. Más adelante vamos a ver que para textos cortos utilizo otra estrategia de clasificación/extracción de tópicos.&lt;/p&gt;
+&lt;p&gt;Las ordenes que le voy a dar son: &lt;em&gt;‘Identifique un tema principal en el siguiente texto:’&lt;/em&gt; y &lt;em&gt;‘Este texto habla sobre violencia de género? Responda únicamente Si o No’&lt;/em&gt; y luego, le pego cada una de las menciones y variables de origen de cada parlamentario/a, de este modo para el segundo caso:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prompt = data.frame(&amp;#39;prompts&amp;#39; = c(paste(&amp;#39;La siguiente frase menciona la violencia de género? Responda únicamente Si o No&amp;#39;,base$speech)),&amp;#39;prompt_id&amp;#39; = c(1:nrow(base)))
+
+
+
+consulta = gpt3_completions(prompt_var = prompt$prompts # defino las órdenes, una por cada mención
+                             , id_var = prompt$prompt_id # el identificador
+                             , param_model = &amp;#39;text-davinci-003&amp;#39;, ##defino el modelo
+                            param_max_tokens = 2000,param_output_type = &amp;quot;complete&amp;quot;,
+                            param_temperature = 0) ##defino algunos parámetros: max_tokens (cuanto me va a traer como máximo, debe ser mayor que mi N y temperature que está entre 0 y 1, siendo las respuestas que se acercan a 1 más aleatorias) 
+
+respuestas=consulta[[1]] ##veo el primer elemento en mi lista que es mi data frame de respuestas
+base=cbind(base,respuestas) ##le pego las respuestas a la base original&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Los resultados de la reducción del texto en dos pasos son lo que se muestran en la siguiente tabla, la variable &lt;strong&gt;gpt3_1&lt;/strong&gt; nos da una idea del tema principal del texto largo, y luego utilizo esa variable para identificar un tema específico:&lt;/p&gt;
+&lt;iframe src=&#34;t1.html&#34; width=&#34;700&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Codificación de preguntas abiertas a partir de &lt;em&gt;codigueras pre-definidas&lt;/em&gt; o &lt;em&gt;emergentes&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Otra aplicación posible sería el tratamiento de preguntas abiertas usando el GTP-3 como un asistente para la codificación (lo cual nos podría ahorrar mucho tiempo!), al menos para una clasificación inicial cuando tenemos muchos casos.&lt;/p&gt;
+&lt;p&gt;Identifico dos formas: (a) &lt;em&gt;Codigueras pre-definidas&lt;/em&gt; o (b) &lt;em&gt;Emergentes&lt;/em&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;En el primer caso, dentro de la orden que le damos y que vimos anteriormente, le defino las categorías que deseo que identifique. Hay una publicación reciente (Bailey et al, 2022)&lt;a href=&#34;#fn2&#34; class=&#34;footnote-ref&#34; id=&#34;fnref2&#34;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; que compara para un dataset de preguntas abiertas, un codificador humano, un modelo de aprendizaje automático (SVM) y el modelo GPT-3, y encuentra niveles de acierto altos(recomiendo la lectura! aunque sin dudas deben existir ventajas en el inglés).&lt;/p&gt;
+&lt;p&gt;El ensayo que hice fue de una encuesta de opinión pública, sobre la típica pregunta sobre los principales problemas del país, en este caso lo ideal es tener una respuesta única pero sin embargo, se puede definir en la orden (prompt) un criterio de priorización de algún tipo (ej. primera mención).&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prompt = data.frame(&amp;#39;prompts&amp;#39; = c(paste(&amp;quot;Tengo algunas respuestas abiertas de una encuesta que pregunta lo siguiente: ¿qué cosas le preocupan en su vida?. 
+Por favor, asigne una de las siguientes categorías a cada respuesta de texto abierto.
+La categoría son: 
+
+salud
+economía
+educación 
+seguridad
+política
+pobreza
+sueldos
+desempleo
+corrupción
+suba de precios
+espacios
+transporte público
+migración
+vivienda
+costo del estado
+
+Si no es ninguna de las anteriores por favor asigne la categoría Otros&amp;quot;,
+base_op$R1)),&amp;#39;prompt_id&amp;#39; = c(1:nrow(base_op)))
+
+consulta = gpt3_completions(prompt_var = my_prompts$prompts
+                            , id_var = my_prompts$prompt_id
+                            , param_model = &amp;#39;text-davinci-003&amp;#39;,
+                            param_max_tokens = 500,param_temperature = 0,
+                            param_output_type = &amp;quot;complete&amp;quot;)
+
+
+respuestas=consulta[[1]]
+base_op=cbind(base_op,respuestas)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;Los resultados que obtengo son los que se encuentran en la sigiente tabla, según los códigos sugeridos en mi orden. Esta categorización es más fácil de procesar, por ejemplo separando en diferentes columnas considerando la coma como separador y luego contabilizando menciones para cada código:&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;iframe src=&#34;t2.html&#34; width=&#34;700&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Por último, en el caso de preguntas que no tengan, o sea difícil, una codificación previa, voy a optar por una orden más concreta que me permita identificar códigos &lt;em&gt;emergentes&lt;/em&gt;. En el ejemplo que utilicé, era una pregunta también de opinión pública orientada en conocer sobre qué genera bienestar de las personas consultadas. La orden diseñada fue:&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prompt = data.frame(&amp;#39;prompts&amp;#39; = c(paste(&amp;quot;Tengo algunas respuestas abiertas de una encuesta que pregunta: ¿Qué cosas le causan bienestar, qué le hace feliz o le pone contento?. 
+Por favor identifique en pocas palabras las principales respuestas&amp;quot;,base_op$R2)),
+&amp;#39;prompt_id&amp;#39; = c(1:nrow(base_op)))
+
+consulta = gpt3_completions(prompt_var = prompt$prompts
+                            , id_var = prompt$prompt_id
+                            , param_model = &amp;#39;text-davinci-003&amp;#39;,param_max_tokens = 2000,
+                            param_temperature = 0,
+                            param_output_type = &amp;quot;complete&amp;quot;)
+
+
+
+respuestas_2=consulta[[1]]
+base_op=cbind(base_op,respuestas_2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;Los resultados también me ayudan a reducir mi respuesta inicial para poder procesarlas creando, por ejemplo, conjuntos de códigos más amplios:&lt;/p&gt;
+&lt;iframe src=&#34;t3.html&#34; width=&#34;700&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Esta es una idea inicial para uso de esta potente herramienta para nuestro trabajo orientado al procesamiento de grandes volúmenes de texto. Podrían haber otros de asistencia a armado de código para análisis y visualización.
+Espero que haya inspirado 🙏!&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;div class=&#34;footnotes footnotes-end-of-document&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;Kleinberg, B. (2022). rgpt3: Making requests from R to the GPT-3 API (Version 0.3.1) [Computer software]. &lt;a href=&#34;https://doi.org/10.5281/zenodo.7327667&#34; class=&#34;uri&#34;&gt;https://doi.org/10.5281/zenodo.7327667&lt;/a&gt;&lt;a href=&#34;#fnref1&#34; class=&#34;footnote-back&#34;&gt;↩︎&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn2&#34;&gt;&lt;p&gt;Mellon, Jonathan and Bailey, Jack and Scott, Ralph and Breckwoldt, James and Miori, Marta, Does GPT-3 know what the Most Important Issue is? Using Large Language Models to Code Open-Text Social Survey Responses At Scale (December 22, 2022). Available at SSRN: &lt;a href=&#34;https://ssrn.com/abstract=4310154&#34; class=&#34;uri&#34;&gt;https://ssrn.com/abstract=4310154&lt;/a&gt; or &lt;a href=&#34;http://dx.doi.org/10.2139/ssrn.4310154&#34; class=&#34;uri&#34;&gt;http://dx.doi.org/10.2139/ssrn.4310154&lt;/a&gt;&lt;a href=&#34;#fnref2&#34; class=&#34;footnote-back&#34;&gt;↩︎&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>AMALIA: análisis masivo de archivos de la dictadura uruguaya</title>
+      <link>/blog/2021-11-10-amalia/</link>
+      <pubDate>Wed, 10 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2021-11-10-amalia/</guid>
+      <description>
+
+
+&lt;p&gt;En el marco de la conferencia regional &lt;a href=&#34;https://latin-r.com/&#34;&gt;LatinR 2021&lt;/a&gt;, presenté la aplicación &lt;em&gt;AMALIA&lt;/em&gt;, dejo video de la ponencia:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://youtu.be/mquWWrM8eqo&#34;&gt;&lt;img src=&#34;ama.png&#34; alt=&#34;AMALIA&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;strong&gt;AMALIA&lt;/strong&gt; es una aplicación que surge como una iniciativa en el marco del proyecto &lt;a href=&#34;https://cruzar.edu.uy/&#34;&gt;CRUZAR&lt;/a&gt; (&lt;em&gt;Sistema de Información de Archivos del Pasado Reciente&lt;/em&gt;), y que a través de técnicas de minería de texto, busca aportar en el análisis masivo e interactivo de documentos de la dictadura uruguaya (1973-1985) que han sido digitalizados y convertidos a texto mediante técnicas de OCR. La misma ha sido desarrollada utilizando el lenguaje R y se encuentra en su versión de prueba. Se nutre de más de 100000 imágenes que conforman el denominado &lt;em&gt;Archivo Berruti&lt;/em&gt;, y permite realizar búsqueda de términos y palabras, analizar las inter-conexiones entre los mismos, así como el contexto en que son mencionadas en los archivos.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;div id=&#34;estructura-general&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Estructura general:&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Buscador:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;El buscador parte de un listado de palabras validadas previamente a partir de su inclusión en los diccionarios pre-definidos y permite evaluar tanto la frecuencia de aparición de un término como la co-ocurrencia entre diferentes palabras en las unidades de agregación. Así también plantea la posibilidad de analizar su contexto de mención en el texto bruto.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Explorador:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;El explorador permite realizar un análisis partiendo de lo general a lo particular ya que es posible seleccionar un sub-conjunto de documentos y explorar las temáticas que incluye a partir de las frecuencias de términos, nubes de palabras, co-ocurrencia, redes de palabras y asociaciones. También es posible dirigir el análisis seleccionando los diccionarios de interés.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Analizador:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;El analizador plantea un análisis centrado en el contexto en que se menciona una determinada palabra o conjunto de palabras previamente validadas por los diccionarios, a partir de la frecuencia, redes de términos y asociación entre las palabras que forman parte de dicho contexto.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;paquetes-utilizados&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Paquetes utilizados:&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;shiny&lt;/em&gt; , &lt;em&gt;shinythemes&lt;/em&gt;, &lt;em&gt;shinyWidgets&lt;/em&gt;, &lt;em&gt;shinycssloaders&lt;/em&gt; , &lt;em&gt;wordclouds2&lt;/em&gt; , &lt;em&gt;DT&lt;/em&gt; para diseñar la estructura de la aplicación, formato, visualizaciones.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;dbplyr&lt;/em&gt; para hacer conexión con la base en Postgres y optimizar las búsquedas SQL.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;em&gt;quanteda&lt;/em&gt; ( &lt;em&gt;quanteda.textmodels&lt;/em&gt;, &lt;em&gt;quanteda.textplots&lt;/em&gt;, &lt;em&gt;quanteda.textstats&lt;/em&gt;) para visualizacione y cálculos de co-ocurrencias y distancias entre términos.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Otros: &lt;em&gt;dplyr&lt;/em&gt; , &lt;em&gt;ggplot2&lt;/em&gt;, &lt;em&gt;seededlda&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>La temática de género en el Parlamento uruguayo</title>
+      <link>/blog/2020-09-26-parlamento-genero/</link>
+      <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2020-09-26-parlamento-genero/</guid>
+      <description>
+&lt;script src=&#34;../../blog/2020-09-26-parlamento-genero/index_files/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;Este post surge a partir de la idea de aplicar algunas técnicas de &lt;em&gt;minería de texto&lt;/em&gt; y &lt;em&gt;clasificación con aprendizaje automático&lt;/em&gt; (o &lt;em&gt;machine learning&lt;/em&gt;) para análisis masivo de datos cualitativos usando R, de una temática que me interesaba particularmente como es el &lt;strong&gt;discurso político de género&lt;/strong&gt;. Considero que la minería de texto es un área que aún no se encuentra tan difundida en Uruguay, que tiene mucho potencial y que puede ser aprovechada desde las ciencias sociales como aporte para sumar o complementar las herramientas metodológicas más tradicionales.&lt;/p&gt;
+&lt;p&gt;El &lt;strong&gt;objetivo general&lt;/strong&gt; del trabajo es lograr un buen método de clasificación de texto que me permita distinguir entre las intervenciones parlamentarias en la Cámara de representantes (unidad mínima de análisis) que planteen y discutan la temática de género para luego analizar mediante variables anexas, qué representantes, partidos, sectores son los que instalan la discusión en dicha materia &lt;a href=&#34;#fn1&#34; class=&#34;footnote-ref&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;El post se va a estructurar en cuatro partes:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;strong&gt;Obtención de la información (web scraping)&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Limpieza del texto y matriz de términos&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Clasificación: machine lerning y diccionario&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Análisis de los datos&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr /&gt;
+&lt;div id=&#34;obtención-de-la-información-web-scraping&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;1. Obtención de la información (web scraping)&lt;/h2&gt;
+&lt;p&gt;En lo que respecta a la fuente de datos, mi primera inspiración estuvo en &lt;a href=&#34;https://d4tagirl.com/2018/04/de-qu%C3%A9-se-habl%C3%B3-en-el-parlamento-uruguayo-desde-2017&#34;&gt;este post&lt;/a&gt; de 2018 de &lt;a href=&#34;https://d4tagirl.com/&#34;&gt;&lt;em&gt;d4tagirl&lt;/em&gt;&lt;/a&gt; que trataba sobre la obtención de datos directamente desde internet (&lt;em&gt;web scraping&lt;/em&gt;), de las sesiones parlamentarias (cuyas transcripcioes son de libre acceso) y análisis de las frecuencias de las sesiones, visualización de las palabras más relevantes, análisis de sentimiento, etc.&lt;/p&gt;
+&lt;p&gt;Luego de esto, en 2019 se desarrolla por parte de un equipo&lt;a href=&#34;#fn2&#34; class=&#34;footnote-ref&#34; id=&#34;fnref2&#34;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; de la &lt;em&gt;Facultad de Ciencias Sociales&lt;/em&gt; (UdelaR), el paquete &lt;a href=&#34;https://cran.r-project.org/web/packages/speech/index.html&#34;&gt;speech&lt;/a&gt;, el cual permite descargar las sesiones parlamentarias de forma fácil y ordenada, agregando a los discursos algunas variables anexas como la legislatura, el nombre (lo cual me permite rastrear algunas características), la fecha de la sesión, entre otras. Esto me facilitó mucho el trabajo de recolección de información inicial 🙇 !.&lt;/p&gt;
+&lt;p&gt;Para el análisis, decidí acotar el universo a los discursos e intervenciones de lxs diputadxs (ya que incluir ambas cámaras era un volúmen demasiado grande de información!), correspondientes a la legislatura pasada: &lt;strong&gt;XLVIII (2015-2020)&lt;/strong&gt;. La transcripciones taquigráficas de las sesiones parlamentarias se encuentran en archivos formato &lt;em&gt;pdf&lt;/em&gt; en la &lt;a href=&#34;https://parlamento.gub.uy/&#34;&gt;página del parlamento&lt;/a&gt;, en la cual se pueden hacer búsquedas manuales según legislatura, fechas, identificadores de sesión y Diario, etc. Lo que yo necesitaba entonces era obtener todas las transcripciones del período, las cuales metiante una búsuqueda simple filtrando la legislatura, sólo para la Cámara de representantes asciendían a &lt;strong&gt;308&lt;/strong&gt; Diarios de sesiones.&lt;/p&gt;
+&lt;p&gt;Como primer paso para la obtención de la información debía recolectar todas las rutas a los archivos &lt;em&gt;pdf&lt;/em&gt; lo cual me permitiría aplicar la función &lt;strong&gt;speech_build()&lt;/strong&gt; del paquete &lt;a href=&#34;https://cran.r-project.org/web/packages/speech/index.html&#34;&gt;speech&lt;/a&gt; y transformar la información que se encuentra en &lt;em&gt;pdf&lt;/em&gt; en un &lt;em&gt;data frame&lt;/em&gt; ordenado.&lt;/p&gt;
+&lt;p&gt;Una opción válida, pero ineficiente, hubiera sido copiar &lt;em&gt;“a mano”&lt;/em&gt; las 308 rutas a cada uno de los &lt;em&gt;pdf&lt;/em&gt;, sin embargo indagando un poco en el post de &lt;em&gt;d4tagirl&lt;/em&gt; sobre &lt;a href=&#34;https://d4tagirl.com/2018/04/scrapeando-las-sesiones-parlamentarias-de-uruguay&#34;&gt;web scraping&lt;/a&gt; (recomiendo!) y en foros, agregué alguna cosa y llegué a una solución para automatizar la recolección considerando incluso que, dada la cantidad, los mismos se encuentran desplegados en diferentes páginas.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Cargo paquetes:
+library(dplyr) #manipulación
+library(rvest) #web scraping  
+library(purrr) #iteración 
+
+##creo un objeto &amp;quot;ruta&amp;quot; que es el url raíz para luego pegarle la terminación según el número de página del cual me interesa objeter las url a los pdf. 
+ruta= &amp;quot;https://parlamento.gub.uy/documentosyleyes/documentos/diarios-de-sesion?Cpo_Codigo_2=D&amp;amp;Lgl_Nro=48&amp;amp;DS_Fecha%5Bmin%5D%5Bdate%5D=15-02-2015&amp;amp;DS_Fecha%5Bmax%5D%5Bdate%5D=14-02-2020&amp;amp;Ssn_Nro=&amp;amp;TS_Diario=&amp;amp;tipoBusqueda=T&amp;amp;Texto=&amp;quot;
+paginas=as.character(c(0:7)) ##defino la cantidad de paginas, en este caso 8 (del 0 al 7)
+
+##creo un objeto &amp;quot;url&amp;quot; dónde me va a guardar el vector de las 308 rutas que necesito!
+
+url &amp;lt;- map(paginas,~ paste0(ruta, &amp;quot;&amp;amp;page=&amp;quot;, .))%&amp;gt;% #pego el pedazo de ruta para hacer referencia al número de página
+       unlist() %&amp;gt;% 
+       map(~ .x  %&amp;gt;% ## con la función map() de purr, ítero a lo largo del vector &amp;quot;paginas&amp;quot;
+       read_html() %&amp;gt;%  ##función de rvest para obtener contenido en formato html 
+       html_nodes(&amp;quot;.views-field-DS-File-IMG a&amp;quot;) %&amp;gt;% #identifica qué parte o nodo específico me interesa   
+       html_attr(&amp;quot;href&amp;quot;) %&amp;gt;%
+       map(~ paste0(&amp;quot;https://parlamento.gub.uy&amp;quot;, .)))%&amp;gt;%
+       unlist()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;En este punto lo que tengo es un vector con 308 elementos, en el cual cada uno es una ruta a un Diario de sesión en formato pdf. Luego, aplico la función &lt;strong&gt;speech_build()&lt;/strong&gt; para que ordene en un data frame todas las intervenciones contenidas en cada uno de los Diarios, con información anexa como ya lo mencioné.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Cargo paquetes:
+library(speech) #scraping parlamentario
+
+#aplico la función speech_build() iterando sobre cada una de las rutas y alojandolo en un objeto &amp;quot;discursos_diputadxs&amp;quot;
+
+discursos_diputadxs &amp;lt;- map(url,possibly(speech_build,otherwise = NULL))
+
+#Importante: acá tuve algún problema grande con pdf en los cuales no se podían identificar intervenciones y me cortaban el proceso, lo cual solucioné con la función possibly() de purr, la cual omite el error y continúa aplicando la función.   &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Al final de este proceso (que demora bastante!), obtuve una base con &lt;strong&gt;23990&lt;/strong&gt; intervenciones para todo el período. Cabe aclarar que la función &lt;strong&gt;speech_build()&lt;/strong&gt; tiene un argumento &lt;em&gt;quality&lt;/em&gt; que te permite, mediante un par de indicadores, dar cuenta de la calidad de la conversión a partir de la proporción del documento que pudo ser recuperado. También otro argumento que permite agregar o compilar la información por legislador, en este caso obtuve cada mención por separado.&lt;/p&gt;
+&lt;p&gt;Hasta este momento tenía una gran base de todas las intervenciones de la legislatura pasada en bruto y que necesitaba clasificar en aquellas que trataban la temática de género y aquellas que no. Debía conseguir entonces documentos que hablaran de género y otros que no, así podía aplicar un modelo que &lt;em&gt;aprendiera&lt;/em&gt; a distinguir entre estos dos discursos y me permitiera clasificar las intervenciones (machine lerning o aprendizaje automático).Para esto podría haber etiquetado de forma &lt;em&gt;artesanal&lt;/em&gt; las intervenciones que trataran la temática de género y aquellas que no, pero me implicaba mucho tiempo (que no tengo!) y entonces se me ocurrió una idea💡: en la pagina del parlamento hay unos documentos de las transcripciones de las diferentes comisiones temáticas que integran lxs propixs parlamentarixs y existe una específica de &lt;a href=&#34;https://parlamento.gub.uy/documentosyleyes/documentos/versiones-taquigraficas?Cpo_Codigo=D&amp;amp;Lgl_Nro=48&amp;amp;Fecha%5Bmin%5D%5Bdate%5D=15-02-2015&amp;amp;Fecha%5Bmax%5D%5Bdate%5D=14-02-2020&amp;amp;Cms_Codigo=1090&amp;amp;Dtb_Nro=&amp;amp;tipoBusqueda=T&amp;amp;Texto=&amp;amp;Cuerpo=&#34;&gt;Equidad y género&lt;/a&gt; con &lt;strong&gt;28&lt;/strong&gt; documentos disponibles, por lo que con la misma técnica anterior, elaboré una base de datos con todas las intervenciones de dicha comisión y otra base con intervenciones de diferentes comisiones parlamentarias con temas variados: presupuesto, hacienda, asuntos internacionales, salud, turismo, ambiente, etc.&lt;/p&gt;
+&lt;p&gt;Finalmente, construí una base que servirá de &lt;em&gt;entrenamiento&lt;/em&gt; con ambos tipos de intervenciones y una variabla de agregación llamada &lt;em&gt;genero&lt;/em&gt; con dos valores: &lt;em&gt;Si genero&lt;/em&gt; / &lt;em&gt;No genero&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;limpieza-del-texto-y-matriz-de-términos&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;2. Limpieza del texto y matriz de términos&lt;/h2&gt;
+&lt;p&gt;En este momento necesitaba aplicar algunas funciones que me permitieran &lt;em&gt;limpiar&lt;/em&gt; el texto y quedarme con lo que realmente me interesa y que me permite distinguir entre palabras que dan cuenta de un discurso que hace referencia a la temática de género y aquellos que no. Este es un trabajo que lleva mucho tiempo (tal vez el que más!), mucho ensayo y error, y a veces resulta tedioso, pero es el más importante para que los resultados tengan sentido y lograr hacer una buena clasificación y análisis posterior.&lt;/p&gt;
+&lt;p&gt;En un primer momento esto lo hice para la base de &lt;em&gt;entrenamiento&lt;/em&gt; que incluía intervenciones de las comisiones, las cuales alojé en un &lt;em&gt;corpus&lt;/em&gt; dónde cada una es un elemento del mismo. El resultado de este paso será una una matriz de términos (en este caso palabras, pero podrían ser expresiones también!) que se denomina &lt;em&gt;document-feature matrix&lt;/em&gt; (dfm) en el paquete &lt;strong&gt;quanteda&lt;/strong&gt; que es el que voy a utilizar. Esta matriz contiene tantas filas como elementos del corpus haya (en este caso intervenciones) y tantas columnas como términos, en las celdas se encuentra la frecuencia de aparición de cada término en cada intervención.&lt;/p&gt;
+&lt;p&gt;Como primer paso para llevar a cabo la limpieza, me interesa eliminar todas las intervenciones que cuenten con menos de 13 palabras ya que, según he leído, corresponden con expresiones o asuntos de órden ( &lt;em&gt;“Pido la palabra”&lt;/em&gt;, &lt;em&gt;“Voto la moción de…”&lt;/em&gt;, etc.) que no me dicen nada para mi análisis. Esto lo hago en un primer momento con la función &lt;em&gt;corpus trimsentences()&lt;/em&gt; al momento de crear el corpus y decirle la variable en dónde se encuentra el discurso ( &lt;em&gt;speech&lt;/em&gt; en este caso).&lt;/p&gt;
+&lt;p&gt;En un segundo momento, aplico la función &lt;em&gt;dfm()&lt;/em&gt; al corpus previamente creado para limpiar y construir la matriz. Para esto, uso un vector que tengo pre-cargado y que llamo &lt;strong&gt;palabras_drop&lt;/strong&gt; y que me ayudan a eliminar términos que no me interesan, el cual contiene:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;nombres&lt;/strong&gt; y &lt;strong&gt;apellidos&lt;/strong&gt; de lxs diputadxs&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;stopwords&lt;/strong&gt; y modismos uruguayos&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;palabras específicas&lt;/strong&gt; que se reiteran en las trascripciones (señor, señora, dipudato, diputada, taquigráfico y varias más)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;En el código explico cada paso:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Cargo paquetes:
+library(quanteda) #minería de texto
+
+entrenamiento &amp;lt;- quanteda::corpus(train,text_field = &amp;quot;speech&amp;quot;)%&amp;gt;%
+  quanteda::corpus_trimsentences(min_length = 13) # quito las intervenciones que tienen menos de 13 palabras 
+
+entrenamiento_dfm &amp;lt;- quanteda::dfm(entrenamiento,
+                         tolower = TRUE, #transforma todo a minúscula
+                         remove_punct = TRUE, #elimina puntuación  
+                         remove_numbers = TRUE,  #elimina números 
+                         remove = c(stopwords::stopwords(&amp;quot;spanish&amp;quot;),palabras_drop), #elimina stopwords pre-cargadas en quanteda y palabras específicas de interés
+                         verbose = TRUE) %&amp;gt;% #imprime un resumen del proceso
+  quanteda::dfm_remove(min_nchar=3)%&amp;gt;% # elimino las palabras que tienen 1 y 2 caracteres
+  quanteda::dfm_trim(min_termfreq = 90) #le indico que se quede con téminos que aparezcan al menos 90 veces (Esto se va calibrando en la marcha!). Me permite sacar los términos que se usan muy poco. &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Acá me interesa ver si me está agregando bien las palabras y hago una nube de palabras con la función &lt;strong&gt;textplot_wordcloud()&lt;/strong&gt;, para ello le defino la variable &lt;em&gt;genero&lt;/em&gt; como de agrupación y el argumento &lt;em&gt;comparison=T&lt;/em&gt; para mostrar la segmentación.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;quanteda.textplots::textplot_wordcloud(quanteda::dfm(entrenamiento_dfm, groups = &amp;quot;genero&amp;quot;), min.count = 10,max_words = 300,random.order = TRUE,rot.per = .25, colors = c(&amp;quot;#954342&amp;quot;,&amp;quot;#e76363&amp;quot;),comparison = T)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;imagenes/nube.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Me quedo conformé con las palabras que me muestra!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;clasificación-aprendizaje-automático-y-diccionario&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;3. Clasificación: aprendizaje automático y diccionario&lt;/h2&gt;
+&lt;p&gt;El &lt;a href=&#34;https://es.wikipedia.org/wiki/Aprendizaje_autom%C3%A1tico&#34;&gt;&lt;em&gt;aprendizaje automático&lt;/em&gt;&lt;/a&gt; (o machine learning) es un procedimiento que permite automatizar algunas operaciones reduciendo la necesidad de intervención de un ser humano, a partir de la identificación o &lt;em&gt;aprendizaje&lt;/em&gt; de ciertos patrones según parámetros determinados y posterior predicción en otro conjunto de datos.&lt;/p&gt;
+&lt;p&gt;En este caso, tengo la matriz de téminos creada a partir de mi base de entrenamiento (creada en el punto 1) y categorizada con la variable &lt;em&gt;“genero”&lt;/em&gt; de forma equilibrada según si las mismas fueron realizadas en la &lt;em&gt;Comisión de Equidad y género&lt;/em&gt; o en otras comisiones temáticas. Ahora tengo que aplicar un modelo que permita &lt;em&gt;aprender&lt;/em&gt; qué términos distinguen entre un discurso que trata género y uno que no. Para ello existen diferentes tipos de técnicas y modelos, más sencillos y más complejos, en este caso usaré el modelo predictivo de clasificación llamado &lt;a href=&#34;https://es.wikipedia.org/wiki/Random_forest&#34;&gt;&lt;em&gt;Random forest&lt;/em&gt;&lt;/a&gt; (o bosques aleatorios en español), con el paquete &lt;a href=&#34;https://cran.r-project.org/web/packages/randomForest/index.html&#34;&gt;&lt;em&gt;random Forest&lt;/em&gt;&lt;/a&gt;. Para ello, creo dos grupos aleatorios para entrenar y testear el modelo, todo dentro de la matriz de términos ya creada. Para definir con qué modelo me quedo, pruebo diferentes opciones de parámetros y evalúo según la precisión en la predicción.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Cargo paquetes:
+library(randomForest) #correr modelo
+library(tidymodels) #lo uso sólo para crear grupos para entrenamiento y prueba
+
+##primero convierto la matriz en un data frame
+entrenamiento_dfm &amp;lt;- entrenamiento_dfm %&amp;gt;%
+  convert(to = &amp;quot;data.frame&amp;quot;)%&amp;gt;%
+  mutate(genero=docvars(entrenamiento_dfm, &amp;quot;genero&amp;quot;))
+
+set.seed(23) #hago reproducible la selección aleatoria
+
+genero_split &amp;lt;- initial_split(entrenamiento_dfm, strata = genero) ##divide aleatoriamente según un estrato, acá es genero y genera dos sub grupos: entreno y testeo
+entreno &amp;lt;- training(genero_split) 
+testeo &amp;lt;- testing(genero_split)
+
+##Con la variable randomForest se aplica el algoritmo y guardo el modelo
+modelo &amp;lt;- randomForest(genero ~ ., data=entreno)
+##OOB 
+#0.1582538 
+
+##lo uso para predecir en los grupos: entreno y testeo 
+prediccion_entreno &amp;lt;- predict(modelo, newdata=entreno)
+prediccion_testeo &amp;lt;- predict(modelo, newdata=testeo)
+
+##Evalúo el modelo
+
+##veo la matriz de confusión y veo en cuantos predijo bien y en cuantos no
+
+# table(entreno$genero, prediccion_entreno)
+#  prediccion_entreno
+#               No genero Si genero
+#   No genero       372         1
+#   Si genero        23       337
+#accuracy 96.7%
+
+# table(testeo$genero, prediccion_testeo)
+#  prediccion_testeo
+#              No genero Si genero
+#  No genero       111        13
+#  Si genero        31        88
+#accuracy 81.9%&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Luego de tener este modelo y ver que funciona bastante bien, lo que hago es cargar mi base de las intervenciones de todxs lxs diputadxs, aplico una limpieza similar al punto 2 y me quedo con las sentencias y palabras que me sirven en una matriz de términos. En esta limpieza, de &lt;strong&gt;23990&lt;/strong&gt; intervenciones paso a &lt;strong&gt;13437&lt;/strong&gt;, poco más de la mitad.&lt;/p&gt;
+&lt;p&gt;Luego me quedo con los términos coincidentes en ambos casos y predigo en mi base sin clasificación alguna.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;##me quedo con los términos coincidentes entre la base que usé para predicir y la que quiero predecir
+
+entrenamiento_dfm_final &amp;lt;-data.frame(entreno[,colnames(entreno)%in%colnames(diputados_dfm)])
+diputados_dfm_final &amp;lt;- data.frame(diputados_dfm[,colnames(diputados_dfm)%in%colnames(entreno)])
+
+##hago la predicción
+prediccion_todo &amp;lt;- predict(modelo, newdata=diputados_dfm_final)
+
+#lo convierto en data frame y filtro los que fueron predecido como &amp;quot;Si genero&amp;quot;
+sigenero &amp;lt;- diputados%&amp;gt;%
+  convert(to = &amp;quot;data.frame&amp;quot;)%&amp;gt;%
+  mutate(genero=prediccion_todo) %&amp;gt;%
+  filter(genero=&amp;quot;Si genero&amp;quot;) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;En este momento tengo una base con una clasificación entre: &lt;em&gt;Si genero&lt;/em&gt; / &lt;em&gt;No genero&lt;/em&gt; generada a partir de la aplicación del algoritmo random forest con intervenciones que tocan la temática de género. En este punto, podríamos comenzar el análisis viendo como se sub divide entre partidos, legisladorxs, etc, pero tomo algunas intervenciones y, más allá de que muchas están bien clasificadas, veo que algunas tocan el tema pero muy tangencialmente o se entran en la proporción de error del modelo y directamente no hablan del tema, por lo que se me ocurre la idea de afinar un poco más la clasificación y combinar con la técnica de diccionario de &lt;strong&gt;quanteda&lt;/strong&gt;, considerando los 50 téminos más usados en mi base de entrenamiento (limpia) para el grupo &lt;em&gt;Si género&lt;/em&gt; como un diccionario a aplicar a mis intervenciones pre-clasificadas.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt; ##top términos por grupo
+ dicgenero &amp;lt;- entrenamiento_dfm %&amp;gt;%
+   quanteda::topfeatures(50,groups = &amp;quot;genero&amp;quot;)
+dicgenero &amp;lt;- rownames(as.data.frame(dicgenero[[2]]))
+##lo convierto en diccionario (formato lista) con la función dictionary()  
+idc_dicgenero &amp;lt;-dictionary(list(genero=dicgenero))
+##aplico la función dfm_lookup() para evaluarlo en un dfm nuevo sólo de la base pre-clasificada
+midic_result_dicgen &amp;lt;- data.frame(dfm_lookup(sigenero_dfm,dictionary=idc_dicgenero))
+
+base_final &amp;lt;-  sigenero %&amp;gt;%
+              left_join(y=midic_result_dicgen,by=&amp;quot;doc_id&amp;quot;)%&amp;gt;%
+              filter(diccionario&amp;gt;=30)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Luego de aplicar el diccionario, opto por quedarme con aquellas intervenciones que tienen &amp;gt;=30 palabras del mismo y así asegurarme que están bien clasificadas. Luego de esto al fin llego a una base final con &lt;strong&gt;745&lt;/strong&gt; intervenciones que tratan género 😄!&lt;/p&gt;
+&lt;p&gt;Para mi análisis necesito dar cuenta del género de lxs diputadxs, el partido, sector, etc, por lo que la variable que lxs identifica, toma unicamente el primer apellido que se encuentra en la trascripción, por lo que tuve que hacer un trabajo artesanal de identificar a qué legisladorxs se refería y pegar ese dato con la información anexa que me interesa (me complicaron mucho los apellidos repetidos: Rodriguez, Cardoso, Umpiérrez, Viera y algunos más)&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;análisis-de-los-datos&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;4. Análisis de los datos&lt;/h2&gt;
+&lt;p&gt;En este apartado presento algunos datos generales que se desprenden de mi base de menciones sobre género.&lt;/p&gt;
+&lt;p&gt;En primer lugar, observando la evolución de menciones sobre el tema se registra un aumento de las mismas hacia el final de la legislatura, con diferencias entre partidos.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Evolución de las menciones en el tiempo por partido político&lt;/strong&gt;&lt;/p&gt;
+&lt;iframe src=&#34;imagenes/g1.html&#34; width=&#34;800&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;strong&gt;Menciones por partido político&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Si vemos la distribución de las menciones relativas al género por partido político en términos absolutos, vemos que el &lt;strong&gt;Frente Amplio&lt;/strong&gt; es el que cuenta con más menciones ( &lt;strong&gt;364&lt;/strong&gt;), seguidas por el &lt;strong&gt;Partido Nacional&lt;/strong&gt; ( &lt;strong&gt;230&lt;/strong&gt;).&lt;/p&gt;
+&lt;iframe src=&#34;imagenes/part.html&#34; width=&#34;700&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;strong&gt;Menciones por género&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Si nos centramos en el género de lxs legisladorxs, el &lt;strong&gt;56.5%&lt;/strong&gt; de las intervenciones son de varones y el &lt;strong&gt;43.5%&lt;/strong&gt; por mujeres. Sin embargo, si relativizamos por la cantidad de mujeres y varones diputadxs vemos que la cantidad de menciones por legisladorx es mayor en el caso de las mujeres con respecto a los varones, de hecho podemos decir que las diputadas mujeres hablan &lt;strong&gt;1.3&lt;/strong&gt; más que los varones.&lt;/p&gt;
+&lt;iframe src=&#34;imagenes/genero.html&#34; width=&#34;700&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;strong&gt;Legisladorxs&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Por último, queremos ver qué legisladorxs son lxs que tienen más intervenciones referidas al género y observamos que, a pesar de que el Frente Amplio era el partido que registraba más menciones absolutas, quienes acumulan más intervanciones referidas al tema son diputadas del Partido Nacional y Partido Colorado. También vemos que, entre lxs 10 principales, la gran mayoría son mujeres, esto ratifica la idea de que las mujeres son las que más instalan la temática de género, reafirmando la necesidad de paridad y participación equilibrada en la representación parlamentaria.&lt;/p&gt;
+&lt;iframe src=&#34;imagenes/legis.html&#34; width=&#34;700&#34; height=&#34;500&#34;&gt;
+&lt;/iframe&gt;
+&lt;hr /&gt;
+&lt;p&gt;Espero que les haya gustado y servido, seguro que existen muchas cosas por mejorar y mucho potencial aún para ahondar y enriquecer la investigación social a partir del análisis del texto y de la palabra.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes footnotes-end-of-document&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;En este punto cabe aclarar que se hace un análisis del tratamiento de la temática sin valoraciones positivas o negativas en los discursos, lo cual podría eventualmente analizarse mediante la técnica de análisis de sentimento.&lt;a href=&#34;#fnref1&#34; class=&#34;footnote-back&#34;&gt;↩︎&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&#34;fn2&#34;&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/Nicolas-Schmidt&#34;&gt;Nicolas Schmidt&lt;/a&gt; [aut, cre], Diego Lujan [aut], Juan Andres Moraes [aut]&lt;a href=&#34;#fnref2&#34; class=&#34;footnote-back&#34;&gt;↩︎&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Infografías automáticas con R</title>
+      <link>/blog/2020-04-25-inforgrafias/</link>
+      <pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2020-04-25-inforgrafias/</guid>
+      <description>
+
+
+&lt;p&gt;Necesitaba hacer &lt;em&gt;inforgrafías automáticas y reproducibles&lt;/em&gt; en R para presentar diferentes indicadores y poder replicar el mismo formato para una gran cantidad de datos con la misma estructura inicial.&lt;/p&gt;
+&lt;p&gt;Mi inspiración principal estuvo en &lt;a href=&#34;https://www.r-bloggers.com/r-how-to-layout-and-design-an-infographic/&#34;&gt;este post&lt;/a&gt; que presentaba algunas posibilidades de cómo construir una inforgrafía combinando diferentes paquetes de análisis y visualización. No encontré nada útil en español, así que por eso decidí escribir esto.
+A continuación dejo el paso a paso:&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;En primer lugar, debemos decidir qué tipo de grafico o información queremos presentar en la infografía. En este caso necesitaba:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Gráfico de líneas (serie temporal)&lt;/li&gt;
+&lt;li&gt;Gráfico de barras (serie temporal)&lt;/li&gt;
+&lt;li&gt;Mapa de densidad&lt;/li&gt;
+&lt;li&gt;Pirámide poblacional&lt;/li&gt;
+&lt;li&gt;Íconos con datos brutos&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;También un titulo inicial y un logo!&lt;/p&gt;
+&lt;div id=&#34;construcción-del-contenido&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Construcción del contenido:&lt;/h2&gt;
+&lt;p&gt;###Paquetes&lt;/p&gt;
+&lt;p&gt;Los paquetes genéricos que que voy a utilizar son:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2) #visualización
+library(dplyr) #manipulación de datos
+library(grid) #estructura de cuadrantes de infografía
+library(gridExtra) #estructura de cuadrantes de infografía
+library(RColorBrewer) #paleta de colores
+library(extrafont) #tipos de letras
+library(sf) #cargar shape de mapas
+library(png) #abrir iconos en formato png 
+library(classInt) #calcular intervalos
+library(useful) #ubica objetos de ggplot en cuadrícula&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Cómo les comenté, será una inforgrafía &lt;em&gt;automática&lt;/em&gt; que se aplicará a conjuntos de datos iguales pero con diferente unidad de análisis, por lo que me interesa que cambiando un parámetro inicial, pueda correrlo sin tener que modificar nada del código, por lo que dejo referenciadas de modo variable las rutas, los títulos, etc. creando un objeto &lt;em&gt;nombre&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nombre =&amp;quot;Infografia&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;###Gráfico de línea (serie temporal)&lt;/p&gt;
+&lt;p&gt;Cargo un archivo con la serie de datos que será insumo para el gráfico de línea y le pongo &lt;strong&gt;serie_linea&lt;/strong&gt;. Construyo el gráfico con &lt;em&gt;ggplot&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;serie_linea_graf = ggplot(serie_linea,aes(x = as.factor(fecha_dato) , y = conteo,group = 1)) + 
+  geom_line(size=2, stat=&amp;quot;identity&amp;quot;,colour = &amp;quot;#E13D3D&amp;quot;) +
+  theme(axis.text.x = element_text(size=15,family = &amp;quot;Impact&amp;quot;), axis.text.y = element_text(size=15,family = &amp;quot;Impact&amp;quot;),plot.title = element_text(size=20,family = &amp;quot;Impact&amp;quot;),axis.title.x=element_blank(),axis.title.y=element_blank())+
+  geom_text(aes(label = round(conteo, 1)),
+            vjust = &amp;quot;inward&amp;quot;, hjust = &amp;quot;inward&amp;quot;,
+            show.legend = FALSE,size=4,family=&amp;quot;Impact&amp;quot;)+
+  ylab(&amp;quot;Casos&amp;quot;) + xlab(&amp;quot;Año&amp;quot;) + ggtitle(&amp;quot;Gráfico de línea&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;../../blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;768&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;###Gráfico de barras (serie temporal)&lt;/p&gt;
+&lt;p&gt;Cargo un archivo con la serie de datos que será insumo para el gráfico de barras y le pongo &lt;strong&gt;serie_barra&lt;/strong&gt;. Construyo el gráfico también con &lt;em&gt;ggplot&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;serie_barra_graf = ggplot(serie_barra,aes(x = factor(fecha_dato) , y = conteo,group = 1)) + 
+  geom_bar(size=2, stat=&amp;quot;identity&amp;quot;, colour = &amp;quot;#E13D3D&amp;quot;,fill = &amp;quot;#E13D3D&amp;quot;,width = 0.6) +
+   scale_y_continuous(limits = c(0, 100))+ 
+  theme(axis.text.x = element_text(size=15,family = &amp;quot;Impact&amp;quot;), axis.text.y = element_blank(),plot.title = element_text(size=20,family = &amp;quot;Impact&amp;quot;),axis.title.x=element_blank(),axis.title.y=element_blank())+
+  geom_text(aes(label = paste0(round(conteo, 1),&amp;quot;%&amp;quot;)),
+            position = position_dodge(0.9) ,
+            vjust = 0,show.legend = FALSE,size=4,family=&amp;quot;Impact&amp;quot;)+
+  ylab(&amp;quot;%&amp;quot;) + xlab(&amp;quot;Año&amp;quot;) + ggtitle(&amp;quot;Gráfico de barras&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;../../blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;768&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;mapa-de-densidad&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Mapa de densidad&lt;/h3&gt;
+&lt;p&gt;Cargo un archivo con los datos por departamento ( &lt;strong&gt;depto&lt;/strong&gt; ) y luego dos archivos de tipo &lt;em&gt;shape&lt;/em&gt; para tener los polígonos y las coordenadas para construir el mapa de Uruguay, pegándoselos a mis datos originales según una variable común (en este caso el nombre del departamento!). Luego calculo 5 intervalos (con la función &lt;em&gt;classIntervals&lt;/em&gt;) que serán diferentes según la distribución de los datos que levante (a estos le asigno el nombre &lt;em&gt;brks&lt;/em&gt;).
+Construyo el mapa.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mapa=ggplot() + 
+  geom_sf(aes(fill = conteo), data = uru) +
+  scale_y_continuous(breaks = brks)+
+  scale_fill_continuous(high = &amp;quot;#e13d3d&amp;quot;, low = &amp;quot;#fcebeb&amp;quot;)+
+  geom_text(data = subset(coord, coord$conteo !=0), aes(XCOORD, YCOORD -3000 , label = conteo),size = 4,family=&amp;quot;Impact&amp;quot;) +
+  theme(
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.text = element_text(size = 15,family=&amp;quot;Impact&amp;quot;),
+    legend.title = element_text(size = 15,family=&amp;quot;Impact&amp;quot;),
+    plot.title = element_text(size=20,family=&amp;quot;Impact&amp;quot;),
+    panel.border = element_rect(colour = &amp;quot;#ffffff&amp;quot;, fill = NA, size = 0.5))+
+    guides(fill=guide_legend(title=&amp;quot;Casos&amp;quot;))+
+    ggtitle(&amp;quot;Mapa de densidad&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;../../blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;768&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;piramide-poblacional&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Piramide poblacional&lt;/h3&gt;
+&lt;p&gt;Cargo los datos de la piramide, objeto &lt;em&gt;piramide&lt;/em&gt; y calculo el inverso cuando es Varón. Armo el gráfico.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;piramide$Var1 &amp;lt;- as.character(piramide$Var1)
+piramide$Var1 &amp;lt;- factor(piramide$Var1, levels=c(&amp;quot;0 a 4&amp;quot;,&amp;quot;5 a 9&amp;quot;,&amp;quot;10 a 14&amp;quot;,&amp;quot;15 a 19&amp;quot;,&amp;quot;20 a 24&amp;quot;,&amp;quot;25 a 29&amp;quot;,&amp;quot;30 a 34&amp;quot;,&amp;quot;35 a 39&amp;quot;,&amp;quot;40 a 44&amp;quot;,&amp;quot;45 a 49&amp;quot;,&amp;quot;50 a 54&amp;quot;,&amp;quot;55 a 59&amp;quot;,&amp;quot;60 a 64&amp;quot;,&amp;quot;65 a 69&amp;quot;,&amp;quot;70 a 74&amp;quot;,&amp;quot;75 a 79&amp;quot;,&amp;quot;80 a 84&amp;quot;,&amp;quot;85 a 89&amp;quot;,&amp;quot;90 y +&amp;quot;))
+
+piramide$Freq &amp;lt;- ifelse(piramide$Var2 == &amp;quot;Varón&amp;quot;, -1*piramide$Freq, piramide$Freq)
+
+
+piramide_graf=ggplot(piramide, aes(x = Var1, y = Freq, fill = Var2)) + 
+  geom_bar(data = subset(piramide, Var2 == &amp;quot;Mujer&amp;quot;), stat = &amp;quot;identity&amp;quot;) +
+  geom_bar(data = subset(piramide, Var2 == &amp;quot;Varón&amp;quot;), stat = &amp;quot;identity&amp;quot;) + 
+  scale_fill_manual(values = c(&amp;quot;#f09e9e&amp;quot;,&amp;quot;#e76363&amp;quot;))+
+  coord_flip()+
+  theme(axis.text.x = element_text(size=15,family = &amp;quot;Impact&amp;quot;), axis.text.y = element_text(size=15,family = &amp;quot;Impact&amp;quot;),axis.title.x = element_blank(),axis.title.y = element_blank(),legend.text = element_text(
+    size = 15,family = &amp;quot;Impact&amp;quot;),legend.title = element_text(
+      size = 15,family = &amp;quot;Impact&amp;quot;),plot.title = element_text(size=20,family = &amp;quot;Impact&amp;quot;))+
+  guides(fill=guide_legend(title=&amp;quot;Sexo&amp;quot;,reverse = T))+
+  ggtitle(&amp;quot;Pirámide poblacional&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;../../blog/2020-04-25-inforgrafias/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;íconos-con-datos-y-logo&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Íconos con datos y logo&lt;/h3&gt;
+&lt;p&gt;Cargo los íconos que quiero incluir con la función &lt;em&gt;readPNG()&lt;/em&gt; y asignandolo a objetos correlativos (icon1,icon2…). También un objeto &lt;em&gt;datos&lt;/em&gt; con los datos brutos que me interesa incluir.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;armado-de-la-infografía&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Armado de la infografía:&lt;/h2&gt;
+&lt;p&gt;Ahora ya tenemos todos los elementos que incluiremos en la inforgrafía, por lo que debemos construirla incluyendo a todos:&lt;/p&gt;
+&lt;p&gt;En primer lugar, con la función &lt;em&gt;pdf()&lt;/em&gt; le digo qué quiero que me guarde la infografía en pdf (podría haber sido jpg, png, etc.), dónde quiero que se guarde y el tamaño de la misma. En este caso quería que sea horizontal pero podría ser vertical.&lt;/p&gt;
+&lt;p&gt;En segundo lugar, defino los parámetros para diseñar la cuadrícula que tendré como referencia para ubicar los elementos. En este caso es una cuadrícula de 12 x 12. Todo esto lo hago con el paquete &lt;em&gt;grid&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pdf(paste0(&amp;quot;/&amp;quot;,nombre,&amp;quot;.pdf&amp;quot;), width = 40, height = 22)
+
+grid.newpage() 
+pushViewport(viewport(layout = grid.layout(12,12)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Ahora, usamos las funciones &lt;em&gt;grid.rect&lt;/em&gt; para poner una línea recta, &lt;em&gt;grid.text&lt;/em&gt; para incluir texto, &lt;em&gt;grid.raster&lt;/em&gt; para insertar imágenes y la función &lt;em&gt;print&lt;/em&gt; para insertar los objetos gráficos construidos anteriormente. Con la función &lt;em&gt;vplayout&lt;/em&gt; defino el lugar de la cuadrícula en que quiero ubicar el elemento en cuestión. También en cada función se setean los tipos y formatos de letra, tamaños, alineación, etc.&lt;br /&gt;
+&lt;em&gt;(dejo comentado lo que costruye en cada línea)&lt;/em&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Línea recta del encabezado
+grid.rect(gp = gpar(fill = &amp;quot;#E13D3D&amp;quot;, col = &amp;quot;#E13D3D&amp;quot;), x = unit(0.5, &amp;quot;npc&amp;quot;), y = unit(0.82, &amp;quot;npc&amp;quot;), width = unit(1, &amp;quot;npc&amp;quot;), height = unit(1.2, &amp;quot;npc&amp;quot;),vp = vplayout(1,1:11))
+#Título
+grid.text(&amp;quot;INFOGRAFÍA EN R&amp;quot;,gp = gpar(fontsize = 45, fontface =&amp;quot;bold&amp;quot;,fontfamily = &amp;quot;Impact&amp;quot;, col = &amp;quot;#000000&amp;quot;),just = c(&amp;quot;left&amp;quot;),vp = vplayout(1,1)) 
+#Logo de R a la derecha
+grid.raster(logo,width = unit(0.6, &amp;quot;npc&amp;quot;),height=unit(0.6, &amp;quot;npc&amp;quot;),vp = vplayout(1,12))
+
+#Inserto gráficos
+print(serie_linea_graf, vp = vplayout(2:6, 1:6))
+print(mapa, vp = vplayout(8:12, 1:3))
+print(piramide_graf, vp = vplayout(8:12,4:6))
+print(serie_barra_graf, vp = vplayout(8:12,7:12))
+
+#ÍconoS con datos 
+#Título
+grid.text(&amp;quot;Iconos con datos&amp;quot;,gp = gpar(fontsize = 30, fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;left&amp;quot;),vp = vplayout(2,8))
+
+#Ícono y dato 1
+grid.raster(icon1,width = unit(0.3, &amp;quot;npc&amp;quot;),height=unit(0.5, &amp;quot;npc&amp;quot;),vp = vplayout(3,8))
+grid.text(&amp;quot;Dato 1&amp;quot;,gp = gpar(fontsize = 30, fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;left&amp;quot;),vp = vplayout(3,9))
+grid.text(datos[1,2],gp = gpar(fontsize = 32, fontface = &amp;quot;bold&amp;quot;,fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;right&amp;quot;),vp = vplayout(3,11))   
+
+#Ícono y dato 2
+grid.raster(icon2,width = unit(0.3, &amp;quot;npc&amp;quot;),height=unit(0.5, &amp;quot;npc&amp;quot;),vp = vplayout(4,8))
+grid.text(&amp;quot;Dato 2&amp;quot;,gp = gpar(fontsize = 30, fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;left&amp;quot;),vp = vplayout(4,9))
+grid.text(datos[2,2],gp = gpar(fontsize = 32, fontface = &amp;quot;bold&amp;quot;,fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;right&amp;quot;),vp = vplayout(4,11))   
+
+#Ícono y dato 3
+grid.raster(icon3,width = unit(0.3, &amp;quot;npc&amp;quot;),height=unit(0.5, &amp;quot;npc&amp;quot;),vp = vplayout(5,8))
+grid.text(&amp;quot;Dato 3&amp;quot;,gp = gpar(fontsize = 30, fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;left&amp;quot;),vp = vplayout(5,9))
+grid.text(datos[3,2],gp = gpar(fontsize = 32, fontface = &amp;quot;bold&amp;quot;,fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;right&amp;quot;),vp = vplayout(5,11))   
+
+#Ícono y dato 4
+grid.raster(icon4,width = unit(0.3, &amp;quot;npc&amp;quot;),height=unit(0.5, &amp;quot;npc&amp;quot;),vp = vplayout(6,8))
+grid.text(&amp;quot;Dato 4&amp;quot;,gp = gpar(fontsize = 30, fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;left&amp;quot;),vp = vplayout(6,9)) 
+grid.text(datos[4,2],gp = gpar(fontsize = 32, fontface = &amp;quot;bold&amp;quot;,fontfamily = &amp;quot;Impact&amp;quot;),just = c(&amp;quot;right&amp;quot;),vp = vplayout(6,11))   &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;versión-final&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Versión final:&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;Inforgrafia.jpg&#34; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;div id=&#34;espero-que-les-sirva&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Espero que les sirva!&lt;/h3&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>R para el análisis cualitativo: Acoso sexual callejero</title>
+      <link>/blog/2018-08-30-acoso-sexual-callejero/</link>
+      <pubDate>Thu, 30 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2018-08-30-acoso-sexual-callejero/</guid>
+      <description>
+
+
+&lt;p&gt;Parte de la presentación que hice en el cumpleaños temático de &lt;a href=&#34;https://twitter.com/RLadiesMVD&#34;&gt;RLadies Montevideo&lt;/a&gt; el 30 de agosto de 2018, dónde se presentaron varias investigaciones en R sobre género. &lt;a href=&#34;https://github.com/rladies/meetup-presentations_montevideo/tree/master/2018-08-30-1er_a%C3%B1o&#34;&gt;Acá están los materiales!&lt;/a&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;El siguiente es un análisis se desarrolla en el marco del &lt;strong&gt;estudio diagnóstico sobre el acoso sexual y otros tipos de violencia contra las mujeres y niñas en espacios públicos&lt;/strong&gt; en Montevideo. El mismo se enmarca en un convenio suscripto entre ONU Mujeres, la Asesoría para Igualdad de Género de la Intendencia de Montevideo (IM) y la Facultad de Ciencias Sociales (UdelaR).&lt;/p&gt;
+&lt;p&gt;Representa un ejemplo de las posibilidades analíticas de tipo cualitativo que pueden hacerse desde R, utilizando los paquetes &lt;em&gt;quanteda&lt;/em&gt; y &lt;em&gt;tm&lt;/em&gt;.&lt;/p&gt;
+&lt;div id=&#34;definiciones-previas&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Definiciones previas:&lt;/h2&gt;
+&lt;p&gt;El estudio concibe al Acoso Sexual Callejero (ASC) como:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“Incluye comentarios, atención, acciones o gestos con contenido sexual indeseado. Como en
+otras formas de violencia sexual, el componente clave del acoso sexual es que alguien
+realiza una acción sin el consentimiento, permiso o acuerdo de la persona o personas a las
+que se dirige. Acoso sexual incluye formas sin contacto, como comentarios sexuales acerca
+del cuerpo o apariencia de la persona, silbidos mientras pasa una mujer, exigencias de
+favores sexuales, quedarse mirando de manera sexualmente sugestiva, persecuciones y
+seguimiento de una persona, exposición de órganos sexuales. El acoso sexual también
+incluye formas físicas de contacto, como frotarse intencionalmente contra alguien en la
+calle o en el transporte público, agarrar, pegar una palmada y aproximarse a alguien en una
+manera sexual.” (ONU Mujeres, 2013)&lt;/em&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;objetivos-del-estudio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Objetivos del estudio:&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Realizar un análisis textual de grupos de discusión sobre ASC realizados a mujeres y varones.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;i.-análisis-textual&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;I. Análisis textual&lt;/h1&gt;
+&lt;div id=&#34;datos-existentes&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Datos existentes&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;6 grupos de discusión sobre la temática ASC, en los cuales participaron mujeres y varones de Montevideo, pertenecientes a diferentes tramos etarios:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Mujeres&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Varones&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Total&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;Jovenes&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;Adultos&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;Total&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-procesamiento&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pre-procesamiento&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Abro los archivos de texto en los cuales tengo las transcripciones de los grupos&lt;/li&gt;
+&lt;li&gt;Elimino aquellas menciones que corresponden a lxs moderadorxs&lt;/li&gt;
+&lt;li&gt;Guardo como archivos .txt, identificando cada archivo por su nombre según las carcaterísticas del grupo (variables de agrupación posteriores)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-procesamiento-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pre-procesamiento&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Abro los archivos con la función &lt;strong&gt;readtext()&lt;/strong&gt;, especificando ubicación de los mismos y variables anexas en los títulos para identificar características del documento&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;readtext.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-procesamiento-2&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pre-procesamiento&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Creo un &lt;strong&gt;corpus&lt;/strong&gt; con el paquete &lt;strong&gt;quanteda&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;corpus.png&#34; /&gt;&lt;/p&gt;
+&lt;!-- ##Pre-procesamiento --&gt;
+&lt;!-- ```{r corpus, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE,size=&#34;tiny&#34;} --&gt;
+&lt;!-- summary(myCorpus) --&gt;
+&lt;!-- ``` --&gt;
+&lt;/div&gt;
+&lt;div id=&#34;limpieza-del-texto&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;em&gt;“Limpieza”&lt;/em&gt; del texto&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Creo un Document feature matrix (DFM), aplicando algunos argumentos que me permiten limpiar las palabras que no me interesan al efecto del análisis.
+&lt;ul&gt;
+&lt;li&gt;Homogeinizo las palabras en minúscula&lt;/li&gt;
+&lt;li&gt;Elimino números&lt;/li&gt;
+&lt;li&gt;Elimino puntuaciones&lt;/li&gt;
+&lt;li&gt;Elimno stopwords (por defecto y lista propia)&lt;/li&gt;
+&lt;li&gt;Elimino palabras con pocos caracteres (1 y 2)&lt;/li&gt;
+&lt;li&gt;Elimino palabras específicas que no me interesan (ej. “Risas”)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;nubes-de-palabras&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Nubes de palabras&lt;/h1&gt;
+&lt;p&gt;Creo nubes de palabras con la función &lt;em&gt;textplot_wordcloud&lt;/em&gt; y desagrego por grupos de interés.&lt;/p&gt;
+&lt;div id=&#34;nubes-de-palabras-general&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Nubes de palabras: general&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../blog/2018-08-30-acoso-sexual-callejero/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;nubes-de-palabras-grupos&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Nubes de palabras: grupos&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/2.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;nubes-de-palabras-mujeresvarones&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Nubes de palabras: mujeres/varones&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../blog/2018-08-30-acoso-sexual-callejero/index_files/figure-html/wccomp2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/3.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;agrupación-de-palabras&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Agrupación de palabras&lt;/h1&gt;
+&lt;div id=&#34;agrupación-de-palabras-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Agrupación de palabras&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Para dar cuenta de la agrupación de palabras, uso el paquete &lt;strong&gt;tm&lt;/strong&gt; y, a diferencia del análisis anterior, considero cada mención como un elemento del corpus&lt;/li&gt;
+&lt;li&gt;Calculo las distancias entre los términos y armo &lt;em&gt;clusters&lt;/em&gt; de palabras (método euclidiano)&lt;/li&gt;
+&lt;li&gt;Grafico la agrupación jerárquica de las palabras en un dendograma, separada entre grupos (método de Ward)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;agrupación-de-palabras-mujeres&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Agrupación de palabras: mujeres&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/4.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;agrupación-de-palabras-varones&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Agrupación de palabras: varones&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/5.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;##Asociación de palabras&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Para analizar las asociaciones entre palabras, consideramos una dispersión de 0.995&lt;/li&gt;
+&lt;li&gt;Buscamos la asociación de palabras, considerando una correlación mínima de 0.05&lt;/li&gt;
+&lt;li&gt;Al tratarse de menciones y no de grupos, la dispersión entre términos es muy alta&lt;/li&gt;
+&lt;li&gt;Analizamos la asociación con las palabras: &lt;em&gt;calle&lt;/em&gt;, &lt;em&gt;acoso&lt;/em&gt; y &lt;em&gt;mujer&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;asociaciónde-palabras-calle&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Asociaciónde palabras: $calle&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/6.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;asociación-de-palabras-acoso&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Asociación de palabras: $acoso&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/7.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;asociaciónde-palabras-mujer&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Asociaciónde palabras: $mujer&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/8.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;#Análisis de sentimiento&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;análisis-de-sentimiento&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Análisis de sentimiento&lt;/h2&gt;
+&lt;p&gt;Se presentan dos métodos para analizar sentimiento de los documentos:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Diccionario LWIC-Spanish: con la función dfm_lookup() de &lt;em&gt;quanteda&lt;/em&gt; identifica en los documentos las emociones presentes en el diccionario y establece puntajes para cada uno, a partir de la estandarización de los mismos (conicidencia únicamente de 15% entre términos).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Método Syuzhet: utiliza la función get_sentiment() de &lt;em&gt;syuzhet&lt;/em&gt; asigna puntajes a cada documento según el método y lenguaje indicado. El método &lt;strong&gt;syuzhet&lt;/strong&gt; es un diccionario de sentimientos desarrollado en el Laboratorio Literario de Nebraska. Otros métodos: &lt;em&gt;bing&lt;/em&gt;, &lt;em&gt;afinn&lt;/em&gt;, &lt;em&gt;nrc&lt;/em&gt; y &lt;em&gt;stanford&lt;/em&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;análisis-de-sentimiento-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Análisis de sentimiento&lt;/h2&gt;
+&lt;p&gt;Comparación entre los métodos:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/9.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;análisis-de-sentimiento-mujeres&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Análisis de sentimiento: mujeres&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/10.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;##Análisis de sentimiento: varones&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;blog_post1/11.png&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
