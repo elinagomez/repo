@@ -26,7 +26,7 @@ featuredImage: ""
 ______________
 
 
-Las palabras son un campo de disputa, están situadas, se conectan con un pasado y construyen realidad. En esa entrada me interesa ensayar algunas prácticas de recuperación de discursos políticos, en particular, declaraciones del presidente de la República Lacalle Pou y posterior análisis con técnicas de minería de texto usando R.   
+Las palabras son un campo de disputa, están situadas, se conectan con un pasado y construyen realidad. En esta entrada me interesa ensayar algunas prácticas de recuperación de discursos políticos, en particular, declaraciones del presidente de la República Lacalle Pou y posterior análisis con técnicas de minería de texto usando R.   
 
 Intentaremos responder lo siguiente: ¿Cuales son las palabras que son más mencionadas por el presidente en sus declaraciones? ¿y las frases? ¿esto cambia en el tiempo? ¿qué temas se desprenden del análisis de las palabras? ¿cómo se asocian entre sí?
 
