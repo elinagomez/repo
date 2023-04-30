@@ -48,4 +48,4 @@ Trabajo también como consultora en investigación social aplicada, asesorando e
 
 Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD). Imparto cursos en el área de [Educación Permanente](https://cienciassociales.edu.uy/educacion-permanente/) orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al análisis de texto. 
 
-Mamá de Emilia(6) y Juliana(3).
+Mamá de Emilia y Juliana.
