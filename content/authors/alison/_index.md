@@ -1,7 +1,7 @@
 ---
 authors:
 - elina
-bio: Licenciada en Sociología
+bio: Socióloga. MSc, PhD(c) 
 education:
   courses:
   - course: Maestría en Estudios Contemporáneos de América Latina
@@ -18,7 +18,7 @@ interests:
 
 name: Elina Gómez
 
-role: Investigadora Social
+role: Socióloga
 social:
 - icon: envelope
   icon_pack: fas
