@@ -293,7 +293,9 @@ anotado %&gt;%
   ylab(&quot;&quot;) +
   theme_bw() +
   coord_flip()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<iframe src="unnamed-chunk-7-1.png" width="700" height="500">
+</iframe>
+<p><br></p>
 <p>Luego, voy a focalizar el análisis en algunas palabras específicas y observar la evolución entre los años de los cuales tenemos declaraciones, en un mapa de calor. Para ello, calculo el peso relativo de cada palabra en el total de palabras mencionadas por el presidente ese año (ya que tenemos menos declaraciones de 2023) y comparo. Tiene sentido que en los primeros años (2020 y 2021) tenga más peso las palabras <em>pandemia</em> y <em>salud</em>, mientras que social y economía empiezan a tener más relevancia desde 2022. Las palabras corrupción, sindicato e ideología tienen un peso relativo menor con respecto a las demás.</p>
 <pre class="r"><code>anotado %&gt;%
   left_join(.,declara_final%&gt;%select(anio),by=c(&quot;doc_id&quot;=&quot;vid&quot;))%&gt;%
@@ -312,7 +314,9 @@ ggplot(aes(x = anio , y = reorder(lemma, prop))) +
   theme(axis.ticks = element_blank(),
         panel.background = element_blank(),
         axis.title = element_blank())</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<iframe src="unnamed-chunk-9-1.png" width="700" height="500">
+</iframe>
+<p><br></p>
 <p>Si quiero ir un poco más allá de las palabras y extraer los términos claves que menciona Lacalle Pou en sus declaraciones, me quedo únicamente con los sustantivos, adjetivos y nombres propios, y utilizo la función <em>keywords_rake</em> del mismo paquete <a href="https://cran.r-project.org/web/packages/udpipe/vignettes/udpipe-annotation.html">udpipe</a> que construye una métrica ( <em>ranke</em>) que surge de combinar la frecuencia de aparición de una palabra y la co-ocurrencia con otras en un documento determinado, en este caso, en cada declaración. Como criterio general, voy a considerar términos claves de hasta tres palabras y opto por quedarme con el <em>lema</em> de cada una, el cual corresponde a la forma común (ej. público) a todas las formas que puede adquirir una palabra (públicos, pública, pública, etc.) y así evitar repeticiones.</p>
 <p>Las palabras claves nos dan una idea de las temáticas que trata el presidente en sus declaraciones públicas y su jerarquización en términos de presencia mayoritaria de ciertos términos. Lo sanitario aparece en primer lugar, vinculado a la pandemia, seguido por la ley de urgente consideración, así como tópicos sobre impuestos, aranceles y comercio exterior.</p>
 <pre class="r"><code>udpipe::keywords_rake(x = anotado %&gt;%filter(lemma %in%quanteda::stopwords(language = &quot;es&quot;)==F),term = &quot;lemma&quot;, group = &quot;doc_id&quot;, 
@@ -328,7 +332,8 @@ filter(freq&gt;4)%&gt;%
   ylab(&quot;&quot;) +
   theme_bw() +
   coord_flip()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<iframe src="unnamed-chunk-11-1.png" width="700" height="500">
+</iframe>
 <p><br></p>
 <p>Otra forma de acercarnos a lo que se menciona en las declaraciones, tiene que ver con la identificación de <em>frases</em> o <em>sintagmas nominales</em>, es decir, que se construyen a partir de un <em>sustantivo</em> como núcleo de la frase. Esto lo puedo identificar utilizando <a href="https://es.wikipedia.org/wiki/Expresi%C3%B3n_regular">expresiones regulares</a> que me permiten extraer frases a partir de un patrón que combina las formas gramaticales previamente etiquetadas. Con ese fin, uso la función <em>keywords_phrases</em>.</p>
 <pre class="r"><code>library(udpipe)
@@ -347,7 +352,9 @@ xlab(&quot;&quot;) +
 ylab(&quot;&quot;) +
 theme_bw() +
 coord_flip()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<iframe src="unnamed-chunk-13-1.png" width="700" height="500">
+</iframe>
+<p><br></p>
 <p>El término <em>millones de dólares</em> aparece como una de las más mencionadas (122 veces) por el presidente, seguramente vinculada al contexto en que se realizan las declaraciones analizadas. A partir de esto, podríamos indagar un poco más el contexto de aparición de dicha expresión con la función <em>kwic</em> ( <em>keyword in context</em>) del paquete <a href="http://quanteda.io/">quanteda</a>. Esta técnica nos permite focalizar en una palabra o frase y analizar el contexto en que se menciona en un determinado texto, definiendo una <em>ventana</em> (cantidad de palabras anteriores y posteriores), pudiendo también constituir un nuevo corpus de datos textuales procesable. Podríamos analizar, por ejemplo, qué menciona el presidente en torno a palabras como <em>“sindicato”</em>, <em>“reforma de la seguridad social”</em> o <em>“transformación educativa”</em>.</p>
 <pre class="r"><code>library(quanteda)
 
@@ -572,7 +579,8 @@ libertad
 </tr>
 </tbody>
 </table>
-<p>Por último, quiero ver como se distribuyen y agrupan las palabras de interés (sustantivos y nombres propios) en un espacio bidimensional en función de la distancia definida a partir de la co-ocurrencia en las declaraciones. Para esto, selecciono las 80 palabras más mencionadas y realizo un escalamiento multidimensional para definir las posiciones de cada una en el espacio. Luego, armo 8 clusters o agrupamientos de palabras que me van a dar información sobre los principales temas de los que habló Lacalle Pou, y que se desprenden de las palabras que se incluyen en cada uno. Algunos de los temas que tienen más cantidad de menciones están la pandemia ( <em>medidas</em>, <em>pandemia</em>), las vacunas ( <em>vacunas</em>, <em>dosis</em>, <em>vacunación</em>), reforma de la seguridad social ( <em>reforma</em>, <em>millones</em>, <em>coalición</em>).</p>
+<p><br>
+Por último, quiero ver como se distribuyen y agrupan las palabras de interés (sustantivos y nombres propios) en un espacio bidimensional en función de la distancia definida a partir de la co-ocurrencia en las declaraciones. Para esto, selecciono las 80 palabras más mencionadas y realizo un escalamiento multidimensional para definir las posiciones de cada una en el espacio. Luego, armo 8 clusters o agrupamientos de palabras que me van a dar información sobre los principales temas de los que habló Lacalle Pou, y que se desprenden de las palabras que se incluyen en cada uno. Algunos de los temas que tienen más cantidad de menciones están la pandemia ( <em>medidas</em>, <em>pandemia</em>), las vacunas ( <em>vacunas</em>, <em>dosis</em>, <em>vacunación</em>), reforma de la seguridad social ( <em>reforma</em>, <em>millones</em>, <em>coalición</em>).</p>
 <pre class="r"><code>library(ggpubr)
 vector=anotado %&gt;%
   filter(upos %in% c(&quot;PROPN&quot;,&quot;NOUN&quot;))%&gt;% pull(token)
@@ -596,7 +604,8 @@ escalamiento$Clusters =clusters
 #Grafico
 ggscatter(escalamiento,x = &quot;V1&quot;,y = &quot;V2&quot;,label = rownames(base_fcm_select),color = &quot;Clusters&quot;,palette = &quot;aaas&quot;,size = 1,ellipse = TRUE, ellipse.type = &quot;convex&quot;, 
 repel = TRUE,font.label = c(7, &quot;plain&quot;),ggtheme = theme_bw())</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<iframe src="unnamed-chunk-19-1.png" width="700" height="500">
+</iframe>
 <hr />
 <p>Hasta aquí algunos de los ensayos de recuperación y análisis de los datos textuales. Las técnicas que explora el posteo resultan útiles para realizar un análisis inicial y rápido de los principales tópicos, términos y sus combinaciones, agrupamientos de palabras, con visualizaciones ilustrativas que ayudan a interpretar los resultados. Pueden complementarse o combinarse con un análisis e interpretación en profundidad de los datos textuales, por ejemplo, de forma asistida con la herramienta libre de análisis cualitativo <a href="https://rqda.r-forge.r-project.org/">RQDA</a>, lo cual puede retroalimentar el análisis, a partir de identificar categorías teóricas de forma sistemática que se integren y oficien de variables de corte para las técnicas y procesamientos presentados.</p>
 <hr />
