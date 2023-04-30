@@ -35,7 +35,7 @@ ______________
 
 <br>
 
-El ensayo se estructura en dos partes fundamentales: (1) recuperación y (2) procesamiento con visualizaciones asociadas. Para asegurar la replicabilidad del análisis se presenta el código utilizado (desplegable) y se disponibilizan en mi [repositorio de GitHub]() las bases utilizadas para reproducir o ampliar los procesamientos.  
+El ensayo se estructura en dos partes fundamentales: (1) recuperación y (2) procesamiento con visualizaciones asociadas. Para asegurar la replicabilidad del análisis se presenta el código utilizado (desplegable) y se disponibilizan en mi [repositorio de GitHub](https://github.com/elinagomez/repo/tree/master/content/blog/2023-05-4-palabras-presidente/Datos) las bases utilizadas para reproducir o ampliar los procesamientos.  
 
 
 ______________
