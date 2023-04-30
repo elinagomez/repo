@@ -1,7 +1,7 @@
 ---
 authors:
 - elina
-bio: Socióloga. MSc, PhD(c) 
+bio: Licenciada en Sociología
 education:
   courses:
   - course: Doctorado en Sociología
@@ -22,7 +22,7 @@ interests:
 
 name: Elina Gómez
 
-role: Socióloga
+role: Investigadora Social
 social:
 - icon: envelope
   icon_pack: fas
@@ -47,5 +47,3 @@ Soy Licenciada en Sociología, Magíster en Estudios Contemporáneos de América
 Trabajo también como consultora en investigación social aplicada, asesorando en el diseño y ejecución de estrategias metodológicas en diversas áreas de conocimiento _(gestión pública_, _educación_, _cooperativismo_,  _género_, _ciencia y tecnología_, _medicina_, entre otros.). Los trabajos de consultoría que desarrollo se centran en la generación y análisis de datos (cuantitativos y cualitativos), evaluación y monitoreo de proyectos, diseño de indicadores y automatización de reportes.
 
 Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD). Imparto cursos en el área de [Educación Permanente](https://cienciassociales.edu.uy/educacion-permanente/) orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al análisis de texto. 
-
-Mamá de Emilia y Juliana. 
