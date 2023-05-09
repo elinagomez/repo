@@ -50,7 +50,10 @@ Para focalizar y construir un corpus de datos textuales exhaustivo de las declar
 
 Esta herramienta permite descargar las url (y alguna metadata) para luego poder ejecutar las transcripciones desde R, por lo que con una búsqueda específica (declaraciones+"lacalle pou") en 2 horas y 13 minutos me recuperó 575 resultados en formato tabulado que coincidían. Al analizar la base veo que es bastante precisa pero hay muchas declaraciones repetidas ya que existe una declaración oficial y los diferentes medios de comunicación la _"levantan"_ y suben en su propio canal de YouTube por lo que también existían intervenciones de periodistas que me _"ensuciaban"_ el análisis. A partir de esta constatación, opté por quedarme con las declaraciones oficiales desde la asunción del presidente (01/03/2020), subidas al canal oficial de YouTube de [Presidencia de la República](https://www.youtube.com/@ComunicacionPresidencial). Luego de hacer ese filtro inicial, me quedo con 205 enlaces y corroboro que todos los videos sean del presidente, a partir de lo cual descarto tres casos que eran de otras personas y no relevantes para mi análisis, me quedo con 202 url a videos. 
 
-Para realizar la descarga de los subtitulos de los videos uso la librería [youtubecaption](https://github.com/jooyoungseo/youtubecaption) que trabaja sobre la librería de Python [youtube-transcript-api](https://pypi.org/project/youtube-transcript-api/) y que que recupera la transcripción de forma tabulada y ordenada para cada secuencia del video, por lo que luego es necesario agrupar por el identificador y recuperar la metadata original. Hago este proceso iterando sobre mi vector de url con [purrr](https://purrr.tidyverse.org/) y la función _possibly()_ para saltar errores. 
+Para realizar la descarga de los subtitulos de los videos uso la librería [youtubecaption](https://github.com/jooyoungseo/youtubecaption) que trabaja sobre la librería de Python[^1] [youtube-transcript-api](https://pypi.org/project/youtube-transcript-api/) y que que recupera la transcripción de forma tabulada y ordenada para cada secuencia del video, por lo que luego es necesario agrupar por el identificador y recuperar la metadata original. Hago este proceso iterando sobre mi vector de url con [purrr](https://purrr.tidyverse.org/) y la función _possibly()_ para saltar errores. 
+
+[^1]: Para conectar R con Python existen algunas posibilidades, en este caso usamos la librería [reticulate](https://posit.co/blog/reticulate-r-interface-to-python/) el cual permite la instalación de miniconda o la interfaz [Anaconda](https://www.anaconda.com/) para gestionar los paquetes.
+
 
 
 ```{r eval=F, message=FALSE, warning=FALSE}
@@ -109,9 +112,9 @@ ______________
 **2. Análisis de los datos textuales** 
 
 
-Como punto de partida para el análisis, luego de hacer la recuperación del apartado anterior, cuento con un corpus de datos con 185 declaraciones presidenciales transcriptas que comprenden el período 2020 a 2023[^1]. 
+Como punto de partida para el análisis, luego de hacer la recuperación del apartado anterior, cuento con un corpus de datos con 185 declaraciones presidenciales transcriptas que comprenden el período 2020 a 2023[^2]. En primera instancia me voy a centrar en el análisis de las palabras (frecuencia, peso relativo, evolución, correlación), para luego ir más allá, recuperando su categoría gramatical e indagar en lo que eso nos permite.   
 
-[^1]: Para el año 2020 se recuperaron sólo 5 casos por lo que, cuando existan cruces por año, opto presentarlos en conjunto con los de 2021. Esto puede deberse a que se registró una baja en las declaraciones en situación de pandemia, existiendo una comunicación más centralizada, y en algunos casos, no aparecía la palabra _declaraciones_ por lo que el filtro sub registró esos casos al automatizar la búsqueda. 
+[^2]: Para el año 2020 se recuperaron sólo 5 casos por lo que, cuando existan cruces por año, opto presentarlos en conjunto con los de 2021. Esto puede deberse a que se registró una baja en las declaraciones en situación de pandemia, existiendo una comunicación más centralizada, y en algunos casos, no aparecía la palabra _declaraciones_ por lo que el filtro sub registró esos casos al automatizar la búsqueda. 
 
   
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -120,7 +123,7 @@ load("C:/Users/Usuario/Documents/repo/content/blog/2023-05-4-palabras-presidente
 library(dplyr)
 ```
 
-En términos de visualizaciones de los videos en YouTube, considerando todo el universo, se desprende que los tres de mayor relevancia fueron las declaraciones en el marco de la cumbre de la Celac (2023) y la Cumbre de Presidentes del Mercosur (2022), que tienen un carácter internacional y por lo tanto mayor impacto, y en tercer lugar, declaraciones vinculadas al caso de corrupción de Astesiano en noviembre de 2022.    
+En términos de visualizaciones de los videos en YouTube, considerando todo el universo, vemos que los tres de mayor relevancia fueron las declaraciones en el marco de la cumbre de la Celac (2023) y la Cumbre de Presidentes del Mercosur (2022), que tienen un carácter internacional y por lo tanto mayor impacto, y en tercer lugar, declaraciones vinculadas al caso de corrupción de Astesiano en noviembre de 2022.    
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -143,13 +146,229 @@ knitr::kable(a, table.attr = "style='width:90%;'",
 ```
 
 
-Me interesa explorar, como primer acercamiento, cuáles son las palabras que menciona el presidente en mayor medida pero quiero poder analizarlas distinguiendo entre sus categorías gramaticales. Para eso, necesito alguna herramienta que logre identificar qué categoría corresponde a cada palabra que forma parte de mi corpus, y para ello voy a utilizar un modelo pre-entrenado para español que logra hacer ese etiquetado[^2]. Hay algunos paquetes de R para dicho fin (ej. [spacyr](https://cran.r-project.org/web/packages/spacyr/vignettes/using_spacyr.html)) en base a la librería de Python [spacy](https://spacy.io/), pero en este caso vamos a usar [udpipe](https://cran.r-project.org/web/packages/udpipe/vignettes/udpipe-annotation.html) con el cual obtube mejores resultados y que definirá qué etiqueta corresponde a cada palabra según [categorías universales](https://universaldependencies.org/u/pos/).
+## Palabras
+
+<br>
+
+Como primer acercamiento me interesa focalizarme en algunas palabras específicas y observar la evolución entre los años de los cuales tenemos declaraciones, en un mapa de calor. Para ello, calculo el peso relativo de cada palabra en el total de palabras mencionadas por el presidente ese año (ya que tenemos menos declaraciones de 2023) y comparo. Tiene sentido que en los primeros años (2020 y 2021) tenga más peso las palabras _pandemia_ y _salud_, mientras que social y economía empiezan a tener más relevancia desde 2022. Las palabras corrupción, sindicato e ideología tienen un peso relativo menor con respecto a las demás.
+
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+anotado %>%
+  left_join(.,declara_final%>%select(anio),by=c("doc_id"="vid"))%>%
+  filter(upos%in%quanteda::stopwords(language = "es")==F)%>%
+  group_by(anio,lemma) %>%
+  summarise(n = n()) %>%
+  mutate(prop = round((n / sum(n)*100),3))%>%
+  filter(lemma %in% c("libertad","ideología","pandemia","economía","social","salud",
+                      "coalición","corrupción","argentina","brasil","china","reforma",
+                      "sindicato"))%>% ##palabras que selecciono
+group_by(anio)%>%
+ggplot(aes(x = anio , y = reorder(lemma, prop))) +
+  geom_tile(aes(fill = prop), color = "white", size = 1) +
+  scale_fill_gradient(high = "#C77CFF",low = "white") +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        axis.title = element_blank())
+
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+load("C:/Users/Usuario/Documents/repo/content/blog/2023-05-4-palabras-presidente/Datos/anotado.RData")
+library(ggplot2)
+
+anotado %>%
+  left_join(.,declara_final%>%select(anio),by=c("doc_id"="vid"))%>%
+  filter(upos%in%quanteda::stopwords(language = "es")==F)%>%
+  group_by(anio,lemma) %>%
+  summarise(n = n()) %>%
+  mutate(prop = round((n / sum(n)*100),3))%>%
+  filter(lemma %in% c("libertad","ideología","pandemia","economía","social","salud",
+                      "coalición","corrupción","argentina","brasil","china","reforma",
+                      "sindicato"))%>%
+  group_by(anio)%>%
+   #top_n(15, abs(prop)) %>%
+ggplot(aes(x = anio , y = reorder(lemma, prop)      )) +
+  geom_tile(aes(fill = prop), color = "white", size = 1) +
+  scale_fill_gradient(high = "#C77CFF",low = "white") +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        axis.title = element_blank())
+
+```
+
+<iframe src="unnamed-chunk-9-1.png" width="700"  height="500"></iframe>
+
+
+<br>
+
+
+Un ejercicio que podría hacer al respecto del análisis de las palabras tiene que ver con buscar la correlación en una matriz de términos (dfm), con la función _textstat_simil_ de _quanteda_, de unas palabras con otras en términos de co-ocurrencia en cada una de las declaraciones públicas de Lacalle Pou. Como se observa, la palabra _libertad_ en sus 144 menciones se asocia principalmente a nivel discursivo con la religión, las creencias, así como con otros términos que la complementan (suprema, ejercicio, demostración). 
+
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+library(quanteda)
+
+quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
+remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
+  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
+min_nchar=3)%>%
+quanteda.textstats::textstat_simil(selection = "libertad",
+method = "correlation",margin = "features")%>%
+as.data.frame()%>%
+arrange(-correlation)%>%
+head(15)
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(quanteda)
+
+dfm=quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
+remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
+  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
+min_nchar=3)
+a=quanteda.textstats::textstat_simil(dfm,selection = "libertad",
+method = "correlation",margin = "features")%>%
+as.data.frame()%>%
+  arrange(-correlation)%>%
+head(7)
+
+knitr::kable(a, table.attr = "style='width:90%;'",
+caption = "Correlación entre palabras") %>% 
+kableExtra::kable_styling(position = "center")
+
+
+```
+
+
+<br>
+
+
+Como otro aspecto, me interesa indagar sobre qué peso tienen los principales temas a los que se refiere Lacalle Pou utilizando diccionarios temáticos que me van a dar información al respecto [^3]. Con este objetivo, armo un diccionario considerando palabras y términos asociados a 6 dimensiones (social, economía, salud, seguridad, vivienda y educación) y observo su peso general y evolución por año [^4]. 
+
+Se observa, como es de esperar, una predominancia de los temas vinculados a salud como consecuencia de la pandemia en los primeros años (2020-2021), mientras que la economía y la educación, esta sobre todo en el último año, cobra relevancia en sus declaraciones.  
+
+[^3]: En español hay poco o nulo desarrollo de diccionarios de temas y es una línea importante a trabajar. Existe un proyecto interesante denominado [Comparative Agendas Project](https://www.comparativeagendas.net/) que disponibiliza un diccionario de al momento de 21 temas y 220 subtemas para inglés y holandés.
+
+[^4]: El utilizado es un diccionario preliminar que podría ampliarse y mejorarse para obtener mejores resultados e interpretaciones analíticas. 
+
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+
+dfm=quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
+                         remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
+  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
+                       min_nchar=3)
+
+docnames(dfm)= declara_final$vid
+midic <- dictionary(list(Social = c("soci*","politica social","politicas sociales", "plan social",
+                                    "planes sociales","pobreza"),
+                         Economia = c("econo*","empleo", "desempleo", "crisis","fiscal","dolar*","inflación",
+                                      "moned*","diner*","deuda","déficit"),
+                         Seguridad=c("seguridad","robo","delincuente","inseguridad","homicidio",
+                                     "rapiña","delito"),
+                         Vivienda = c("vivienda","habitacional","asentamiento*"),
+                         Educacion = c("educ*","transformación educativa","escuela","liceo","utu",
+                                       "universi*"),
+                         Salud = c("salu*","sanitari*","pandemia","vacuna*","salud pública",
+                                       "mutualista","ministerio de salud")))
+
+midic_result<-dfm_lookup(dfm,dictionary=midic)
+midic_result=convert(midic_result, to = "data.frame") %>%
+left_join(.,declara_final%>% dplyr::select(anio),by=c("doc_id"="vid"))
+  
+midic_result %>%
+  dplyr::select(-doc_id)%>%
+  group_by(anio)%>%
+  summarise(across(where(is.numeric), ~ sum(.x, na.rm = TRUE)))%>%
+  pivot_longer(-anio)%>%
+  group_by(anio)%>%
+  mutate(prop = round((value / sum(value)*100),1))%>%
+  ggplot(aes(x = anio , y = prop,fill=name)) +
+  geom_bar(position="fill", stat="identity")+
+  theme_bw() + scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  theme(axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_blank())
+
+
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidyr)
+dfm=quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
+                         remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
+  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
+                       min_nchar=3)
+
+docnames(dfm)= declara_final$vid
+midic <- dictionary(list(Social = c("soci*","politica social","politicas sociales", "plan social",
+                                    "planes sociales","pobreza"),
+                         Economia = c("econo*","empleo", "desempleo", "crisis","fiscal","dolar*","inflación",
+                                      "moned*","diner*","deuda","déficit"),
+                         Seguridad=c("seguridad","robo","delincuente","inseguridad","homicidio",
+                                     "rapiña","delito"),
+                         Vivienda = c("vivienda","habitacional","asentamiento*"),
+                         Educacion = c("educ*","transformación educativa","escuela","liceo","utu",
+                                       "universi*"),
+                         Salud = c("salu*","sanitari*","pandemia","vacuna*","salud pública",
+                                       "mutualista","ministerio de salud")))
+
+midic_result<-dfm_lookup(dfm,dictionary=midic)
+midic_result=convert(midic_result, to = "data.frame") %>%
+left_join(.,declara_final%>% dplyr::select(anio),by=c("doc_id"="vid"))
+  
+midic_result %>%
+  dplyr::select(-doc_id)%>%
+  group_by(anio)%>%
+  summarise(across(where(is.numeric), ~ sum(.x, na.rm = TRUE)))%>%
+  pivot_longer(-anio)%>%
+  group_by(anio)%>%
+  mutate(prop = round((value / sum(value)*100),1))%>%
+  ggplot(aes(x = anio , y = prop,fill=name)) +
+  geom_bar(position="fill", stat="identity")+
+  theme_bw() + scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  theme(axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_blank())
+
+
+
+```
+
+
+<iframe src="unnamed-chunk-21-1.png" width="700"  height="500"></iframe>
+
+
+<br>
+
+## Categorías gramaticales
+
+<br>
+
+En un segundo momento, voy a ir más allá de las palabras y buscar identificar sus categorías gramaticales lo cual le aportan al análisis la capacidad, por ejemplo, de identificar secuencias y extraer a partir de ello palabras claves o frases. También, como veremos, posibilita focalizar el análisis en algunos términos específicos (adjetivos, nombres propios) y no en todas las palabras o términos que sean mencionados en los discursos. 
+
+Por lo tanto, necesito alguna herramienta que logre identificar qué categoría corresponde a cada palabra que forma parte de mi corpus, y para ello voy a utilizar un modelo pre-entrenado para español que logra hacer ese etiquetado[^5]. Hay algunos paquetes de R para dicho fin (ej. [spacyr](https://cran.r-project.org/web/packages/spacyr/vignettes/using_spacyr.html)) en base a la librería de Python [spacy](https://spacy.io/), pero en este caso vamos a usar [udpipe](https://cran.r-project.org/web/packages/udpipe/vignettes/udpipe-annotation.html) con el cual obtuve mejores resultados y parece tener un mejor rendimiento en español para nuestro objetivo[^6]. Dicho modelo definirá qué etiqueta corresponde a cada palabra según [categorías universales](https://universaldependencies.org/u/pos/).
+
+
+[^5]: Ver métricas de comparación entre las dos librerías en: [https://www.bnosac.be/index.php/blog/75-a-comparison-between-spacy-and-udpipe-for-natural-language-processing-for-r-users](https://www.bnosac.be/index.php/blog/75-a-comparison-between-spacy-and-udpipe-for-natural-language-processing-for-r-users)
+
 
  
-[^2]: En el área de Procesamiento de Lenguaje Natural (PLN) estas técnicas se utilizan para analizar el contexto, identificando dependencias y hacer predicciones a partir de esto. En este caso simplemente analizaremos las palabras más mencionadas asociadas a cada categoría gramatical. 
+[^6]: En el área de Procesamiento de Lenguaje Natural (PLN) estas técnicas se utilizan para analizar el contexto, identificando dependencias y hacer predicciones a partir de esto. En este caso simplemente analizaremos las palabras más mencionadas asociadas a cada categoría gramatical. 
 
 
-Si distinguimos entre categorías, como se ve en el gráfico, se observa que los adjetivos que predominan son de carácter positivo ( _importante_, _bueno_, _mejor_, etc.), mientras que los países que más se mencionan son _brasil_, _argentina_ y _paraguay_ respectivamente y el verbo más mencionado es _tener_. Aunque no entra en las categorías gramaticales que estamos viendo ya que es un adverbio, la palabra _obviamente_ es una de las más mencionadas por parte del presidente, la menciona 506 veces, es decir, más de 2.5 veces por declaración.    
+Al comparar la frecuencia simple entre categorías, como se ve en el gráfico, se observa que los adjetivos que predominan son de carácter positivo ( _importante_, _bueno_, _mejor_, etc.), mientras que los países que más se mencionan son _brasil_, _argentina_ y _paraguay_ respectivamente y el verbo más mencionado es _tener_. Aunque no entra en las categorías gramaticales que estamos viendo ya que es un adverbio, la palabra _obviamente_ es una de las más mencionadas por parte del presidente, la menciona 506 veces, es decir, más de 2.5 veces por declaración.    
 
 
 ```{r eval=F, message=FALSE, warning=FALSE}
@@ -215,61 +434,8 @@ anotado %>%
 
 <br>
 
-Luego, voy a focalizar el análisis en algunas palabras específicas y observar la evolución entre los años de los cuales tenemos declaraciones, en un mapa de calor. Para ello, calculo el peso relativo de cada palabra en el total de palabras mencionadas por el presidente ese año (ya que tenemos menos declaraciones de 2023) y comparo. Tiene sentido que en los primeros años (2020 y 2021) tenga más peso las palabras _pandemia_ y _salud_, mientras que social y economía empiezan a tener más relevancia desde 2022. Las palabras corrupción, sindicato e ideología tienen un peso relativo menor con respecto a las demás.  
 
-
-```{r eval=FALSE, message=FALSE, warning=FALSE}
-
-anotado %>%
-  left_join(.,declara_final%>%select(anio),by=c("doc_id"="vid"))%>%
-  filter(upos%in%quanteda::stopwords(language = "es")==F)%>%
-  group_by(anio,lemma) %>%
-  summarise(n = n()) %>%
-  mutate(prop = round((n / sum(n)*100),3))%>%
-  filter(lemma %in% c("libertad","ideología","pandemia","economía","social","salud",
-                      "coalición","corrupción","argentina","brasil","china","reforma",
-                      "sindicato"))%>% ##palabras que selecciono
-group_by(anio)%>%
-ggplot(aes(x = anio , y = reorder(lemma, prop))) +
-  geom_tile(aes(fill = prop), color = "white", size = 1) +
-  scale_fill_gradient(high = "#C77CFF",low = "white") +
-  theme_bw() +
-  theme(axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        axis.title = element_blank())
-
-```
-
-
-```{r message=FALSE, warning=FALSE, include=FALSE}
-
-anotado %>%
-  left_join(.,declara_final%>%select(anio),by=c("doc_id"="vid"))%>%
-  filter(upos%in%quanteda::stopwords(language = "es")==F)%>%
-  group_by(anio,lemma) %>%
-  summarise(n = n()) %>%
-  mutate(prop = round((n / sum(n)*100),3))%>%
-  filter(lemma %in% c("libertad","ideología","pandemia","economía","social","salud",
-                      "coalición","corrupción","argentina","brasil","china","reforma",
-                      "sindicato"))%>%
-  group_by(anio)%>%
-   #top_n(15, abs(prop)) %>%
-ggplot(aes(x = anio , y = reorder(lemma, prop)      )) +
-  geom_tile(aes(fill = prop), color = "white", size = 1) +
-  scale_fill_gradient(high = "#C77CFF",low = "white") +
-  theme_bw() +
-  theme(axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        axis.title = element_blank())
-
-```
-
-<iframe src="unnamed-chunk-9-1.png" width="700"  height="500"></iframe>
-
-
-<br>
-
-Si quiero ir un poco más allá de las palabras y extraer los términos claves que menciona Lacalle Pou en sus declaraciones, me quedo únicamente con los sustantivos, adjetivos y nombres propios, y utilizo la función _keywords_rake_ del mismo paquete [udpipe](https://cran.r-project.org/web/packages/udpipe/vignettes/udpipe-annotation.html) que construye una métrica ( _ranke_) que surge de combinar la frecuencia de aparición de una palabra y la co-ocurrencia con otras en un documento determinado, en este caso, en cada declaración. Como criterio general, voy a considerar términos claves de hasta tres palabras y opto por quedarme con el _lema_ de cada una, el cual corresponde a la forma común (ej. público) a todas las formas que puede adquirir una palabra (públicos, pública, pública, etc.) y así evitar repeticiones.     
+Si quiero extraer los términos claves que menciona Lacalle Pou en sus declaraciones, me quedo únicamente con los sustantivos, adjetivos y nombres propios (sub categoría de los sustantivos), y utilizo la función _keywords_rake_ del mismo paquete [udpipe](https://cran.r-project.org/web/packages/udpipe/vignettes/udpipe-annotation.html) que construye una métrica ( _ranke_) que surge de combinar la frecuencia de aparición de una palabra y la co-ocurrencia con otras en un documento determinado, en este caso, en cada declaración. Como criterio general, voy a considerar términos claves de hasta tres palabras y opto por quedarme con el _lema_ de cada una, el cual corresponde a la forma común (ej. público) a todas las formas que puede adquirir una palabra (públicos, pública, pública, etc.) y así evitar repeticiones.     
 
 
 Las palabras claves nos dan una idea de las temáticas que trata el presidente en sus declaraciones públicas y su jerarquización en términos de presencia mayoritaria de ciertos términos. Lo sanitario aparece en primer lugar, vinculado a la pandemia, seguido por la ley de urgente consideración, así como tópicos sobre impuestos, aranceles y comercio exterior.  
@@ -365,7 +531,7 @@ coord_flip()
 
 <br>
 
-También podríamos indagar un poco más el contexto de aparición de ciertas palabras o expresionescon la función _kwic_ ( _keyword in context_) del paquete [quanteda](http://quanteda.io/). Esta técnica nos permite focalizar en una palabra o frase y analizar el contexto en que se menciona en un determinado texto, definiendo una _ventana_ (cantidad de palabras anteriores y posteriores), pudiendo también constituir un nuevo corpus de datos textuales procesable. 
+También podríamos indagar un poco más el contexto de aparición de ciertas palabras o expresiones con la función _kwic_ ( _keyword in context_) del paquete [quanteda](http://quanteda.io/). Esta técnica nos permite focalizar en una palabra o frase y analizar el contexto en que se menciona en un determinado texto, definiendo una _ventana_ (cantidad de palabras anteriores y posteriores), pudiendo también constituir un nuevo corpus de datos textuales procesable. 
 
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE}
@@ -458,149 +624,6 @@ sindi %>%
 <iframe src="unnamed-chunk-17-1.png" width="700"  height="500"></iframe>
 
 <br>
-
-
-
-Otro ejercicio que podría hacer tiene que ver con buscar la correlación, con la función _textstat_simil_ de _quanteda_, de una palabras con otras en términos de co-ocurrencia en cada una de las declaraciones públicas de Lacalle Pou. Como se observa, la palabra _libertad_ en sus 144 menciones se asocia principalmente a nivel discursivo con la religión, las creencias, así como con otros términos que la complementan (suprema, ejercicio, demostración). 
-
-
-```{r eval=FALSE, message=FALSE, warning=FALSE}
-library(quanteda)
-
-quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
-remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
-  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
-min_nchar=3)%>%
-quanteda.textstats::textstat_simil(selection = "libertad",
-method = "correlation",margin = "features")%>%
-as.data.frame()%>%
-arrange(-correlation)%>%
-head(15)
-
-```
-
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(quanteda)
-
-dfm=quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
-remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
-  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
-min_nchar=3)
-a=quanteda.textstats::textstat_simil(dfm,selection = "libertad",
-method = "correlation",margin = "features")%>%
-as.data.frame()%>%
-  arrange(-correlation)%>%
-head(7)
-
-knitr::kable(a, table.attr = "style='width:90%;'",
-caption = "Correlación entre palabras") %>% 
-kableExtra::kable_styling(position = "center")
-
-
-```
-
-
-<br>
-
-Por último, me interesa indagar sobre qué peso tienen los principales temas a los que se refiere Lacalle Pou utilizando diccionarios temáticos que me van a dar información al respecto [^3]. Con este objetivo, armo un diccionario considerando palabras y términos asociados a 6 dimensiones (social, economía, salud, seguridad, vivienda y educación) y observo su peso general y evolución por año [^4]. 
-
-Se observa, como es de esperar, una predominancia de los temas vinculados a salud como consecuencia de la pandemia en los primeros años (2020-2021), mientras que la economía y la educación, esta sobre todo en el último año, cobra relevancia en sus declaraciones.  
-
-[^3]: En español hay poco o nulo desarrollo de diccionarios de temas[^2] y es una linea importante a trabajar. Existe un proyecto interesante denominado [Comparative Agendas Project](https://www.comparativeagendas.net/) que disponibiliza un diccionario de al momento de 21 temas y 220 subtemas para inglés y holandés.
-
-[^4]: El utilizado es un diccionario preliminar que podría ampliarse y mejorarse para obtener mejores resultados e interpretaciones analíticas. 
-
-
-```{r eval=FALSE, message=FALSE, warning=FALSE}
-
-
-dfm=quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
-                         remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
-  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
-                       min_nchar=3)
-
-docnames(dfm)= declara_final$vid
-midic <- dictionary(list(Social = c("soci*","politica social","politicas sociales", "plan social",
-                                    "planes sociales","pobreza"),
-                         Economia = c("econo*","empleo", "desempleo", "crisis","fiscal","dolar*","inflación",
-                                      "moned*","diner*","deuda","déficit"),
-                         Seguridad=c("seguridad","robo","delincuente","inseguridad","homicidio",
-                                     "rapiña","delito"),
-                         Vivienda = c("vivienda","habitacional","asentamiento*"),
-                         Educacion = c("educ*","transformación educativa","escuela","liceo","utu",
-                                       "universi*"),
-                         Salud = c("salu*","sanitari*","pandemia","vacuna*","salud pública",
-                                       "mutualista","ministerio de salud")))
-
-midic_result<-dfm_lookup(dfm,dictionary=midic)
-midic_result=convert(midic_result, to = "data.frame") %>%
-left_join(.,declara_final%>% dplyr::select(anio),by=c("doc_id"="vid"))
-  
-midic_result %>%
-  dplyr::select(-doc_id)%>%
-  group_by(anio)%>%
-  summarise(across(where(is.numeric), ~ sum(.x, na.rm = TRUE)))%>%
-  pivot_longer(-anio)%>%
-  group_by(anio)%>%
-  mutate(prop = round((value / sum(value)*100),1))%>%
-  ggplot(aes(x = anio , y = prop,fill=name)) +
-  geom_bar(position="fill", stat="identity")+
-  theme_bw() + scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
-  theme(axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        axis.title = element_blank(),
-        legend.title = element_blank())
-
-
-```
-
-```{r message=FALSE, warning=FALSE, include=FALSE}
-
-dfm=quanteda::dfm(tokens(declara_final$declara,remove_punct = T,
-                         remove_numbers = T),tolower=TRUE,verbose = FALSE) %>%
-  quanteda::dfm_remove(pattern = c(quanteda::stopwords("spanish")),
-                       min_nchar=3)
-
-docnames(dfm)= declara_final$vid
-midic <- dictionary(list(Social = c("soci*","politica social","politicas sociales", "plan social",
-                                    "planes sociales","pobreza"),
-                         Economia = c("econo*","empleo", "desempleo", "crisis","fiscal","dolar*","inflación",
-                                      "moned*","diner*","deuda","déficit"),
-                         Seguridad=c("seguridad","robo","delincuente","inseguridad","homicidio",
-                                     "rapiña","delito"),
-                         Vivienda = c("vivienda","habitacional","asentamiento*"),
-                         Educacion = c("educ*","transformación educativa","escuela","liceo","utu",
-                                       "universi*"),
-                         Salud = c("salu*","sanitari*","pandemia","vacuna*","salud pública",
-                                       "mutualista","ministerio de salud")))
-
-midic_result<-dfm_lookup(dfm,dictionary=midic)
-midic_result=convert(midic_result, to = "data.frame") %>%
-left_join(.,declara_final%>% dplyr::select(anio),by=c("doc_id"="vid"))
-  
-midic_result %>%
-  dplyr::select(-doc_id)%>%
-  group_by(anio)%>%
-  summarise(across(where(is.numeric), ~ sum(.x, na.rm = TRUE)))%>%
-  pivot_longer(-anio)%>%
-  group_by(anio)%>%
-  mutate(prop = round((value / sum(value)*100),1))%>%
-  ggplot(aes(x = anio , y = prop,fill=name)) +
-  geom_bar(position="fill", stat="identity")+
-  theme_bw() + scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
-  theme(axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        axis.title = element_blank(),
-        legend.title = element_blank())
-
-
-
-```
-
-
-<iframe src="unnamed-chunk-21-1.png" width="700"  height="500"></iframe>
-
 
 ______________
 
