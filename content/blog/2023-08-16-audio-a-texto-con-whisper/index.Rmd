@@ -30,6 +30,8 @@ ______________
 
 Una de las tareas que debemos realizar quienes trabajamos con técnicas de investigación en ciencias sociales que se registran en formatos como videos o audios (ej. entrevistas, grupos de discusión), es su transcripción o pasaje a texto para hacerlos procesables ya sea cualitativa o cuantitativamente. Generalmente, es una tarea que hacemos de forma manual y nos permite un primer acercamiento analítico al material producido en la etapa de trabajo de campo. Sin embargo, en muchos casos la masividad o falta de tiempo hace que sea útil complementar la tarea con técnicas de transcripción automática con modelo entrenados para tal fin. 
 
+Este pequeño tutorial y el código que se presenta fue hecho en conjunto con [Gabriela Mathieu](https://gabrielamathieu.rbind.io/).
+
 ______________
 
 
