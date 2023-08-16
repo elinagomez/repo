@@ -1,0 +1,45 @@
+---
+aliases: [audio a texto]
+title: 'Audio a Texto con whisper'
+thumbnail: ""
+authors: [elina]
+date: '2023-08-16'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2023-08-16 / Transcripción de audio a texto usando whisper
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+
+
+<hr />
+<p>Una de las tareas que debemos realizar quienes trabajamos con técnicas de investigación en ciencias sociales que se registran en formatos como videos o audios (ej. entrevistas, grupos de discusión), es su transcripción o pasaje a texto para hacerlos procesables ya sea cualitativa o cuantitativamente. Generalmente, es una tarea que hacemos de forma manual y nos permite un primer acercamiento analítico al material producido en la etapa de trabajo de campo. Sin embargo, en muchos casos la masividad o falta de tiempo hace que sea útil complementar la tarea con técnicas de transcripción automática con modelo entrenados para tal fin.</p>
+<hr />
+<p><strong>1. Contexto</strong></p>
+<p>Esta entrada tiene la intención de socializar una forma sencilla de realizar esa transcripción utilizando una librería de <a href="https://openai.com/">Open AI</a> que se llama <a href="https://openai.com/research/whisper">whisper</a> y permite obtener transcripciones en alta calidad aún en español. Para ello utilizamos en lenguaje de programación <a href="https://www.python.org/">Python</a> combinado con un entorno para escribir y ejecutar código, que pertenece a Google denominado <a href="https://colab.research.google.com">Google Colab</a> y que tiene la ventaja, en este caso, de poder conectar con archivos alojados en Drive. El uso del entorno tiene un cuota gratuita por cuenta de 12 horas de ejecución de GPU (como referencia, en mi caso 240 minutos de audio me llevaron 33 minutos de ejecución).</p>
+<p>El mismo código sería posible ejecutarlo a nivel local directamente desde Python (o en R usando el paquete <a href="https://github.com/bnosac/audio.whisper">audio.whisper</a>), sin embargo los requerimientos de memoria que tiene si contamos con muchos archivos podría hacer inviable su ejecución.</p>
+<p><strong>2. Pasos</strong></p>
+<p>Como primer paso debemos tener una cuenta de Google para poder abrir el cuaderno en el cual estará y se ejecutará el código.</p>
+<p>I. Abrimos <a href="https://colab.research.google.com/drive/1ZIZB87sYD92lh50sonxRo5dNos8d6d3d?usp=sharing">este archivo</a> denominado <em>Audio_a_texto.ipynb</em> que contiene todas las líneas necesarias para hacer la transcripción.</p>
+<ol start="2" style="list-style-type: upper-roman">
+<li><p>Hago una copia del archivo y le pongo el nombre que quiero.</p></li>
+<li><p>Voy al panel de Herramientas, abro <em>Entorno de ejecución</em> -&gt; <em>Cambiar tipo de entorno de ejecución</em> -&gt; <em>T4 GPU</em></p></li>
+</ol>
+<iframe src="imagen1.png" width="700" height="500">
+</iframe>
+<ol start="4" style="list-style-type: upper-roman">
+<li>Creo las carpetas <strong>Entrevistas</strong> y <strong>transcripciones</strong> en el Drive propio y voy ejecutando de a uno los 5 pasos que aparecen en el código.</li>
+</ol>
+<p>Voilá!</p>
