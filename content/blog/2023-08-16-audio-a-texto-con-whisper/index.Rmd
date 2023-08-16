@@ -45,18 +45,21 @@ El mismo código sería posible ejecutarlo a nivel local directamente desde Pyth
 
 Como primer paso debemos tener una cuenta de Google para poder abrir el cuaderno en el cual estará y se ejecutará el código. 
 
-I. Abrimos [este archivo](https://colab.research.google.com/drive/1ZIZB87sYD92lh50sonxRo5dNos8d6d3d?usp=sharing) denominado _Audio_a_texto.ipynb_ que contiene todas las líneas necesarias para hacer la transcripción. 
 
-II. Hago una copia del archivo y le pongo el nombre que quiero con _Archivo_ -> _Guardar una copia en Drive_
+  I. Abrimos [este archivo](https://colab.research.google.com/drive/1ZIZB87sYD92lh50sonxRo5dNos8d6d3d?usp=sharing) denominado _Audio_a_texto.ipynb_ que contiene todas las líneas necesarias para hacer la transcripción. 
 
-III. Voy al panel de Herramientas, abro _Entorno de ejecución_ -> _Cambiar tipo de entorno de ejecución_ -> _T4 GPU_
+  II. Hago una copia del archivo y le pongo el nombre que quiero con _Archivo_ -> _Guardar una copia en Drive_
+
+  III. Voy al panel de Herramientas, abro _Entorno de ejecución_ -> _Cambiar tipo de entorno de ejecución_ -> _T4 GPU_
 
 
 <iframe src="imagen1.png" width="700"  height="500"></iframe>
 
-IV. Creo las carpetas **Entrevistas** y **transcripciones** en el Drive propio 
 
-V. Voy ejecutando de a uno los 5 pasos que aparecen en el código, apretando la la flecha circular en cada uno de los pasos. Cuando aparece un tick en verde, significa que esa celda ya fue ejecutada correctamente. El paso 5 será el que más demore ya que es dónde se hacen efectivamente las transcripciones y su guardado. 
+  IV. Creo las carpetas **Entrevistas** y **transcripciones** en el Drive propio.
+
+
+  V. Voy ejecutando de a uno los 5 pasos que aparecen en el código, apretando la la flecha circular en cada uno de los pasos. Cuando aparece un tick en verde, significa que esa celda ya fue ejecutada correctamente. El paso 5 será el que más demore ya que es dónde se hacen efectivamente las transcripciones y su guardado. 
 Acá un video en el cual ejecuto los primeros pasos:   
 
 
