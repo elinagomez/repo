@@ -47,7 +47,7 @@ Como primer paso debemos tener una cuenta de Google para poder abrir el cuaderno
 
 I. Abrimos [este archivo](https://colab.research.google.com/drive/1ZIZB87sYD92lh50sonxRo5dNos8d6d3d?usp=sharing) denominado _Audio_a_texto.ipynb_ que contiene todas las líneas necesarias para hacer la transcripción. 
 
-II. Hago una copia del archivo y le pongo el nombre que quiero. 
+II. Hago una copia del archivo y le pongo el nombre que quiero con _Archivo_ -> _Guardar una copia en Drive_
 
 III. Voy al panel de Herramientas, abro _Entorno de ejecución_ -> _Cambiar tipo de entorno de ejecución_ -> _T4 GPU_
 
