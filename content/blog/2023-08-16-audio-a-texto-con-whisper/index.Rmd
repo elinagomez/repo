@@ -36,7 +36,7 @@ ______________
 **1. Contexto**
 
 
-Esta entrada tiene la intención de socializar una forma sencilla de realizar esa transcripción utilizando una librería de [Open AI](https://openai.com/) que se llama [whisper](https://openai.com/research/whisper) y permite obtener transcripciones en alta calidad aún en español. Para ello utilizamos en lenguaje de programación [Python](https://www.python.org/) combinado con un entorno para escribir y ejecutar código, que pertenece a Google denominado [Google Colab](https://colab.research.google.com) y que tiene la ventaja, en este caso, de poder conectar con archivos alojados en Drive. El uso del entorno tiene un cuota gratuita por cuenta de 12 horas de ejecución de GPU (como referencia, en mi caso 240 minutos de audio me llevaron 33 minutos de ejecución). 
+Esta entrada tiene la intención de socializar una forma sencilla de realizar esa transcripción utilizando una librería de [Open AI](https://openai.com/) que se llama [whisper](https://openai.com/research/whisper) y permite obtener transcripciones en alta calidad aún en español. Para ello utilizamos en lenguaje de programación [Python](https://www.python.org/) combinado con un entorno para escribir y ejecutar código, que pertenece a Google denominado [Google Colab](https://colab.research.google.com) y que tiene la ventaja, en este caso, de poder conectar con archivos alojados en Drive. El uso del entorno tiene un cuota gratuita por cuenta de 12 horas de ejecución de GPU (como referencia, en mi caso 240 minutos de audio me llevaron 33 minutos de ejecución, usando el modelo _medio_ o _medium_). 
 
 El mismo código sería posible ejecutarlo a nivel local directamente desde Python (o en R usando el paquete [audio.whisper](https://github.com/bnosac/audio.whisper)), sin embargo los requerimientos de memoria que tiene si contamos con muchos archivos podría hacer inviable su ejecución.  
 
@@ -54,9 +54,18 @@ III. Voy al panel de Herramientas, abro _Entorno de ejecución_ -> _Cambiar tipo
 
 <iframe src="imagen1.png" width="700"  height="500"></iframe>
 
-IV. Creo las carpetas **Entrevistas** y **transcripciones** en el Drive propio y voy ejecutando de a uno los 5 pasos que aparecen en el código. 
+IV. Creo las carpetas **Entrevistas** y **transcripciones** en el Drive propio 
+
+V. Voy ejecutando de a uno los 5 pasos que aparecen en el código, apretando la la flecha circular en cada uno de los pasos. Cuando aparece un tick en verde, significa que esa celda ya fue ejecutada correctamente. El paso 5 será el que más demore ya que es dónde se hacen efectivamente las transcripciones y su guardado. 
+Acá un video en el cual ejecuto los primeros pasos:   
 
 
+
+<iframe src="video.mp4" width="700"  height="500"></iframe>
+
+
+
+**Nota:** si cerramos el archivo _Audio_a_texto.ipynb_, cuando lo volvemos a abrir, tenemos que ejecutar todo de nuevo desde el Paso 1. 
 
 Voilá!
 
