@@ -1,0 +1,273 @@
+---
+aliases: [scraping+texto+geo]
+title: 'Cabildo Abierto en el territorio (scraping+texto+geo)'
+thumbnail: ""
+authors: [elina]
+date: '2024-02-10'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2024-02-10 / Mapeo de actividades en territorio de Cabildo Abierto a partir de identificación de localidades en texto de posteos de redes sociales (Instagram). Se aplican técnicas de scraping, análisis de texto y visualización geográfico-espacial.
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+
+
+
+______________
+
+El objetivo del posteo es presentar algunas técnicas que permitan realizar mapeos a partir de identificación de localizaciones geográficas en texto. En particular, haré un mapeo de actividades en territorio de Cabildo Abierto a partir de la extracción de nombres de localidades y departamentos en posteos públicos de redes sociales (Instagram). 
+
+Para ello, aplico técnicas de scraping, análisis de texto y visualización geográfico-espacial. Estas herramientas, trabajadas en conjunto, pueden resultar muy potentes y aplicables a diferentes casos y fuentes de información. 
+
+______________
+
+
+**1. Presentación del caso: Cabildo Abierto**
+
+
+Para este ejercicio utilizo los posteos de la cuenta oficial y pública de [Guido Manini Ríos](https://www.instagram.com/guidomanini/), principal representante del partido [Cabildo Abierto](https://cabildoabierto.uy/) de Uruguay, ya que tiene la particularidad de llevar un registro sistemático de la actividad partidaria y su despliegue en el territorio uruguayo[^1]. 
+
+[^1]: El procesamiento presentado constituye un ejemplo que será replicado para otros actores políticos, cuya comparación enriquecerán las posibilidades analíticas.  
+
+La delimitación del análisis se hará considerando todos los posteos de dicha cuenta pública desde su inicio,el 9 de abril de 2019, hasta el 11 de noviembre de 2023, lo cual significan 1145 entradas únicas en total.
+
+
+
+**2. Scraping de redes sociales: Instagram**
+
+Como primer paso, debo construir la base de datos de posteos con una metadata adecuada que me permita, por un lado, el procesamiento del texto de los posteos de Instagram pero también poder identificar fechas, localizaciones, imagenes adjuntas, entre otras. Para ello, utilicé como referencia [esta entrada](https://achmann.dev/getting-started-with-instagram-analysis-instaloader-bbf686cb6e3b) que explica muy detalladamente cómo hacer la descarga de los datos, conectando con una cuenta propia, y utilizando código Python desde el entorno _Colab de Google_. Esta forma es muy óptima ya que permite consolidar toda la información en una base de datos estándar (en formato .csv) y guarda las imágenes que acompañan los posteos (podría ser interesante analizarlas también!). [Acá](https://colab.research.google.com/drive/1rgS7AP5CJc0X8-g7YCjz8G4q3W6Dvbih?usp=sharing) dejo el link al archivo que se llama _InstagramDataCollection.ipynb_ con las líneas de código necesarias para la descarga (conectando con el Drive propio, tal como hice en el [posteo anterior](https://www.elinagomez.com/blog/2023-08-16-audio-a-texto-con-whisper/) que también usaba Colab). 
+
+La base de datos resultante debería verse así:
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+base=openxlsx::read.xlsx("C:/Users/elina/OneDrive/Documentos/repo/content/blog/2024-02-13-texto-geo/Datos/guidomanini.completo.xlsx")
+base$fecha=openxlsx::convertToDate(base$fecha)
+base = subset(base,duplicated(base$caption)==F)
+
+library(dplyr)
+
+base=base%>%
+  select(username,fecha,caption)%>%
+head(3)
+
+knitr::kable(base, table.attr = "style='width:110%;'",
+                       caption = "Ejemplos de posteos de la cuenta oficial de Instagram de Guido Manini Ríos") %>% 
+  kableExtra::kable_styling(position = "center",full_width = FALSE,font_size = 12)
+
+
+```
+
+
+**3. Extracción de localidades**
+
+
+Luego de tener la base de datos, hago algunos arreglos como eliminar casos duplicados, recuperar fechas, sacar tildes y hashtags (#) que me pueden ensuciar el análisis. Aplico con [quanteda](http://quanteda.io/) un diccionario de localidades y departamentos de Uruguay, para realizar búsquedas en la variable _caption_ que contiene el texto de cada posteo. Vale aclarar que cada posteo puede mencionar más de una localidad por lo que se crean tantas filas como localidades encuentre en cada caso. En el código se detallan todos los pasos que hice para realizar la extracción de localidades. 
+
+
+<br>
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+base$fecha=openxlsx::convertToDate(base$fecha) #recupero fechas
+base = subset(base,duplicated(base$caption)==F) #saco casos duplicados
+base$caption = gsub("#","",base$caption) #saco hashtags
+base$caption=iconv(base$caption,from="UTF-8",to="ASCII//TRANSLIT") #saco tildes
+
+loc_depto=read.csv("depto_loc.csv",header = F) #cargo diccionario de localidades+deptos
+loc_depto=tolower(loc_depto$V1) #paso a minúsculas
+
+library(quanteda) #cargo librería quanteda
+
+luga=dictionary(list(lugares = loc_depto)) #creo diccionario a partir de vector    
+
+dfm <- quanteda::dfm(quanteda::tokens_compound(quanteda::tokens(base$caption,
+remove_punct = TRUE,remove_numbers = TRUE),luga),tolower = TRUE,  
+verbose = FALSE)%>%
+quanteda::dfm_select(luga) #creo matriz de términos DFM y selecciono localidades según diccionario
+
+dfm=convert(dfm, to = "data.frame") #convierto en dataframe
+dfm$doc_id=base$id #asigno variables anexas (metadata)
+
+library(tidyverse) #cargo librería
+base_a = dfm %>% # me quedo solo con los casos que encontró alguna localidad
+  pivot_longer(-doc_id)%>%
+  filter(value!=0)
+
+base=base%>% #le pego estos casos según el identificador a mi base original
+  mutate(doc_id=id)%>%
+  left_join(base_a,by = "doc_id")
+
+base$name=toupper(gsub("_"," ",base$name)) #paso a mayúsculas y remuevo el símbolo "_" que quanteda usa para realizar búsquedas. 
+
+```
+
+<br>
+
+La base resultante contiene las localidades identificadas en una variable específica (con casos duplicados cuando hay más de dos menciones). Luego, hago una revisión manual ya que hay casos en los que existe ambiguedad en la detección (p.e localidades _LA LUCHA_, _ESPERANZA_ o mención a _ARTIGAS_ no como ciudad sino como figura). También existen posteos que tienen una localización asignada por la cuenta, reviso que tenga coherencia con la detectada. Por último, tomo la decisión de que en los casos de mención genérica a departamentos y no coinciden con ciudades capitales (Lavalleja, Soriano o Flores, por ejemplo), se asigna como localidad la capital departamental en cada caso. 
+En resumen, podemos decir que en 567 (49,5%) de los posteos realizados desde la cuenta de Guido Manini Ríos en el período analizado se menciona al menos una localidad o departamento. 
+
+A continuación, una muestra de la base de datos con los chequeos y localidades identificadas:
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+base_c=openxlsx::read.xlsx("C:/Users/elina/OneDrive/Documentos/repo/content/blog/2024-02-13-texto-geo/Datos/guidomanini.chequeo2.xlsx")
+
+
+base_c=base_c%>%
+  filter(is.na(name)==F)%>%
+  select(username,caption,name)%>%
+  slice(c(8,9,10,11))
+
+knitr::kable(base_c, table.attr = "style='width:110%;'",
+                       caption = "Base de datos con localidades identificadas") %>% 
+  kableExtra::kable_styling(position = "center",full_width = FALSE,font_size = 12)
+
+
+```
+
+
+
+**4. Mapeo**
+
+
+Por último, quiero mapear esas localidades considerando el año y la frecuencia de mención[^2] en cada uno. Para ello, necesito recuperar las geometrías de las localidades con las coordenadas específicas, por lo cual recurro a la librería (que uso y recomiendo mucho!) [geouy](https://github.com/RichDeto/geouy/) creada por [Richard Detomasi](https://github.com/RichDeto/) y que con la función _load_geouy()_ permite recuperarlas y fusionarlas con mi base original, tal como se muestra en el código. Como recupera polígonos y no puntos, calculo los centroides para cada caso con la librería para análisis espacial [sf](https://cran.r-project.org/web/packages/sf/index.html). 
+
+
+[^2]: Se trata de menciones a determinadas localidaes o departamentos, las cuales en la mayor parte de los casos se vinculan con actividades en ese territorio pero puede tratarse de una mención genérica. 
+
+
+<br>
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+base_corregida=openxlsx::read.xlsx("guidomanini.chequeo2.xlsx")
+base_corregida$fecha=openxlsx::convertToDate(base_corregida$fecha) #arreglo fechas
+base_corregida$name=iconv(base_corregida$name,from="UTF-8",to="ASCII//TRANSLIT") #saco tildes
+
+loc=geouy::load_geouy(c=c("Localidades pg")) #cargo geometrías con geouy
+
+library(sf) #cargo librería
+loc_menciones= base_corregida%>%
+  filter(is.na(name)==F)%>% #saco los casos que no tienen localidad
+dplyr::left_join(loc, by = c("name" = "NOMBLOC")) #pego geometrías
+
+loc_menciones = sf::st_as_sf(loc_menciones) #paso a objeto sf para calcular centroides
+
+loc_menciones$centroids <- st_transform(loc_menciones, 29101) %>% 
+  st_centroid() %>% 
+  st_transform(., '+proj=longlat +ellps=GRS80 +no_defs') %>%
+  st_geometry()
+
+loc_menciones$ano=lubridate::epiyear(loc_menciones$fecha) #extraigo año con lubridate
+
+#armo tabla con frecuencia de menciones y coordenadas 
+tabla = loc_menciones %>%
+  group_by(ano,name,centroids)%>%
+  summarize(n=n())
+
+```
+
+
+<br>
+
+Para tener una visualización óptima voy a hacer un mapa de burbujas (o [Bubble map](https://r-graph-gallery.com/330-bubble-map-with-ggplot2.html)) con [ggplot2](https://ggplot2.tidyverse.org/) que me permitirá combinar frecuencia de menciones con la categoría año. 
+Genero dos visualizaciones, una con ambas variables en un mismo mapa (identificando puntos o burbujas sobre la geometría de departamentos también recuperada con _geouy_) y otra que mapea considerando facetas por año para visualizar de mejor manera los cambios en el tiempo. 
+
+Es posible observar que 2021 aparece el año con mayor actividad y en los últimos dos se registra una concentración en ciudades capitales y centradas mayoritariamente en el sur del país. 
+
+<br>
+
+_Mapa 1. Frecuencia de localidades en posteos y años_
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+library(ggplot2)
+library(sf)
+library(geouy)
+depto=geouy::load_geouy("Departamentos") #cargo geometrías de departamentos de Uruguay
+ 
+ ggplot() +
+   geom_sf(data = depto, fill = "grey95") +
+   geom_sf(
+     data = tabla,
+     pch = 21,
+     aes(size = n, fill = as.character(ano)),
+     col = "grey20") +
+   scale_size(
+     range = c(1, 20),
+     guide = guide_legend(
+       direction = "horizontal",
+       nrow = 1,
+       label.position = "right")) +
+   guides(fill = guide_legend(title = "")) +
+   theme_void() + theme(legend.position = "bottom")
+
+
+```
+
+
+<br>
+
+<iframe src="manini_total_2.jpg" width="700"  height="500"></iframe>
+
+<br>
+
+
+
+
+
+_Mapa 2. Frecuencia de localidades en posteos para cada año_
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+library(ggplot2)
+library(sf)
+library(geouy)
+depto=geouy::load_geouy("Departamentos") #cargo geometrías de departamentos de Uruguay
+ 
+ggplot() +
+   geom_sf(data = depto, fill = "grey95") +
+   geom_sf(
+     data = tabla,
+     pch = 21,
+     aes(size = n, fill = n),
+     col = "grey20") +
+   scale_size(
+     range = c(1, 9),
+     guide = guide_legend(
+       direction = "horizontal",
+       nrow = 1,
+       label.position = "right")) +
+   guides(fill = guide_legend(title = "")) +
+   theme_void() + theme(legend.position = "bottom")+
+   facet_wrap(vars(as.character(ano))) #facetas por año
+
+
+```
+
+<br>
+
+<iframe src="manini_facet2.jpg" width="700"  height="500"></iframe>
+
+<br>
+
+<br>
+
+FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis en mi [GitHub](https://github.com/elinagomez). 
+
+<br>
