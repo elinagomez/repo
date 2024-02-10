@@ -223,7 +223,7 @@ depto=geouy::load_geouy("Departamentos") #cargo geometrías de departamentos de 
 
 <br>
 
-<iframe src="manini_total_2.jpg" width="700"  height="500"></iframe>
+<iframe src="manini_total_2.jpg" width="500"  height="300"></iframe>
 
 <br>
 
@@ -262,7 +262,7 @@ ggplot() +
 
 <br>
 
-<iframe src="manini_facet2.jpg" width="700"  height="500"></iframe>
+<iframe src="manini_facet2.jpg" width="500"  height="300"></iframe>
 
 <br>
 
