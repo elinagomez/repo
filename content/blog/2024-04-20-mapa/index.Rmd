@@ -1,0 +1,31 @@
+---
+aliases: [mapa]
+title: 'Mapa'
+thumbnail: ""
+authors: [elina]
+date: '2024-02-10'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2024-02-10 / 
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+
+
+
+______________
+
+
+<iframe src="imagenes/Mapa_AD_LP.html" width="900"  height="700"></iframe>
