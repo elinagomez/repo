@@ -1,0 +1,298 @@
+---
+aliases: [scraping+texto+geo]
+title: 'Noticias internacionales sobre casos de corrupción y delito en Uruguay (2022-2024)'
+thumbnail: ""
+authors: [elina]
+date: '2024-07-16'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2024-07-16 / Mapeo de noticias internacionales sobre tres casos de corrupción y delito en Uruguay (Marset, Penadés y Astesiano). Se realiza un ejercicio de visualización geográfico-espacial de la frecuencias de noticias.
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+
+
+<hr />
+<p>El presente posteo se centra en el análisis de noticias internacionales vinculadas a tres casos de corrupción y delito en Uruguay durante el período 2022-2024. Busca realizar un mapeo animado de los casos en el tiempo, así como uno estático para cada uno de los casos analizados. Se disponibilizan las <a href="https://github.com/elinagomez/repo/tree/master/content/blog/2024-07-16-corrupcion-geo/Datos">bases de datos</a> para los tres casos.</p>
+<p>Links a información y cronología de los casos analizados:</p>
+<ul>
+<li><p><a href="https://es.wikipedia.org/wiki/Caso_Marset">Marset</a></p></li>
+<li><p><a href="https://es.wikipedia.org/wiki/Caso_Penad%C3%A9s">Penadés</a></p></li>
+<li><p><a href="https://es.wikipedia.org/wiki/Caso_Astesiano">Astesiano</a></p></li>
+</ul>
+<hr />
+<p><strong>1. Recuperación y consolidación de los datos: scraping de prensa digital</strong></p>
+<p>En primer lugar, para realizar la recuperación de noticias internacionales se recurrió a un scraper de prensa digital <a href="https://eventregistry.org/">Event Registry</a> que permite vía API realizar descarga de los datos vía código <em>Python</em> con su metadata<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>La obtención de datos se hizo a través de búsquedas de palabras claves (kw: marset, astesiano y penadés) en el cuerpo de la noticia, dicha generalidad de datos hizo necesario un trabajo de depuración manual de artículos que, aunque mencionaban los términos, no se vinculaban a los casos especificamente.</p>
+<p>En total se obtuvieron 7720 noticias vinculadas a los tres casos para el período considerado. Para el caso de Marset se contabilizan 6446 noticias, para el caso Astesiano 821 y 453 para el caso Penadés. Cabe mencionar que para el caso de Marset existe un alcance internacional notoriamente mayor, concentrado en la región (Bolivia, Paraguay y Brasil específicamente), dado el seguimiento medático de hechos vinculados a las conexiones regionales e internacionales de las redes de narcotráfico y crimen organizado en las que se encuentra involucrado Sebastián Marset.</p>
+<p>Si vemos la evolución en el tiempo de las noticias internacionales, se visualizan picos en el caso Marset vinculada a la polémica sobre la entrega del pasaporte y renuncia del Canciller Francisco Bustillo. En los casos Astesiano y Penadés, cociden con el inicio del caso y las imputaciones realizadas por la justicia.</p>
+<iframe src="g1.png" width="700" height="400">
+</iframe>
+<p><strong>2. Mapeo conjunto de noticias internacionales</strong></p>
+<p>Para realizar el mapeo de las noticias obtenidas, necesitaba georreferenciar los medios que emitieron cada uno de los artículos. Para esto existían dos tipos de noticias, algunas en las que se identificaban los países, en los cuales es posible mapearlos, mientras que en otros casos los medios internacionales que no tienen anclaje en un país específico (23,5% de NA en la base de datos).</p>
+<p>En este caso, el tiempo era una variable relevante en el análisis, por lo que opté por realizar un mapeo animado con la librería <a href="https://gganimate.com/">gganimate</a> que permite darle interactividad a los gráficos estáticos <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p>Como primer paso necesitaba recuperar las coordenadas de los países por lo que usé la librería <a href="https://cran.r-project.org/web/packages/rnaturalearth/vignettes/rnaturalearth.html">rnaturalearth</a> y el paquetes para análisis espacial <a href="https://cran.r-project.org/web/packages/sf/index.html">sf</a>. Como no quiero los polígonos ya que mi objetivo es un mapa de burbujas (o puntos), debo calcular los <em>centroids</em> para cada caso.</p>
+<pre class="r"><code>#Cargo librerías
+library(sf)
+library(rnaturalearth)
+library(dplyr)
+
+world &lt;- ne_countries(scale = &quot;medium&quot;, returnclass = &quot;sf&quot;)
+world &lt;- st_make_valid(world) # validar las geometrías
+world &lt;- st_buffer(world, 0) # geometrías inválidas 
+world_centroids &lt;- world %&gt;% # centroides
+  st_centroid() %&gt;%
+  st_coordinates() %&gt;%
+  as.data.frame() %&gt;%
+  bind_cols(world %&gt;% select(name))
+# Renombro
+colnames(world_centroids) &lt;- c(&quot;longitude&quot;, &quot;latitude&quot;, &quot;country&quot;)</code></pre>
+<p>Luego tengo que resumir los datos con alguna periodicidad que me permita una visualización adecuada en un período que abarca 3 años, por lo que apoté por agrupar de forma bimensual los casos con la librería <a href="https://cran.r-project.org/web/packages/lubridate/index.html">lubridate</a> y pegarle las coordenadas que había recuperado en el paso anterior.</p>
+<pre class="r"><code>#Cargo librería
+library(lubridate)
+
+base_geo = internacional %&gt;%
+  mutate(mes=floor_date(as.Date(date), unit = &quot;bimonth&quot;)) %&gt;%
+  group_by(caso,mes,country) %&gt;%
+  summarize(n=n()) 
+##le pego las coordenadas
+base_geo= merge(base_geo,world_centroids,by=&quot;country&quot;)
+base_geo=base_geo[,c(-7)] ##borro columna con polígonos</code></pre>
+<p>Luego de tener los datos ya georreferenciados, voy a hacer el mapa animado con <em>gganimate</em>. Lo primero es construir un objeto con un mapa base sobre el cual ubicar los puntos, ahí hago algunos ajustes para excluir los polos y que me quede más centrado. Luego ubico mis puntos que estaban en <em>base_geo</em>, le digo que tome la variable <em>mes</em> para dividir en partes (o frames) la animación y <em>transition_time</em> para definir la transición de un frame a otro.</p>
+<p><br></p>
+<pre class="r"><code>library(ggplot2)
+library(maps)
+library(ggthemes)
+library(gganimate)
+
+##Cargo el mapa del mundo base con algunos ajustes para sacar los polos
+world &lt;- ggplot() +
+  borders(&quot;world&quot;, colour = &quot;gray85&quot;, fill = &quot;gray80&quot;) +
+  coord_fixed(ratio = 1.5, xlim = c(-180, 180), ylim = c(-60, 85)) +
+  theme_void()
+
+mapa &lt;- world +
+  geom_point(data = base_geo, 
+             aes(x = longitude, y = latitude, size = as.numeric(n),
+                 color = caso,  # Usar &#39;color&#39; para diferenciar grupos
+                 frame = as.factor(mes),  # Usar &#39;frame&#39; para la animación
+                 cumulative = TRUE),  # Acumular puntos en el tiempo
+             alpha = .4) +
+  scale_size_continuous(range =  c(5, 35), 
+                        breaks = c(100 ,250, 500, 750)) +  
+  scale_color_manual(values = c(&quot;Astesiano&quot; = &quot;#1B9E77&quot;, &quot;Marset&quot; = &quot;#D95F02&quot;, &quot;Penades&quot; = &quot;#7570B3&quot;)) + 
+  labs(title=&quot;Noticias internacionales sobre casos de corrupción y delito en Uruguay&quot;,size = &#39;N Noticias&#39;, color = &#39;Caso&#39;) +
+  theme(legend.position = &quot;bottom&quot;) +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        axis.line = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        panel.border = element_blank(),
+        plot.title = element_text(size = 23),
+        plot.subtitle = element_text(size = 19),
+        legend.position = c(0.02,0.08),
+        legend.justification = c(0.02,0.08),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 11)) +
+  labs(size = &quot;Frecuencia&quot;)+
+  labs(subtitle = &#39;Mes: {format(frame_time, &quot;%b %Y&quot;)}&#39;, x = &#39;&#39;, y = &#39;&#39;) +
+  ease_aes(&#39;linear&#39;) +
+  transition_time(mes) + 
+  shadow_mark()+
+  guides(size = guide_legend(override.aes = list(size = 8)),  
+         color = guide_legend(override.aes = list(size = 11))) 
+
+animate(mapa, nframes = 240, fps = 10, width = 800, height = 550, end_pause = 100)</code></pre>
+<p><br></p>
+<iframe src="mapa_2.gif" width="700" height="500">
+</iframe>
+<p><strong>3. Mapeo de noticias internacionales por caso</strong></p>
+<p>Luego del mapeo animado, quería un mapeo estático para visualizar de mejor manera la cobertura internacional de cada caso, por lo que generé con <em>ggplot2</em> un mapa para cada uno. Se adjuntan las visualizaciones y código asociado:</p>
+<p>A. Caso Astesiano</p>
+<pre class="r"><code>base_astesiano = internacional %&gt;%
+  filter(caso==&quot;Astesiano&quot;)%&gt;%
+  group_by(caso,country) %&gt;%
+  summarize(n=n()) 
+
+base_astesiano= merge(base_astesiano,world_centroids,by=&quot;country&quot;)
+base_astesiano=base_astesiano[,c(-6)]
+
+
+world=ggplot() +
+  borders(&quot;world&quot;, colour = &quot;gray85&quot;, fill = &quot;gray80&quot;) +
+  coord_fixed(ratio = 1.5, xlim = c(-180, 180), ylim = c(-60, 85)) +  
+  theme_void()
+
+mapa_astesiano &lt;- world +
+  geom_point(data = base_astesiano, 
+             aes(x = longitude, y = latitude, size = as.numeric(n),
+                 color = caso),  # Acumular puntos en el tiempo
+             alpha = .7) +
+  scale_size_continuous(range =  c(1, 20), 
+                        breaks = c(50 ,80, 120)) +  
+  scale_color_manual(values = c(&quot;Astesiano&quot; = &quot;#1B9E77&quot;, &quot;Marset&quot; = &quot;#D95F02&quot;, &quot;Penades&quot; = &quot;#7570B3&quot;)) + # Cambiar colores según tus grupos
+  labs(title=&quot;Caso Astesiano: mapeo de noticias internacionales&quot;,
+       subtitle=&quot;Período: Mar 2023 - Jul 2024&quot;,size = &#39;N Noticias&#39;, color = &#39;Caso&#39;) +
+  guides(size = guide_legend(override.aes = list(alpha = 1),
+                             direction = &quot;vertical&quot;,
+                             title.position = &#39;top&#39;,
+                             title.hjust = 0.5,
+                             label.hjust = 0,
+                             nrow = 5,
+                             byrow = T,
+                             reverse = F,
+                             label.position = &quot;right&quot;
+  )
+  ) +
+  theme(legend.position = &quot;bottom&quot;) +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        axis.line = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        panel.border = element_blank(),
+        plot.title = element_text(size = 25),
+        plot.subtitle = element_text(size = 20),
+        legend.position = c(0.02,0.08),
+        legend.justification = c(0.02,0.08),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8)) +
+  labs(size = &quot;Frecuencia&quot;) +
+  guides(size = guide_legend(override.aes = list(size = 8)),  
+         color = &quot;none&quot;) </code></pre>
+<p><br></p>
+<iframe src="mapa_astesiano.png" width="700" height="400">
+</iframe>
+<p>B. Caso Marset</p>
+<pre class="r"><code>base_marset = internacional %&gt;%
+  filter(caso==&quot;Marset&quot;)%&gt;%
+  group_by(caso,country) %&gt;%
+  summarize(n=n()) 
+
+base_marset= merge(base_marset,world_centroids,by=&quot;country&quot;)
+base_marset=base_marset[,c(-6)]
+
+
+world=ggplot() +
+  borders(&quot;world&quot;, colour = &quot;gray85&quot;, fill = &quot;gray80&quot;) +
+  coord_fixed(ratio = 1.5, xlim = c(-180, 180), ylim = c(-60, 85)) +  
+  theme_void()
+
+mapa_marset &lt;- world +
+  geom_point(data = base_marset, 
+             aes(x = longitude, y = latitude, size = as.numeric(n),
+                 color = caso),  
+             alpha = .7) +
+  scale_size_continuous(range =  c(1, 20), 
+                        breaks = c(50 ,80, 120)) +  
+  scale_color_manual(values = c(&quot;Astesiano&quot; = &quot;#1B9E77&quot;, &quot;Marset&quot; = &quot;#D95F02&quot;, &quot;Penades&quot; = &quot;#7570B3&quot;)) +
+  labs(title=&quot;Caso Marset: mapeo de noticias internacionales&quot;,
+       subtitle=&quot;Período: Feb 2022 - Jul 2024&quot;,size = &#39;N Noticias&#39;, color = &#39;Caso&#39;) +
+  guides(size = guide_legend(override.aes = list(alpha = 1),
+                             direction = &quot;vertical&quot;,
+                             title.position = &#39;top&#39;,
+                             title.hjust = 0.5,
+                             label.hjust = 0,
+                             nrow = 5,
+                             byrow = T,
+                             reverse = F,
+                             label.position = &quot;right&quot;
+  )
+  ) +
+  theme(legend.position = &quot;bottom&quot;) +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        axis.line = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        panel.border = element_blank(),
+        plot.title = element_text(size = 25),
+        plot.subtitle = element_text(size = 20),
+        legend.position = c(0.02,0.08),
+        legend.justification = c(0.02,0.08),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8)) +
+  labs(size = &quot;Frecuencia&quot;) +
+  guides(size = guide_legend(override.aes = list(size = 8)),  
+         color = &quot;none&quot;) </code></pre>
+<p><br></p>
+<iframe src="mapa_marset.png" width="700" height="400">
+</iframe>
+<p>B. Caso Penadés</p>
+<pre class="r"><code>base_penades = base %&gt;%
+  filter(country%in%c(&quot;Uruguay&quot;, &quot;N/A&quot;)==F)%&gt;%
+  filter(caso==&quot;Penades&quot;)%&gt;%
+  group_by(caso,country) %&gt;%
+  summarize(n=n()) 
+
+base_penades= merge(base_penades,world_centroids,by=&quot;country&quot;)
+base_penades=base_penades[,c(-6)]
+
+
+world=ggplot() +
+  borders(&quot;world&quot;, colour = &quot;gray85&quot;, fill = &quot;gray80&quot;) +
+  coord_fixed(ratio = 1.5, xlim = c(-180, 180), ylim = c(-60, 85)) +  # Ajusta el ratio y los límites
+  theme_void()
+
+mapa_penades &lt;- world +
+  geom_point(data = base_penades, 
+             aes(x = longitude, y = latitude, size = as.numeric(n),
+                 color = caso),  
+             alpha = .7) +
+  scale_size_continuous(range =  c(1, 12), 
+                        breaks = c(50 ,80, 120)) +  
+  scale_color_manual(values = c(&quot;Astesiano&quot; = &quot;#1B9E77&quot;, &quot;Marset&quot; = &quot;#D95F02&quot;, &quot;Penades&quot; = &quot;#7570B3&quot;)) + 
+  labs(title=&quot;Caso Penadés: mapeo de noticias internacionales&quot;,
+       subtitle=&quot;Período: Mar 2023 - Jul 2024&quot;,size = &#39;N Noticias&#39;, color = &#39;Caso&#39;) +
+  guides(size = guide_legend(override.aes = list(alpha = 1),
+                             direction = &quot;vertical&quot;,
+                             title.position = &#39;top&#39;,
+                             title.hjust = 0.5,
+                             label.hjust = 0,
+                             nrow = 5,
+                             byrow = T,
+                             reverse = F,
+                             label.position = &quot;right&quot;
+  )
+  ) +
+  theme(legend.position = &quot;bottom&quot;) +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        axis.line = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        panel.border = element_blank(),
+        plot.title = element_text(size = 25),
+        plot.subtitle = element_text(size = 20),
+        legend.position = c(0.02,0.08),
+        legend.justification = c(0.02,0.08),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8)) +
+  labs(size = &quot;Frecuencia&quot;) +
+  guides(size = guide_legend(override.aes = list(size = 8)),  
+         color = &quot;none&quot;) </code></pre>
+<p><br></p>
+<iframe src="mapa_penades.png" width="700" height="400">
+</iframe>
+<p>FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis en mi <a href="https://github.com/elinagomez">GitHub</a>.</p>
+<p><br></p>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Se accede al titular y el cuerpo para los medios sin suscripción, para aquellos que requieren suscripción se obtiene sólo el titular y el copete.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>En esta línea hay un <a href="https://d4tagirl.com/2017/05/how-to-plot-animated-maps-with-gganimate/">posteo</a> muy lindo de <a href="d4tagirl">Daniela Vazquez</a> que tiene algunos años pero que sirvió de inspiración.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>

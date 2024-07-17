@@ -42,10 +42,10 @@ social:
 superuser: true
 ---
 
-Soy Licenciada en Sociología, Magíster en Estudios Contemporáneos de América Latina y Doctoranda en Sociología por la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy). Me desempeño como docente e investigadora en la [Unidad de Métodos y Acceso a Datos (UMAD)](https://umad.cienciassociales.edu.uy/) de la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy) - [Universidad de la República](www.universidad.edu.uy). 
+Soy Licenciada en Sociología, Magíster en Estudios Contemporáneos de América Latina y Candidata a Doctora en Sociología por la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy). Me desempeño como docente e investigadora en la [Unidad de Métodos y Acceso a Datos (UMAD)](https://umad.cienciassociales.edu.uy/) de la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy) - [Universidad de la República](www.universidad.edu.uy). 
 
-Trabajo también como consultora en investigación social aplicada, asesorando en el diseño y ejecución de estrategias metodológicas en diversas áreas de conocimiento _(gestión pública_, _educación_, _cooperativismo_,  _género_, _ciencia y tecnología_, _medicina_, entre otros.). Los trabajos de consultoría que desarrollo se centran en la generación y análisis de datos (cuantitativos y cualitativos), evaluación y monitoreo de proyectos.
+Me intereso en el área de _ciencias sociales computacionales_, _análisis de texto_ y _aprendizaje estadístico_ aplicado a la inverstigación social. Imparto cursos de grado y posgrado orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al procesamiento de texto y análisis cualitativo. 
 
-Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD). Imparto cursos en el área de [Educación Permanente](https://cienciassociales.edu.uy/educacion-permanente/) orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al análisis de texto. 
+Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD). 
 
 Mamá de _Emilia_ y _Juliana_.
