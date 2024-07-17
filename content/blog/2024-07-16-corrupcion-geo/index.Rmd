@@ -246,7 +246,7 @@ mapa_astesiano <- world +
 
 <br>
 
-<iframe src="mapa_astesiano.png" width="700"  height="400"></iframe>
+<iframe src="mapa_astesiano.png" width="800"  height="450"></iframe>
 
 
 
@@ -312,7 +312,7 @@ mapa_marset <- world +
 
 <br>
 
-<iframe src="mapa_marset.png" width="700"  height="400"></iframe>
+<iframe src="mapa_marset.png" width="800"  height="450"></iframe>
 
 
 
@@ -380,7 +380,7 @@ mapa_penades <- world +
 
 <br>
 
-<iframe src="mapa_penades.png" width="700"  height="400"></iframe>
+<iframe src="mapa_penades.png" width="800"  height="450"></iframe>
 
 
 FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis en mi [GitHub](https://github.com/elinagomez).
