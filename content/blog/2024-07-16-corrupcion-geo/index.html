@@ -38,8 +38,9 @@ featuredImage: ""
 <p>La obtención de datos se hizo a través de búsquedas de palabras claves (kw: marset, astesiano y penadés) en el cuerpo de la noticia, dicha generalidad de datos hizo necesario un trabajo de depuración manual de artículos que, aunque mencionaban los términos, no se vinculaban a los casos especificamente.</p>
 <p>En total se obtuvieron 7720 noticias vinculadas a los tres casos para el período considerado. Para el caso de Marset se contabilizan 6446 noticias, para el caso Astesiano 821 y 453 para el caso Penadés. Cabe mencionar que para el caso de Marset existe un alcance internacional notoriamente mayor, concentrado en la región (Bolivia, Paraguay y Brasil específicamente), dado el seguimiento medático de hechos vinculados a las conexiones regionales e internacionales de las redes de narcotráfico y crimen organizado en las que se encuentra involucrado Sebastián Marset.</p>
 <p>Si vemos la evolución en el tiempo de las noticias internacionales, se visualizan picos en el caso Marset vinculada a la polémica sobre la entrega del pasaporte y renuncia del Canciller Francisco Bustillo. En los casos Astesiano y Penadés, cociden con el inicio del caso y las imputaciones realizadas por la justicia.</p>
-<iframe src="g1.png" width="700" height="400">
-</iframe>
+<div class="responsive-iframe">
+<p><iframe src="g1.png" width="700" height="400"></iframe></p>
+</div>
 <p><strong>2. Mapeo conjunto de noticias internacionales</strong></p>
 <p>Para realizar el mapeo de las noticias obtenidas, necesitaba georreferenciar los medios que emitieron cada uno de los artículos. Para esto existían dos tipos de noticias, algunas en las que se identificaban los países, en los cuales es posible mapearlos, mientras que en otros casos los medios internacionales que no tienen anclaje en un país específico (23,5% de NA en la base de datos).</p>
 <p>En este caso, el tiempo era una variable relevante en el análisis, por lo que opté por realizar un mapeo animado con la librería <a href="https://gganimate.com/">gganimate</a> que permite darle interactividad a los gráficos estáticos <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
@@ -117,8 +118,9 @@ mapa &lt;- world +
 
 animate(mapa, nframes = 240, fps = 10, width = 800, height = 550, end_pause = 100)</code></pre>
 <p><br></p>
-<iframe src="mapa_2.gif" width="700" height="500">
-</iframe>
+<div class="responsive-iframe">
+<p><iframe src="mapa_2.gif" width="700" height="400"></iframe></p>
+</div>
 <p><strong>3. Mapeo de noticias internacionales por caso</strong></p>
 <p>Luego del mapeo animado, quería un mapeo estático para visualizar de mejor manera la cobertura internacional de cada caso, por lo que generé con <em>ggplot2</em> un mapa para cada uno. Se adjuntan las visualizaciones y código asociado:</p>
 <p>A. Caso Astesiano</p>
@@ -174,8 +176,9 @@ mapa_astesiano &lt;- world +
   guides(size = guide_legend(override.aes = list(size = 8)),  
          color = &quot;none&quot;) </code></pre>
 <p><br></p>
-<iframe src="mapa_astesiano.png" width="800" height="450">
-</iframe>
+<div class="responsive-iframe">
+<p><iframe src="mapa_astesiano.png" width="700" height="400"></iframe></p>
+</div>
 <p>B. Caso Marset</p>
 <pre class="r"><code>base_marset = internacional %&gt;%
   filter(caso==&quot;Marset&quot;)%&gt;%
@@ -229,8 +232,9 @@ mapa_marset &lt;- world +
   guides(size = guide_legend(override.aes = list(size = 8)),  
          color = &quot;none&quot;) </code></pre>
 <p><br></p>
-<iframe src="mapa_marset.png" width="800" height="450">
-</iframe>
+<div class="responsive-iframe">
+<p><iframe src="mapa_marset.png" width="700" height="400"></iframe></p>
+</div>
 <p>B. Caso Penadés</p>
 <pre class="r"><code>base_penades = base %&gt;%
   filter(country%in%c(&quot;Uruguay&quot;, &quot;N/A&quot;)==F)%&gt;%
@@ -285,8 +289,10 @@ mapa_penades &lt;- world +
   guides(size = guide_legend(override.aes = list(size = 8)),  
          color = &quot;none&quot;) </code></pre>
 <p><br></p>
-<iframe src="mapa_penades.png" width="800" height="450">
-</iframe>
+<!-- <iframe src="mapa_penades.png" width="800"  height="450"></iframe> -->
+<div class="responsive-iframe">
+<p><iframe src="mapa_penades.png" width="700" height="400"></iframe></p>
+</div>
 <p>FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis en mi <a href="https://github.com/elinagomez">GitHub</a>.</p>
 <p><br></p>
 <div class="footnotes footnotes-end-of-document">

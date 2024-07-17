@@ -44,7 +44,7 @@ superuser: true
 
 Soy Licenciada en Sociología, Magíster en Estudios Contemporáneos de América Latina y Candidata a Doctora en Sociología por la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy). Me desempeño como docente e investigadora en la [Unidad de Métodos y Acceso a Datos (UMAD)](https://umad.cienciassociales.edu.uy/) de la [Facultad de Ciencias Sociales](www.cienciassociales.edu.uy) - [Universidad de la República](www.universidad.edu.uy). 
 
-Me intereso en el área de _ciencias sociales computacionales_, _análisis de texto_ y _aprendizaje estadístico_ aplicado a la inverstigación social. Imparto cursos de grado y posgrado orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al procesamiento de texto y análisis cualitativo. 
+Me intereso en el área de _ciencias sociales computacionales_, _análisis de texto_ y _aprendizaje estadístico_ aplicado a la investigación social. Imparto cursos de grado y posgrado orientados a la programación básica en R, generación de informes automáticos integrando lenguajes R, Látex y  Markdown, así como R aplicado al procesamiento de texto y análisis cualitativo. 
 
 Formo parte del [Grupo de Usuarios de R en Uruguay](https://twitter.com/gurumvd) y de la comunidad [RLadies Montevideo](https://twitter.com/RLadiesMVD). 
 

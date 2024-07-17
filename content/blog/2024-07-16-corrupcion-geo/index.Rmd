@@ -58,7 +58,9 @@ Si vemos la evolución en el tiempo de las noticias internacionales, se visualiz
 
 
 
-<iframe src="g1.png" width="700"  height="400"></iframe>
+<div class="responsive-iframe">
+  <iframe src="g1.png" width="700" height="400"></iframe>
+</div>
 
 
 **2. Mapeo conjunto de noticias internacionales**
@@ -172,9 +174,10 @@ animate(mapa, nframes = 240, fps = 10, width = 800, height = 550, end_pause = 10
 
 <br>
 
-<iframe src="mapa_2.gif" width="700"  height="500"></iframe>
 
-
+<div class="responsive-iframe">
+  <iframe src="mapa_2.gif" width="700" height="400"></iframe>
+</div>
 
 
 
@@ -246,8 +249,9 @@ mapa_astesiano <- world +
 
 <br>
 
-<iframe src="mapa_astesiano.png" width="800"  height="450"></iframe>
-
+<div class="responsive-iframe">
+  <iframe src="mapa_astesiano.png" width="700" height="400"></iframe>
+</div>
 
 
 B. Caso Marset
@@ -312,8 +316,9 @@ mapa_marset <- world +
 
 <br>
 
-<iframe src="mapa_marset.png" width="800"  height="450"></iframe>
-
+<div class="responsive-iframe">
+  <iframe src="mapa_marset.png" width="700" height="400"></iframe>
+</div>
 
 
 B. Caso Penadés
@@ -380,7 +385,13 @@ mapa_penades <- world +
 
 <br>
 
-<iframe src="mapa_penades.png" width="800"  height="450"></iframe>
+<!-- <iframe src="mapa_penades.png" width="800"  height="450"></iframe> -->
+
+
+<div class="responsive-iframe">
+  <iframe src="mapa_penades.png" width="700" height="400"></iframe>
+</div>
+
 
 
 FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis en mi [GitHub](https://github.com/elinagomez).
