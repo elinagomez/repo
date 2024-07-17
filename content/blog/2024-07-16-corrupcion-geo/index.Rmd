@@ -179,6 +179,17 @@ animate(mapa, nframes = 240, fps = 10, width = 800, height = 550, end_pause = 10
   <iframe src="mapa_2.gif" width="700" height="400"></iframe>
 </div>
 
+<br>
+
+Luego lo mismo pero focalizando en América Latina, en dónde se concentra la mayor parte de las noticias.
+
+
+<div class="responsive-iframe">
+  <iframe src="mapa_amlat.gif" width="700" height="400"></iframe>
+</div>
+
+
+<br>
 
 
 **3. Mapeo de noticias internacionales por caso**
