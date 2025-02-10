@@ -1,0 +1,414 @@
+---
+aliases: [scraping+texto+sentimiento]
+title: 'Violencia hacia mujeres políticas en X (ex-Twitter) en Uruguay (2024)'
+thumbnail: ""
+authors: [elina]
+date: '2025-02-09'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2025-02-09 / Análisis de la violencia y mensajes ofensivos hacia las mujeres políticas en redes sociales, en particular en la red social X (ex-Twitter), en contexto de campaña electoral en Uruguay (2024). 
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+<script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
+<link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
+
+
+<hr />
+<p>El presente posteo presenta un procesamiento que realicé en el marco de las columnas de análisis de la <a href="https://usina.com.uy/">Usina de Percepción Ciudadana</a> en el programa La Letra Chica de <a href="https://usina.com.uy/tv-ciudad-2/">TV Ciudad</a> durante el año 2024.</p>
+<p>El objetivo era analizar la violencia y mensajes ofensivos hacia las mujeres políticas en redes sociales, en particular en la red social X (ex-Twitter), en contexto de campaña electoral en Uruguay (2024). Existen antecedentes de estudios al respecto en Uruguay como es
+el trabajo de ONU MUjeres <a href="https://lac.unwomen.org/es/digital-library/publications/2022/03/cuantificacion-y-analisis-de-la-violencia-contra-las-mujeres-politicas-en-redes-sociales-uruguay">Cuantificación y análisis de la violencia contra las mujeres políticas en redes sociales - Uruguay</a> y en Argentina un artículo reciente (2025) que analiza el discurso de odio hacia las mujeres políticas en Twitter: <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0317001">Promoters and targets in the Argentinean political context</a>.</p>
+<p>En base a dichos antecedentes, se utilizan para este caso modelos de análisis de sentimiento y detección de mensajes de odio (hate speech) basados en aprendizaje automático, y se presentan algunas visualizaciones que tan cuenta tanto de la cantidad como del contenido de dichos mensajes. Se disponibilizan las <a href="https://github.com/elinagomez/repo/tree/master/content/blog/2025-02-09-violencia-mujerespol/Datos">bases de datos</a> para replicar o ampliar procesamientos.</p>
+<hr />
+<p><strong>1. Conformación de la muestra y scrapeo de datos</strong></p>
+<p>A efectos de realizar un análisis que pudiera ser comparable por género, necesitaba construir una muestra balanceada entre varones y mujeres políticos/as que tuvieran una actividad importante en la red social analizada (X). Además, necesitaba considerar políticos/as de los partidos con representación parlamentaria, por lo que la muestra estuvo constituida por 6 legisladores y 6 legisladoras y, en cada caso, considerando un balance entre partidos según peso parlamentario (2 FA, 2 PN 1 PC y 1 CA). Luego de esta definición, descargué vía scraping (usando <a href="https://apify.com/">Apify</a>) los últimos posteos organicos de cada figura política y los comentarios para cada una, conformando una muestra balanceada de comentarios entre géneros, 2468 comentarios a mujeres y 2140 para varones de 451 conversaciones (posteos). A continuación la tabla resumen de la muestra seleccionada.</p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-1">Table 1: </span>Tabla resumen muestra
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Nombre
+</th>
+<th style="text-align:left;">
+Partido
+</th>
+<th style="text-align:left;">
+Género
+</th>
+<th style="text-align:right;">
+Comentarios
+</th>
+<th style="text-align:right;">
+Conversaciones
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Carmen Asiain
+</td>
+<td style="text-align:left;">
+Partido Nacional
+</td>
+<td style="text-align:left;">
+Mujer
+</td>
+<td style="text-align:right;">
+194
+</td>
+<td style="text-align:right;">
+39
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gloria Rodriguez
+</td>
+<td style="text-align:left;">
+Partido Nacional
+</td>
+<td style="text-align:left;">
+Mujer
+</td>
+<td style="text-align:right;">
+219
+</td>
+<td style="text-align:right;">
+26
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lucia Etcheverry
+</td>
+<td style="text-align:left;">
+Frente Amplio
+</td>
+<td style="text-align:left;">
+Mujer
+</td>
+<td style="text-align:right;">
+918
+</td>
+<td style="text-align:right;">
+78
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ma Eugenia Rossello
+</td>
+<td style="text-align:left;">
+Partido Colorado
+</td>
+<td style="text-align:left;">
+Mujer
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Micaela Melgar
+</td>
+<td style="text-align:left;">
+Frente Amplio
+</td>
+<td style="text-align:left;">
+Mujer
+</td>
+<td style="text-align:right;">
+1028
+</td>
+<td style="text-align:right;">
+69
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Silvana Perez Bonavita
+</td>
+<td style="text-align:left;">
+Cabildo Abierto
+</td>
+<td style="text-align:left;">
+Mujer
+</td>
+<td style="text-align:right;">
+49
+</td>
+<td style="text-align:right;">
+26
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Daniel Caggiani
+</td>
+<td style="text-align:left;">
+Frente Amplio
+</td>
+<td style="text-align:left;">
+Varon
+</td>
+<td style="text-align:right;">
+540
+</td>
+<td style="text-align:right;">
+37
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Martin Sodano
+</td>
+<td style="text-align:left;">
+Cabildo Abierto
+</td>
+<td style="text-align:left;">
+Varon
+</td>
+<td style="text-align:right;">
+126
+</td>
+<td style="text-align:right;">
+18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ope Pasquet
+</td>
+<td style="text-align:left;">
+Partido Colorado
+</td>
+<td style="text-align:left;">
+Varon
+</td>
+<td style="text-align:right;">
+319
+</td>
+<td style="text-align:right;">
+29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rodrigo Goñi
+</td>
+<td style="text-align:left;">
+Partido Nacional
+</td>
+<td style="text-align:left;">
+Varon
+</td>
+<td style="text-align:right;">
+71
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sebastian Da Silva
+</td>
+<td style="text-align:left;">
+Partido Nacional
+</td>
+<td style="text-align:left;">
+Varon
+</td>
+<td style="text-align:right;">
+826
+</td>
+<td style="text-align:right;">
+56
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sebastian Sabini
+</td>
+<td style="text-align:left;">
+Frente Amplio
+</td>
+<td style="text-align:left;">
+Varon
+</td>
+<td style="text-align:right;">
+258
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. Análisis de sentimiento con pysentimiento</strong></p>
+<p>Luego de tener la base de datos consolidada, utilicé la librería de Python <a href="https://github.com/pysentimiento/pysentimiento">pysentimiento</a>: <em>A Python toolkit for Sentiment Analysis and Social NLP tasks</em>. Tiene algunas funcionalidades de preprocesamiento y dos ventajas principales: fue entrenada con Tweets y tiene una implementación del modelo para español, por lo que su elección se ajusta a los objetivos del trabajo. Además de el análisis de sentimiento y detección de mensajes de odio, que serán las dos tareas acá utilizadas, también reliza análisis de emociones, reconocimiento de entidades, etiquetado de POS (Part of speech), entre otras. Este procedimiento lo hice con código Python (no desde R) y el código que utilicé <a href="https://colab.research.google.com/drive/1ycr8032sUU13Ws1ceRjISkc0Ud2oIHK1?usp=sharing">está en este notebook de Google Colab</a>. Es muy sencillo!</p>
+<p><strong>3. Análisis de resultados</strong></p>
+<p>La librería <em>pysentimiento</em> usa modelos basados en transformers en lugar de enfoques basados en diccionarios o reglas, lo que le permite captar matices y contexto en los textos. Clasifica los textos en sentimiento positivo, negativo y neutral.</p>
+<p>En primera instancia hice un análisis de sentimiento de los comentarios a tweets y desagregé entre si fueron reacciones a legisladoras o a legisladores. Encontramos que hay un 5% de diferencia entre ambos en cuanto a comentarios negativos, siendo más negativos aquellos que son dirigidos hacia mujeres, y 3% menos de comentarios positivos en el caso de las legisladoras.</p>
+<pre class="r"><code>load(&quot;Datos/base_sent.RData&quot;)
+
+base_sent &lt;- base_sent %&gt;%
+  rename(
+    Fecha = createdAt,
+    Comentario = text,
+    ID_Conversacion = conversationId,
+    Vistas = viewCount,
+    Nombre = nombre,
+    Partido = partido,
+    Género = sexo
+  )
+##
+sentgen = base_sent %&gt;%
+  group_by(Género, sentimiento)%&gt;%
+  summarise(n = n()) %&gt;%
+  mutate(per = round((n / sum(n))*100 ,1) )
+
+p1=sentgen %&gt;%
+  mutate(sexo = factor(Género, levels = c(&quot;Mujer&quot;, &quot;Varon&quot;))) %&gt;%
+  ggplot(aes(x = Género, y = per, fill = sentimiento)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = paste0(per, &quot;%&quot;)), 
+            size = 5, colour = &quot;black&quot;, fontface = &quot;bold&quot;,
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values = c(&quot;#ff9999&quot;, &quot;#ffcc66&quot;, &quot;#99cc99&quot;), 
+                    name = &quot;Sentimiento&quot;, 
+                    labels = c(&quot;Negativo&quot;, &quot;Neutral&quot;, &quot;Positivo&quot;)) +
+  labs(title = &quot;📊 Sentimiento en Comentarios de X (Twitter) a Políticos/as Uruguayos/as&quot;,
+       subtitle = &quot;Distribución del sentimiento por género en comentarios políticos - 2024&quot;,
+       x = NULL, y = &quot;&quot;,
+       fill = &quot;Sentimiento&quot;) +
+  theme_minimal(base_family = &quot;Fira Sans Condensed&quot;, base_size = 14) +
+  theme(
+    plot.title = element_text(size = 18, face = &quot;bold&quot;, colour = &quot;black&quot;),
+    plot.subtitle = element_text(size = 12, colour = &quot;grey40&quot;),
+    axis.text = element_text(size = 12, colour = &quot;black&quot;),
+    legend.position = &quot;top&quot;,
+    panel.grid.major = element_line(color = &quot;grey85&quot;),
+    panel.grid.minor = element_blank()
+  ) +
+  coord_flip()</code></pre>
+<div class="responsive-iframe">
+<p><iframe src="Plots/p1.png" width="700" height="400"></iframe></p>
+</div>
+<p>Luego, si vamos un poco y más e identificamos la proporción de comentarios que incluyen mensajes ofensivos y de odio, también vemos que es cercano al doble entre mujeres y varones.</p>
+<pre class="r"><code>load(&quot;Datos/base_hate.RData&quot;)
+
+base_hate &lt;- base_hate %&gt;%
+  rename(
+    Fecha = createdAt,
+    Comentario = text,
+    ID_Conversacion = conversationId,
+    Vistas = viewCount,
+    Nombre = nombre,
+    Partido = partido,
+    Género = sexo
+  )
+##
+base_hate$hate_rec=ifelse(base_hate$hate==&quot;[]&quot;,&quot;No&quot;,&quot;Si&quot;)
+
+hatesex = base_hate %&gt;%
+  group_by(Género, hate_rec)%&gt;%
+  summarise(n = n()) %&gt;%
+  mutate(per = round((n / sum(n))*100 ,1) )
+
+p2 &lt;- hatesex %&gt;%
+  filter(hate_rec == &quot;Si&quot;) %&gt;%
+  mutate(Género = factor(Género, levels = c(&quot;Mujer&quot;, &quot;Varon&quot;))) %&gt;%
+  ggplot(aes(x = Género, y = per, fill = hate_rec)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(per, &quot;%&quot;)), 
+            size = 5, colour = &quot;black&quot;, fontface = &quot;bold&quot;,
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values = c(&quot;#d73027&quot;),  # Rojo fuerte para destacar
+                    name = &quot;Mensaje de odio&quot;,
+                    labels = &quot;Sí&quot;) +
+  ylim(0, 15) +
+  labs(title = &quot;💬 Mensajes de odio en Comentarios de X (Twitter) a Políticos/as Uruguayos/as&quot;,
+       subtitle = &quot;Proporción de mensajes de odio según el género del/la destinatario/a - 2024&quot;,
+       x = NULL, y = &quot;&quot;,
+       fill = &quot;Mensaje de odio&quot;,
+       caption = &quot;&quot;) +
+  theme_minimal(base_family = &quot;Fira Sans Condensed&quot;, base_size = 14) +
+  theme(
+    plot.title = element_text(size = 18, face = &quot;bold&quot;, colour = &quot;black&quot;),
+    plot.subtitle = element_text(size = 12, colour = &quot;grey40&quot;),
+    plot.caption = element_text(size = 10, colour = &quot;grey40&quot;),
+    axis.text = element_text(size = 12, colour = &quot;black&quot;),
+    legend.position = &quot;top&quot;,
+    panel.grid.major = element_line(color = &quot;grey85&quot;),
+    panel.grid.minor = element_blank()
+  ) +
+  coord_flip()</code></pre>
+<div class="responsive-iframe">
+<p><iframe src="Plots/p2.png" width="700" height="400"></iframe></p>
+</div>
+<p>Luego, interesaba indagar sobre el contenido de los comentarios a posteos que habían sido identificados como que incluían mensajes de odio e hice un análisis de las palabras descalificativas u ofensivas que aparecen desagregadas por género de la figura política que había realizado el posteo inicial. Se encuentran diferencias significativas, cuantitativas y cualitativas, ya que aparecen más adjetivos y términos ofensivos en el caso de las mujeres políticas. Sobre el contenido, en estas últimas se encuentra más centrado en la persona (adjetivos como <em>rancia</em>, <em>boba</em>, <em>feminazi</em>, <em>borracha</em>, <em>estúpida</em>), al cuerpo ( <em>gorda</em>, <em>bagre</em>, <em>desprolija</em>) y apelación al silencio ( <em>callate</em>, <em>calladita</em> <em>shhhh</em>), mientras que en el caso de los varones se centra en mayor medida en lo ideológico ( <em>oligarca</em>, <em>anglosionista</em>, <em>traidor</em>, <em>delincuente</em>). El procesamiento fue hecho con la librería de R para análisis de datos textuales <a href="https://quanteda.io/">quanteda</a> y generación de nubes de palabras con <a href="https://github.com/Lchiffon/wordcloud2">wordcloud2</a>.</p>
+<pre class="r"><code>library(wordcloud2)
+
+#mujer
+hate_mujer_mas = subset(base_hate,base_hate$hate==&quot;[&#39;hateful&#39;, &#39;targeted&#39;, &#39;aggressive&#39;]&quot; &amp; base_hate$sexo==&quot;Mujer&quot;)
+dfm =quanteda::dfm(quanteda::tokens(hate_mujer_mas$text_proc,remove_punct = TRUE,remove_numbers = TRUE),
+tolower=TRUE,verbose = FALSE) %&gt;%
+  quanteda::dfm_remove(pattern = c(quanteda::stopwords(&quot;spanish&quot;)),min_nchar=3)%&gt;%
+  quanteda::dfm_trim(min_termfreq = 1)
+
+a=as.data.frame(topfeatures(dfm,423))
+a$palabra=rownames(a)
+dfm_select =quanteda::dfm(quanteda::tokens(hate_mujer_mas$text_proc,remove_punct = TRUE,remove_numbers = TRUE),tolower=TRUE,verbose = FALSE) %&gt;%dfm_select(palabras$palabra)
+
+f &lt;- colSums(dfm)
+a=wordcloud2(data.frame(names(f), f),size = 1, ellipticity = 1, shuffle = FALSE, shape = &quot;circle&quot;,rotateRatio = 0) + WCtheme(1)
+
+library(htmlwidgets)
+saveWidget(a,&quot;hate_mujer.html&quot;,selfcontained = F)
+
+
+##varon
+
+hate_varon_mas =subset(base_hate,(base_hate$hate==&quot;[&#39;hateful&#39;, &#39;targeted&#39;, &#39;aggressive&#39;]&quot; |
+                         base_hate$hate==&quot;[&#39;hateful&#39;, &#39;aggressive&#39;]&quot; |
+                         base_hate$hate==&quot;[&#39;hateful&#39;, &#39;targeted&#39;]&quot;)
+                         &amp; base_hate$sexo==&quot;Varon&quot;)
+
+dfm_varon =quanteda::dfm(quanteda::tokens(hate_varon_mas$text_proc,remove_punct = TRUE,remove_numbers = TRUE),
+tolower=TRUE,verbose = FALSE) %&gt;%
+  quanteda::dfm_remove(pattern = c(quanteda::stopwords(&quot;spanish&quot;),stopES),min_nchar=3)%&gt;%
+  quanteda::dfm_trim(min_termfreq = 1)
+f &lt;- colSums(dfm_varon)
+a=wordcloud2(data.frame(names(f), f),size = 1, ellipticity = 1, shuffle = FALSE, shape = &quot;circle&quot;,rotateRatio = 0) + WCtheme(1)
+
+saveWidget(a,&quot;hate_varon.html&quot;,selfcontained = F)</code></pre>
+<div class="responsive-iframe">
+<p><iframe src="Plots/wc1.png" width="700" height="400"></iframe></p>
+</div>
+<p>Por último, centré el foco entre las mujeres políticas según partido, FA y Coalición, y se observa más cantidad de términos ofensivos entre las primeras, incluso cuando en la muestra son minoría, y diferencias en el tipo de palaras y adjetivos utilizados. Se presenta la visualización a continuación.</p>
+<div class="responsive-iframe">
+<p><iframe src="Plots/wc2.png" width="700" height="400"></iframe></p>
+</div>
+<hr />
+<p>FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis, como siempre, en mi <a href="https://github.com/elinagomez">GitHub</a>.</p>
+<p><br></p>
