@@ -1,0 +1,768 @@
+---
+aliases: [scraping+texto+sentimiento]
+title: 'Análisis masivo del discurso público de Gustavo Salle (2015-2025)'
+thumbnail: ""
+authors: [elina]
+date: '2025-04-01'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2025-04-01 / Análisis masivo y evolución del discurso público de Gustavo Salle durante los últimos diez años (2015-2025) en Twitter/X - Entrevistas. 
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+<script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
+<link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
+
+
+<hr />
+<p>Esta entrada se centra en un procesamiento masivo de datos que realicé a iniciativa del <a href="https://www.busqueda.com.uy/">Semanario Búsqueda</a> para <a href="https://www.busqueda.com.uy/politica/el-discurso-conspirativo-salle-se-inscribe-un-contexto-desencanto-global-propulsado-la-pandemia-y-las-redes-n5396141">esta nota</a> y que busca indagar acerca del discurso público de Gustavo Salle, líder de Identidad Soberana, partido que inaugura su participación parlamentaria en la novel legislatura uruguaya (2025-2030), con un discurso rupturista con respecto a los partidos tradicionales. Las fuentes de datos utilizadas fueron la cuenta oficial de Twitter/X y entevistas en medios de prensa, considerando posteos y transcripciones para el período 2015-2025.</p>
+<p>Las preguntas que orientaron el análisis fueron: <em>¿Qué temas trata?</em> <em>¿Cuáles son los términos más mencionados?</em> <em>¿Cómo evoluciona el tono?</em> <em>¿Con qué cuentas interacciona?</em></p>
+<hr />
+<div id="i.-análisis-de-posteos-de-la-cuenta-oficial-gustavo-salle---twitterx" class="section level2">
+<h2>I. Análisis de posteos de la cuenta oficial Gustavo Salle - Twitter/X</h2>
+<p>El trabajo se centra en un análisis retrospectivo de los posteos de la cuenta oficial de Gustavo Salle (<span class="citation">@sallelorier</span>) en la red X (ex-Twitter), en el período 2015 - 2025. En total se contablizan 46633 posteos en el período de diez años, incluyendo posteos originales (21659) y comentarios a otros posteos (24974). En la siguiente tabla se visualiza el total de posteos por año, considerando ambos tipos en conjunto.</p>
+<p><br></p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Anio
+</th>
+<th style="text-align:center;">
+N
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2015
+</td>
+<td style="text-align:center;width: 400px; ">
+5822
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2016
+</td>
+<td style="text-align:center;width: 400px; ">
+5931
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2017
+</td>
+<td style="text-align:center;width: 400px; ">
+3405
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2018
+</td>
+<td style="text-align:center;width: 400px; ">
+3414
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2019
+</td>
+<td style="text-align:center;width: 400px; ">
+4413
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2020
+</td>
+<td style="text-align:center;width: 400px; ">
+8070
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2021
+</td>
+<td style="text-align:center;width: 400px; ">
+4910
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2022
+</td>
+<td style="text-align:center;width: 400px; ">
+3322
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2023
+</td>
+<td style="text-align:center;width: 400px; ">
+4583
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2024
+</td>
+<td style="text-align:center;width: 400px; ">
+2631
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2025
+</td>
+<td style="text-align:center;width: 400px; ">
+132
+</td>
+</tr>
+</tbody>
+</table>
+<div id="evolución" class="section level3">
+<h3>Evolución</h3>
+<p><br>
+En el siguiente gráfico se visualiza su evolución desagregada según tipo de posteo (original o comentario), observando diferentes momentos en la forma de interacción con la red. <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
+<br></p>
+<iframe src="grafico_tipo.html" width="100%" height="500px" style="border:none;">
+</iframe>
+</div>
+<div id="temas" class="section level3">
+<h3>Temas</h3>
+<p><br></p>
+<p>Con el objetivo de analizar el contenido de los posteos, se realizaron diccionarios temáticos con términos asociados a algunas categorías o temas definidos según análisis de discursos del político en medios de prensa. Se distinguieron categorías asociadas a temas recurrentes en su discursividad pública: 1) Orden global y política, 2) Ambiente, 3) Pandemia, 4) Sistema judicial, 5) Género y 6) Otros. La agrupación en diccionarios permite analizar su evolución en el tiempo, énfasis, términos más relevante entre las cetegorías, entre otros.</p>
+<p>En primer lugar, se visualiza la evolución de la cantidad de posteos según cada categoría. Para ello, se define que un posteo corresponde a una categoría determinada cuando menciona al menos uno de los términos definidos en cada caso.
+<br></p>
+<iframe src="evo_cat.html" width="100%" height="500px" style="border:none;">
+</iframe>
+<p><br></p>
+<p>Otra forma de ver dicha evolución en términos de intensidad, como se presenta a continuación, es contabilizar la cantidad de términos mencionados para cada categoría y visualizar su evolución en el tiempo.</p>
+<p><br></p>
+<iframe src="evo_terminos.html" width="100%" height="500px" style="border:none;">
+</iframe>
+<p><br></p>
+<p>Por último se indaga sobre el peso de cada término para cada una de las cuatro categorías que integran el análisis. Se toman las diez palabras principales para cada tema.</p>
+<iframe src="heatmap_terminos.html" width="100%" height="1200px" style="border:none;">
+</iframe>
+<p><br></p>
+</div>
+<div id="temática-parlamentaria" class="section level3">
+<h3>Temática parlamentaria</h3>
+<p><br>
+Se realizó un análisis específico sobre el abordaje de la temática parlamentaria en los posteos emitidos por Gustavo Salle.
+<br></p>
+<iframe src="evo_parlamento.html" width="100%" height="500px" style="border:none;">
+</iframe>
+<p><br>
+También, al igual que en apartados anteriores y con el objetivo de dar cuenta del contenido e intersidad de esos mensajes, se presenta la evolución en la cantidad de términos vinculados con la dinámica parlamentarias que son mencionados en los posteos.
+<br></p>
+<iframe src="evo_terminos_parlamento.html" width="100%" height="500px" style="border:none;">
+</iframe>
+<p><br>
+Finalmente, se presenta un mapa de calor con los diez términos vinculados al parlamento más mencionados y su intensidad.</p>
+<p><br></p>
+<iframe src="heatmap_terminos_parlamento.html" width="100%" height="700px" style="border:none;">
+</iframe>
+</div>
+<div id="interacción" class="section level3">
+<h3>Interacción</h3>
+<p><br>
+Entre los 24974 posteos que representan comentarios a otros posteos, se pueden distinguir cuales son las cuentas a las que reacciona la cuenta original. En la tabla siguiente se contabilizan las menciones a las 20 cuentas con más interacciones (comentarios) en todo el período analizado.</p>
+<p><br></p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Cuenta
+</th>
+<th style="text-align:center;">
+Menciones
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;width: 400px; ">
+LuisLacallePou
+</td>
+<td style="text-align:center;width: 400px; ">
+1498
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+DrEnriqueViana
+</td>
+<td style="text-align:center;width: 400px; ">
+758
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+elpaisuy
+</td>
+<td style="text-align:center;width: 400px; ">
+747
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+gbianchi404
+</td>
+<td style="text-align:center;width: 400px; ">
+280
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+GuidoManiniRios
+</td>
+<td style="text-align:center;width: 400px; ">
+224
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Boconbonica
+</td>
+<td style="text-align:center;width: 400px; ">
+201
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+mabelfosman
+</td>
+<td style="text-align:center;width: 400px; ">
+197
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+ernesto_talvi
+</td>
+<td style="text-align:center;width: 400px; ">
+189
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+OrsiYamandu
+</td>
+<td style="text-align:center;width: 400px; ">
+162
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+salleloreal
+</td>
+<td style="text-align:center;width: 400px; ">
+162
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Subrayado
+</td>
+<td style="text-align:center;width: 400px; ">
+157
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+portalmvd
+</td>
+<td style="text-align:center;width: 400px; ">
+156
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+mcaterra
+</td>
+<td style="text-align:center;width: 400px; ">
+145
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+CosseCarolina
+</td>
+<td style="text-align:center;width: 400px; ">
+143
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+oriental_23
+</td>
+<td style="text-align:center;width: 400px; ">
+137
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+ObservadorUY
+</td>
+<td style="text-align:center;width: 400px; ">
+134
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+AlvaroDelgadoUy
+</td>
+<td style="text-align:center;width: 400px; ">
+133
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+GustavoZubia
+</td>
+<td style="text-align:center;width: 400px; ">
+128
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Frente_Amplio
+</td>
+<td style="text-align:center;width: 400px; ">
+127
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+DameElDiezmo
+</td>
+<td style="text-align:center;width: 400px; ">
+122
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Si vemos la evolución en el tiempo es posible identificar la intensidad de dicha interacción para las 10 cuentas principales.</p>
+<p><br></p>
+<iframe src="evo_interacciones.html" width="100%" height="500px" style="border:none;">
+</iframe>
+</div>
+<div id="análisis-de-sentimiento" class="section level3">
+<h3>Análisis de sentimiento</h3>
+<p>Finalmente, si analizamos el sentimiento de los posteos en el tiempo utilizando modelos pre-entrenados para tal fin (librería <em>pysentimiento</em>), se observa que más de la mitad son negativos (54,3%). La evolución permite visualizar los cambios en el tono, siendo diferente en el último año electoral (2024) con respecto a precedentes.</p>
+<iframe src="evo_sent.html" width="100%" height="500px" style="border:none;">
+</iframe>
+</div>
+</div>
+<div id="análisis-declaraciones-públicas-gustavo-salle" class="section level2">
+<h2>Análisis declaraciones públicas Gustavo Salle</h2>
+<div id="contexto" class="section level3">
+<h3>Contexto</h3>
+<p><br></p>
+<p>En este documentos se analiza un corpus de datos textuales en base a 167 declaraciones o entrevistas a Gustavo Salle en el período entre 2015 y 2024. A continuación se observa la distribución por año.</p>
+<p><br></p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+año
+</th>
+<th style="text-align:center;">
+N
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2015
+</td>
+<td style="text-align:center;width: 400px; ">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2016
+</td>
+<td style="text-align:center;width: 400px; ">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2019
+</td>
+<td style="text-align:center;width: 400px; ">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2020
+</td>
+<td style="text-align:center;width: 400px; ">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+2024
+</td>
+<td style="text-align:center;width: 400px; ">
+106
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Luego, para aquellos casos donde existe registro del medio o programa en el cual fue realizada la entrevista o declaración, se presenta una tabla de frecuencias absolutas.</p>
+<p><br></p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:80%; ">
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Medio
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+N
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Hacemos lo que podemos - Undertake Media
+</td>
+<td style="text-align:center;width: 400px; ">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Hacemos lo que podemos - Hacemos lo que podemos - Undertake Media
+</td>
+<td style="text-align:center;width: 400px; ">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Periodismo con Hansel Iurramendi
+</td>
+<td style="text-align:center;width: 400px; ">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Diario La Noticia
+</td>
+<td style="text-align:center;width: 400px; ">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Ruben Luengas
+</td>
+<td style="text-align:center;width: 400px; ">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Somos de acá - Paysandú
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal Nueve Rocha
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal Once - Punta del Este
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Desayunos informales
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+La super tarde
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Modo País - Canal 5
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+NOCHE D10
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Radio Sarandí
+</td>
+<td style="text-align:center;width: 400px; ">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+HispaUnidad
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Juan Cruz Castiñeiras
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+La gente quiere saber
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+abrazando distritos
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+CRTVuy
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal 3 Colonia
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal 4 HD Salto
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal 5
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal 5 noticias - Canal 5
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Canal 7 - punta del este
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Caras y Caretas TV
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Dirección Correcta
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Esta boca es mía
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Facil Desviarse
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Geopolitica Ariel Umpierrez
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Jorge Vídeos
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Juan Cruz Castiñeiras
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+La posta en la mesa
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Locos por el Fútbol - Del Sol
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Punto de encuentro
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Salto Al Día
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+UndertakeMedia
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;width: 400px; ">
+Vertice
+</td>
+<td style="text-align:center;width: 400px; ">
+1
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="temas-1" class="section level3">
+<h3>Temas</h3>
+<p><br>
+Con el objetivo de analizar el contenido de los posteos, se realizaron diccionarios temáticos con términos asociados a algunas categorías o temas definidos según análisis de discursos del político en medios de prensa. Se distinguieron categorías asociadas a temas recurrentes en su discursividad pública: 1) Orden global y política, 2) Ambiente, 3) Pandemia, 4) Sistema judicial, 5) Género y 6) Otros. La agrupación en diccionarios permite analizar su evolución en el tiempo, énfasis, términos más relevante entre las cetegorías, entre otros.</p>
+<p>La evolución se analiza relativizando las frecuencias absolutas ya que existe desbalance en la cantidad de casos para cada año, por lo que se presenta la cantidad de términos mencionadas para cada categoría en base 1000 términos. Esta normalización hace comparable la serie de tiempo.</p>
+<p><br></p>
+<iframe src="plots/evo_cat_discursos.html" width="100%" height="500px" style="border:none;">
+</iframe>
+<p><br></p>
+<p>Por último se indaga sobre el peso de cada término para cada una de las cuatro categorías que integran el análisis. Se toman las diez palabras principales para cada tema, también considerando la métrica relativa.</p>
+<iframe src="plots/heatmap_terminos_discursos.html" width="100%" height="1200px" style="border:none;">
+</iframe>
+<p><br></p>
+<hr />
+<p>FIN! Bases, código y otros recursos disponibles para replicar o complementar el análisis, como siempre, en mi <a href="https://github.com/elinagomez">GitHub</a>.</p>
+<p><br></p>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Se considera la evolución hasta el año cerrado 2024.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
