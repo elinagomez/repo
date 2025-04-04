@@ -39,11 +39,11 @@ date_format = "January 2006"
 
 [[experience]]
   title = "Socia Directora"
-  company = "FOCUS Investigación y Consultoría"
+  company = "FOCUS"
   company_url = ""
   location = "Montevideo, Uruguay"
   date_start = "2012-08-12"
-  date_end = "2018-08-01"
+  date_end = ""
   description = """ """
   
   

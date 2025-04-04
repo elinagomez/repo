@@ -49,9 +49,13 @@ subtitle = ""
     name = "Cooperativismo"
     tag = "Cooperativismo"
 
-   [[content.filter_button]]
+  [[content.filter_button]]
     name = "Urbanismo"
     tag = "Urbanismo"
+    
+  [[content.filter_button]]
+    name = "Economía"
+    tag = "Economía"
     
   [[content.filter_button]]
     name = "Otros"
