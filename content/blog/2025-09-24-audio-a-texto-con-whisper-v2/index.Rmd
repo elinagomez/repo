@@ -45,10 +45,10 @@ Se usa el mismo entorno de ejecución de código que en la versión anterior ([G
 <br><br>
 **III.** Vas al panel de Herramientas, abrís _Entorno de ejecución_ -> _Cambiar tipo de entorno de ejecución_ -> _T4 GPU_
 <iframe src="imagen1.png" width="700"  height="500"></iframe>
-**IV.** Creás una carpeta en tu Drive (carpeta raíz) que se llame **Audios** y una subcarpeta allí mismo que se llame **Transcripciones** (ojó que esto cambió de la versión anterior!, antes eran dos separadas).En la carpeta **Audios** ponés **TODOS** los audios que querés transcribir (acepta formatos .mp3, .mp4, .wav y .m4a). 
+**IV.** Creás una carpeta en tu Drive (carpeta raíz) que se llame **Audios** y una subcarpeta allí mismo que se llame **Transcripciones** (ojó que esto cambió de la versión anterior!, antes eran dos separadas). En la carpeta **Audios** ponés **TODOS** los audios que querés transcribir (acepta formatos .mp3, .mp4, .wav y .m4a). 
 <br><br>
 **V.** Vas ejecutando de a uno los **5 pasos** que aparecen en el código, apretando la la flecha circular en cada uno de los pasos. Cuando aparece un tick en verde, significa que esa celda ya fue ejecutada correctamente. 
-El paso 1 te va a pedir que te loguees a la cuenta de Google ya que allí hará la conexión con el Drive y así acceder a tus archivos de audio. El paso 5 será el que más demore ya que es dónde se hacen efectivamente las transcripciones y su guardado en .docx en la carpeta **Transcripciones**. 
+El paso 1 te va a pedir que te loguees a la cuenta de Google ya que allí hará la conexión con el Drive y así accederá a tus archivos de audio. El paso 5 será el que más demore ya que es dónde se hacen efectivamente las transcripciones y su guardado en .docx en la carpeta **Transcripciones**. 
 
 
 **Nota:** si cerrás el archivo _Audio_a_texto_v2.ipynb_, cuando lo volvés a abrir, tenés que ejecutar todo de nuevo desde el Paso 1. 
