@@ -1,0 +1,43 @@
+---
+aliases: [audio a texto]
+title: 'Audio a Texto con whisper v2'
+thumbnail: ""
+authors: [elina]
+date: '2025-09-24'
+tags: [Ciencias sociales computacionales]
+codefolding_show: hide
+codefolding_nobutton: true
+categories:
+  - R
+  - Python
+summary: 2025-09-24 / Transcripción de audio a texto usando whisper V2 / Separa párrafos por silencios y exporta a docx
+image:
+  caption: ''
+  focal_point: ''
+  output:
+  blogdown::html_page:
+    toc: yes
+    number_sections: true
+    toc_depth: 4
+featuredImage: ""
+---
+
+
+
+<hr />
+<p>Esta entrada es una actualización de del <a href="https://www.elinagomez.com/blog/2023-08-16-audio-a-texto-con-whisper/">tutorial anterior</a> que mostraba el paso a paso de transcripción de audios a textos con el modelo <a href="https://openai.com/research/whisper">whisper</a>. Esta actualización del código agrega la separación de párrafos por silencios (idealmente pensaba hacerlo con separación según hablantes pero es muy pesado para correrlo desde un entorno Colab gratuito) y el output en un archivo .docx (y no txt).</p>
+<hr />
+<p><strong>1. Pasos</strong></p>
+<p>Se usa el mismo entorno de ejecución de código que en la versión anterior (<a href="https://colab.research.google.com">Google Colab</a>) y el modelo <em>medium</em>, todo con código Python. Tenes que tener una cuenta de Google para poder abrir el cuaderno en el cual estará y se ejecutará el código.</p>
+<p><strong>I.</strong> Abrís <a href="https://colab.research.google.com/drive/1EuLQhzh9T1Sk_1MTJ_GgvMsD8PJd6kE3?usp=sharing">este archivo</a> denominado <em>Audio_a_texto_v2.ipynb</em> que contiene todas las líneas necesarias para hacer la transcripción.
+<br><br>
+<strong>II.</strong> Hacés una copia del archivo y le ponés el nombre que quieras <em>Archivo</em> -&gt; <em>Guardar una copia en Drive</em>
+<br><br>
+<strong>III.</strong> Vas al panel de Herramientas, abrís <em>Entorno de ejecución</em> -&gt; <em>Cambiar tipo de entorno de ejecución</em> -&gt; <em>T4 GPU</em>
+<iframe src="imagen1.png" width="700"  height="500"></iframe>
+<strong>IV.</strong> Creás una carpeta en tu Drive (carpeta raíz) que se llame <strong>Audios</strong> y una subcarpeta allí mismo que se llame <strong>Transcripciones</strong> (ojó que esto cambió de la versión anterior!, antes eran dos separadas).En la carpeta <strong>Audios</strong> ponés <strong>TODOS</strong> los audios que querés transcribir (acepta formatos .mp3, .mp4, .wav y .m4a).
+<br><br>
+<strong>V.</strong> Vas ejecutando de a uno los <strong>5 pasos</strong> que aparecen en el código, apretando la la flecha circular en cada uno de los pasos. Cuando aparece un tick en verde, significa que esa celda ya fue ejecutada correctamente.
+El paso 1 te va a pedir que te loguees a la cuenta de Google ya que allí hará la conexión con el Drive y así acceder a tus archivos de audio. El paso 5 será el que más demore ya que es dónde se hacen efectivamente las transcripciones y su guardado en .docx en la carpeta <strong>Transcripciones</strong>.</p>
+<p><strong>Nota:</strong> si cerrás el archivo <em>Audio_a_texto_v2.ipynb</em>, cuando lo volvés a abrir, tenés que ejecutar todo de nuevo desde el Paso 1.</p>
+<p>Voilá!</p>
